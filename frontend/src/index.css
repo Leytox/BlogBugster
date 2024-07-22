@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Sintony:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .btn {
+        @apply bg-[#001B60] cursor-pointer min-w-52 text-white font-bold p-4 rounded transition font-poppins;
+    }
+
+    .btn:hover {
+        @apply bg-[#001241];
+    }
+
+    .btn:disabled {
+        @apply bg-gray-500 cursor-not-allowed;
+    }
+
+    .gradient {
+        @apply bg-gradient-to-r from-[#001B60] to-[#002b99] text-white;
+    }
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
