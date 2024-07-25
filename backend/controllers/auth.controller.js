@@ -71,14 +71,14 @@ const refresh = async (req, res) => {
   const { refresh_token } = req.cookies;
   try {
     if (!refresh_token)
-      return res.status(400).json({ message: "No token, please login" });
+      return res.status(401).json({ message: "No token, please login" });
     jwt.verify(
       refresh_token,
       process.env.JWT_REFRESH_SECRET,
       async (err, user) => {
         if (err)
           return res
-            .status(400)
+            .status(401)
             .json({ message: "Token is not valid, please login" });
         const isExist = await User.findById(user.id, null, null);
         if (!isExist)

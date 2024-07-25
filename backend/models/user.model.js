@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
     },
     profilePic: {
       type: String,
-      default: "uploads/default.png",
+      default: "default.png",
     },
     social: {
       facebook: {

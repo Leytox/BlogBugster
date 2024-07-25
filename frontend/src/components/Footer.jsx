@@ -72,7 +72,13 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <img src={facebook} alt="facebook" width={40} height={40} />
+                <img
+                  className={"bg-white rounded-3xl"}
+                  src={facebook}
+                  alt="facebook"
+                  width={40}
+                  height={40}
+                />
               </a>
             </li>
             <li>
@@ -81,7 +87,13 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <img src={x} alt="x" width={40} height={40} />
+                <img
+                  className={"bg-white rounded-3xl"}
+                  src={x}
+                  alt="x"
+                  width={40}
+                  height={40}
+                />
               </a>
             </li>
             <li>
@@ -90,7 +102,13 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <img src={linkedin} alt="linkedin" width={40} height={40} />
+                <img
+                  className={"bg-white rounded-3xl"}
+                  src={linkedin}
+                  alt="linkedin"
+                  width={40}
+                  height={40}
+                />
               </a>
             </li>
             <li>
@@ -99,7 +117,13 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <img src={github} alt="github" width={40} height={40} />
+                <img
+                  className={"bg-white rounded-3xl"}
+                  src={github}
+                  alt="github"
+                  width={40}
+                  height={40}
+                />
               </a>
             </li>
           </ul>

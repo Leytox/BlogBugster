@@ -5,6 +5,9 @@ const postSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
+      minlength: 8,
+      maxlength: 64,
+      unique: true,
     },
     content: {
       type: String,
@@ -14,32 +17,33 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    creator: {
+    category: {
+      type: String,
+      enum: ["software", "hardware", "miscellaneous"],
+      required: true,
+    },
+    author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
     },
+    tags: [
+      {
+        type: String,
+        ref: "Tag",
+        required: true,
+      },
+    ],
     comments: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Comment",
       },
     ],
-    likes: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+    likes: {
+      type: Number,
+      default: 0,
     },
-    tags: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Tag",
-      },
-    ],
   },
   {
     timestamps: true,

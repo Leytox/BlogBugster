@@ -22,7 +22,7 @@ const Home = () => {
       ease: "power4",
     });
     gsap.from("#feature-card", {
-      x: -500,
+      y: 200,
       opacity: 0,
       duration: 0.6,
       stagger: 0.5,
@@ -40,18 +40,22 @@ const Home = () => {
     <main>
       <section
         className={
-          "h-screen gap-24 flex lg:flex-row flex-col justify-center px-56 items-center shadow-2xl bg-gray-100"
+          "min-h-screen gap-24 flex lg:flex-row flex-col justify-center px-56 items-center shadow-2xl bg-gray-100 max-sm:px-12"
         }
       >
         <div className={"flex flex-col gap-12"}>
           <div className={"flex flex-col gap-2"}>
-            <h1 className={"text-6xl font-bold leading-normal"}>
+            <h1
+              className={
+                "text-6xl font-bold leading-normal max-sm:text-4xl max-sm:max-w-72 max-sm:leading-normal"
+              }
+            >
               Welcome to{" "}
               <span className={"overline"} id={"blog-bugster-text"}>
                 BlogBugster
               </span>
             </h1>
-            <h2 className={"text-2xl leading-loose"}>
+            <h2 className={"text-2xl leading-normal"}>
               Unraveling the Mysteries of Software and Hardware Bugs
             </h2>
             <p className={"text-lg text-gray-600 leading-normal"}>
@@ -61,7 +65,7 @@ const Home = () => {
               malfunction.
             </p>
           </div>
-          <div className={"flex flex-row gap-8"}>
+          <div className={"flex flex-row gap-8 max-sm:flex-col"}>
             <Button title={"Latest Posts"} />
             <Button
               title={"Join Community"}
@@ -71,7 +75,7 @@ const Home = () => {
             />
           </div>
         </div>
-        <div>
+        <div className={"max-sm:hidden"}>
           <img
             src={heroImage}
             alt="computer filled with bugs"
@@ -82,16 +86,26 @@ const Home = () => {
           </p>
         </div>
       </section>
-      <section className={"h-screen shadow-2xl"}>
-        <div className={"flex h-full justify-between gap-24 px-12"}>
+      <section className={"min-h-screen shadow-2xl py-8"}>
+        <div
+          className={
+            "flex h-full justify-between gap-24 px-12 max-sm:flex-col max-sm:justify-center max-sm:items-center"
+          }
+        >
+          <h1
+            className={
+              "text-6xl font-bold text-center uppercase mt-20 overline hidden max-sm:block"
+            }
+          >
+            Features
+          </h1>
           <FeatureCard
-            styles={"rounded-b-lg"}
             title={features[0].title}
             icon={features[0].icon}
             description={features[0].description}
             image={features[0].image}
           />
-          <div className={"flex flex-col justify-between"}>
+          <div className={"flex flex-col justify-between gap-20 max-sm:hidden"}>
             <h1
               className={
                 "text-6xl font-bold text-center uppercase mt-20 overline"
@@ -100,7 +114,6 @@ const Home = () => {
               Features
             </h1>
             <FeatureCard
-              styles={"rounded-t-lg"}
               title={features[1].title}
               icon={features[1].icon}
               description={features[1].description}
@@ -108,7 +121,13 @@ const Home = () => {
             />
           </div>
           <FeatureCard
-            styles={"rounded-b-lg"}
+            title={features[1].title}
+            icon={features[1].icon}
+            description={features[1].description}
+            image={features[1].image}
+            styles={"max-sm:block hidden"}
+          />
+          <FeatureCard
             title={features[2].title}
             icon={features[2].icon}
             description={features[2].description}
@@ -116,7 +135,7 @@ const Home = () => {
           />
         </div>
       </section>
-      <section className="bg-gray-100 py-20">
+      <section className="min-h-screen py-20 flex items-center">
         <div className="w-full max-w-4xl mx-auto px-6">
           <h1 className="text-6xl font-bold text-center uppercase mb-12 overline">
             About Us

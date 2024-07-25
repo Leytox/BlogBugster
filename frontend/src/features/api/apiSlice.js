@@ -14,7 +14,6 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
   await mutex.waitForUnlock();
 
   let result = await baseQuery(args, api, extraOptions);
-
   if (result.error && result.error.status === 401) {
     // The token has expired
     if (!mutex.isLocked()) {
@@ -26,10 +25,11 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
           api,
           extraOptions,
         );
-
         if (refreshResult.data) {
+          console.log(refreshResult.data);
           // Retry the original request with new token
           result = await baseQuery(args, api, extraOptions);
+          console.log(result);
         } else {
           // Refresh token has failed, log the user out or handle accordingly
           api.dispatch(logout()); // Implement the logout action in your auth slice

@@ -42,7 +42,7 @@ const Login = () => {
         <label className={"text-md"}>Email</label>
         <input
           required={true}
-          className="border-[1px] border-gray-400 p-2 rounded-md bg-gray-100 outline-0 w-80 outline"
+          className="input-default"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -54,7 +54,7 @@ const Login = () => {
         <input
           minLength={6}
           required={true}
-          className="border-[1px] border-gray-400 p-2 rounded-md bg-gray-100 outline-0 w-80 outline"
+          className="input-default"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}

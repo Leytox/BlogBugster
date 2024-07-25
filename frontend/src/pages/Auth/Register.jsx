@@ -48,7 +48,7 @@ const Register = () => {
         <label className={"text-md"}>Name</label>
         <input
           required={true}
-          className="border-[1px] border-gray-400 p-2 rounded-md bg-gray-100 outline-0 w-80 outline"
+          className="input-default"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -59,7 +59,7 @@ const Register = () => {
         <label className={"text-md"}>Email</label>
         <input
           required={true}
-          className="border-[1px] border-gray-400 p-2 rounded-md bg-gray-100 outline-0 w-80 outline"
+          className="input-default"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -71,7 +71,7 @@ const Register = () => {
         <input
           minLength={8}
           required={true}
-          className="border-[1px] border-gray-400 p-2 rounded-md bg-gray-100 outline-0 w-80 outline"
+          className="input-default"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -84,7 +84,7 @@ const Register = () => {
           id={"confirmPassword"}
           minLength={8}
           required={true}
-          className="border-[1px] border-gray-400 p-2 rounded-md bg-gray-100 outline-0 w-80 outline"
+          className="input-default"
           type="password"
           onChange={(e) => setConfirmPassword(e.target.value)}
           value={confirmPassword}

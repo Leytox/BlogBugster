@@ -6,7 +6,7 @@
 
 @layer components {
     .btn {
-        @apply bg-[#001B60] cursor-pointer min-w-52 text-white font-bold p-4 rounded transition font-poppins;
+        @apply bg-[#001B60] h-14 cursor-pointer min-w-52 text-white font-bold p-4 rounded w-72 transition font-poppins;
     }
 
     .btn:hover {
@@ -15,6 +15,18 @@
 
     .btn:disabled {
         @apply bg-gray-500 cursor-not-allowed;
+    }
+
+    .input-base {
+        @apply border-0 border-b-2 h-14 px-4 outline outline-0 w-72 rounded
+    }
+
+    .input-default {
+        @apply input-base border-gray-400 bg-gray-100 text-black;
+    }
+
+    .input-transparent {
+        @apply input-base border-white placeholder-white bg-transparent text-white;
     }
 
     .gradient {

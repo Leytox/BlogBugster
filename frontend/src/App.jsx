@@ -7,6 +7,8 @@ import Footer from "./components/Footer.jsx";
 import Profile from "./pages/Profile.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import NewPost from "./pages/Post/NewPost.jsx";
+import GoTop from "./components/GoTop.jsx";
 
 export default function App() {
   return (
@@ -17,8 +19,10 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        {<Route path="/profile" element={<Profile />} />}
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/new-post" element={<NewPost />} />
       </Routes>
+      <GoTop />
       <Footer />
     </>
   );
