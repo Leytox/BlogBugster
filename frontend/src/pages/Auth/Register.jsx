@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRegisterMutation } from "../../features/auth/authApiSlice.js";
 import { selectUser, setUser } from "../../features/auth/authSlice.js";
 import { toast } from "react-toastify";
+import { setLocation } from "../../features/location/locationSlice.js";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -13,6 +14,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  dispatch(setLocation("Register"));
 
   const [register] = useRegisterMutation();
   const { user } = useSelector(selectUser);

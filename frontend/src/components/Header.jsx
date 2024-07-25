@@ -1,24 +1,17 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { selectUser, setUser } from "../features/auth/authSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import { useLogoutMutation } from "../features/auth/authApiSlice.js";
 import { toast } from "react-toastify";
 import logo from "../assets/logo.png";
 import SearchContainer from "./SearchContainer.jsx";
+import { selectLocation } from "../features/location/locationSlice.js";
 
 const Header = () => {
   const { user } = useSelector(selectUser);
   const [logout] = useLogoutMutation();
   const dispatch = useDispatch();
-  const location = useLocation();
-  let currentLocation;
-  if (location.pathname === "/") currentLocation = "HOME";
-  else {
-    currentLocation = location.pathname.split("/");
-    currentLocation = currentLocation[currentLocation.length - 1].toUpperCase();
-    if (currentLocation.includes("-"))
-      currentLocation = currentLocation.split("-").join(" ");
-  }
+  const { location } = useSelector(selectLocation);
   const handleLogout = async () => {
     const res = await logout();
     dispatch(setUser(null));
@@ -34,7 +27,9 @@ const Header = () => {
         <Link to={"/"}>
           <img src={logo} alt="logo" width={50} height={50} />
         </Link>
-        <h1 className={"text-xl font-bold max-sm:hidden"}>{currentLocation}</h1>
+        <h1 className={"text-xl font-bold max-sm:hidden uppercase"}>
+          {location}
+        </h1>
       </div>
       <nav
         className={

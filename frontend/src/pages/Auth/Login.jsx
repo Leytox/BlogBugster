@@ -5,12 +5,14 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { useLoginMutation } from "../../features/auth/authApiSlice.js";
 import { selectUser, setUser } from "../../features/auth/authSlice.js";
+import { setLocation } from "../../features/location/locationSlice.js";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  dispatch(setLocation("Login"));
 
   const [login] = useLoginMutation();
   const { user } = useSelector(selectUser);

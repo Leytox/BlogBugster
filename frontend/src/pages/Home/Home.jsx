@@ -6,10 +6,14 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TextPlugin } from "gsap/TextPlugin";
+import { useDispatch } from "react-redux";
+import { setLocation } from "../../features/location/locationSlice.js";
 
 gsap.registerPlugin(TextPlugin);
 gsap.registerPlugin(ScrollTrigger);
 const Home = () => {
+  const dispatch = useDispatch();
+  dispatch(setLocation("Home"));
   useGSAP(() => {
     gsap.from("#blog-bugster-text", {
       text: "",

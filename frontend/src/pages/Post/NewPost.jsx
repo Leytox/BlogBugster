@@ -4,10 +4,11 @@ import "react-quill/dist/quill.snow.css";
 import Button from "../../components/Button.jsx";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../../features/auth/authSlice.js";
 import { useCreatePostMutation } from "../../features/posts/postsApiSlice.js";
 import { modules } from "../../constants/index.js";
+import { setLocation } from "../../features/location/locationSlice.js";
 
 const NewPost = () => {
   const [title, setTitle] = useState("");
@@ -17,7 +18,8 @@ const NewPost = () => {
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState([]);
   const [showTags, setShowTags] = useState(false);
-
+  const dispatch = useDispatch();
+  dispatch(setLocation("New post"));
   const { user } = useSelector(selectUser);
   const [post] = useCreatePostMutation();
   const navigate = useNavigate();
