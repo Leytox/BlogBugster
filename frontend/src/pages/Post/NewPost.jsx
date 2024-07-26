@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Button from "../../components/Button.jsx";
@@ -18,6 +18,8 @@ const NewPost = () => {
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState([]);
   const [showTags, setShowTags] = useState(false);
+  const [isFormHidden, setIsFormHidden] = useState(false);
+  const [preview, setPreview] = useState(false);
   const dispatch = useDispatch();
   dispatch(setLocation("New post"));
   const { user } = useSelector(selectUser);
@@ -86,23 +88,24 @@ const NewPost = () => {
   };
 
   let contentLength = editor.current?.getEditor().getLength();
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 640) setIsFormHidden(false);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
-    <main
-      className={
-        "min-h-screen flex flex-col px-8 pt-10 max-sm:pt-5 max-sm:px-4"
-      }
-    >
+    <main className={"h-screen flex flex-col"}>
       <form
         onSubmit={handleCreatePost}
-        className={
-          "w-full gradient p-3 rounded-t-xl flex flex-row justify-between gap-4 max-2xl:flex-col"
-        }
+        className={`${isFormHidden ? "h-24" : null} w-full bg-gray-800 p-3 flex flex-row justify-between gap-12 max-2xl:flex-col`}
       >
         <div
-          className={
-            "flex flex-row gap-8 justify-center items-center max-xl:grid max-xl:grid-cols-2 max-lg:grid-cols-2 max-sm:flex max-sm:flex-col"
-          }
+          className={`${isFormHidden ? "hidden" : "flex flex-row gap-8 justify-center items-center place-items-center max-xl:grid max-xl:grid-cols-2 max-lg:grid-cols-2 max-sm:flex max-sm:flex-col"} `}
         >
           <div className={"flex-col flex"}>
             <input
@@ -138,7 +141,7 @@ const NewPost = () => {
               onChange={(e) => setTagInput(e.target.value)}
               className={"input-transparent"}
             />
-            <div className={"relative flex flex-row gap-4 right-16"}>
+            <div className={"relative flex flex-row gap-4 right-16 text-white"}>
               <button
                 type="button"
                 onClick={handleAddTag}
@@ -158,7 +161,7 @@ const NewPost = () => {
           <div className={"flex flex-row items-center"}>
             <label
               className="bg-transparent transition border-r-4 border-l-2 border-b-4 border-t-[1px] w-72 items-center flex justify-center
-             shadow-2xl border-white text-white hover:text-gray-300 hover:border-gray-300 cursor-pointer p-4 rounded"
+             shadow-2xl border-white text-white hover:text-gray-300 hover:border-gray-300 cursor-pointer p-4 h-14 rounded"
             >
               {file ? file.name.substring(0, 22) + "..." : "Upload Image"}
               <input
@@ -180,7 +183,20 @@ const NewPost = () => {
             </button>
           </div>
         </div>
-        <div className={"flex-row flex justify-center items-center"}>
+        <div
+          className={`${isFormHidden ? "hidden" : "flex-row flex justify-center items-center gap-4"}`}
+        >
+          <button
+            onClick={() => setPreview(!preview)}
+            type={"button"}
+            title={"Preview"}
+            className={
+              `btn ${preview ? "bg-gray-400 scale-95 border-gray-400" : "scale-100"} w-24 bg-transparent transition border-r-4 border-l-2 border-b-4 border-t-[1px] shadow-2xl border-white text-white ` +
+              "hover:bg-gray-500 hover:text-gray-300 hover:border-gray-300 font-normal"
+            }
+          >
+            Preview
+          </button>
           <Button
             title={"Create Post"}
             styles={
@@ -189,29 +205,48 @@ const NewPost = () => {
             }
           />
         </div>
+        <div
+          className={"max-sm:flex w-full hidden justify-center items-center"}
+        >
+          <button
+            type={"button"}
+            onClick={() => setIsFormHidden(!isFormHidden)}
+            className={`text-white text-2xl transition hover:text-gray-300 relative ${isFormHidden ? "top-3" : "top-2"}`}
+          >
+            {isFormHidden ? "Show" : "Hide"}
+          </button>
+        </div>
       </form>
-      <div className={"h-full grid grid-cols-2 gap-4 max-lg:grid-cols-1"}>
+      {preview ? (
+        <div
+          className={`h-[calc(100%-200px)] ${isFormHidden ? "h-full" : "max-2xl:h-[calc(100%-300px)] max-2xl:px-24 max-xl:px-0 max-xl:h-[calc(100%-400px)] max-lg:h-[calc(100%-500px)] max-md:h-[calc(100%-600px)] px-72"}`}
+        >
+          <h1
+            className={`text-gray-200 italic text-6xl text-center ${contentLength > 1 || contentLength === undefined ? "hidden" : "mt-20"}`}
+          >
+            Preview...
+          </h1>
+          <div
+            className={"blog-content text-xl w-full break-words"}
+            id={"content-preview"}
+            dangerouslySetInnerHTML={{ __html: content }}
+          ></div>
+        </div>
+      ) : (
         <ReactQuill
           ref={editor}
           value={content}
           onChange={setContent}
           modules={modules}
-          className={"min-h-[160px] mb-20"}
+          className={`h-[calc(100%-200px)] ${
+            isFormHidden
+              ? "h-full"
+              : "max-2xl:h-[calc(100%-300px)] max-2xl:px-24" +
+                " max-xl:px-0 max-xl:h-[calc(100%-400px)] max-lg:h-[calc(100%-500px)] max-md:h-[calc(100%-625px)] px-72"
+          }`}
           placeholder={"Write something amazing..."}
         />
-        <div className={"p-5"}>
-          <h1
-            className={`text-gray-200 italic text-6xl text-center ${contentLength > 1 ? "" : "mt-20"}`}
-          >
-            {contentLength > 1 ? null : "Preview..."}
-          </h1>
-          <div
-            className={"ql-editor w-full break-words"}
-            id={"content-preview"}
-            dangerouslySetInnerHTML={{ __html: content }}
-          ></div>
-        </div>
-      </div>
+      )}
       {showTags && (
         <div
           className={

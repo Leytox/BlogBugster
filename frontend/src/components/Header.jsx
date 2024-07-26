@@ -20,7 +20,7 @@ const Header = () => {
   return (
     <header
       className={
-        "sticky z-50 top-0 w-full h-[80px] gradient flex flex-row justify-between gap-12 items-center px-8"
+        "transition-all duration-300 sticky z-50 top-0 w-full h-[80px] gradient flex flex-row justify-between gap-12 items-center px-8"
       }
     >
       <div className={"flex flex-row gap-12 items-center"}>
@@ -41,7 +41,7 @@ const Header = () => {
           <>
             <Link
               className={
-                "uppercase hover:text-gray-300 hover:border-gray-300 flex justify-center items-center transition ease-in-out rounded-md border-[1px] border-white px-1 py-2"
+                "uppercase hover:text-gray-300 hover:border-gray-300 flex text-center justify-center items-center transition ease-in-out rounded-md border-[1px] border-white px-2 py-2"
               }
               to={"/new-post"}
             >

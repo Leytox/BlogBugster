@@ -38,10 +38,14 @@ const NotFound = () => {
   }, []);
   return (
     <div className={"h-screen flex flex-row justify-center items-center gap-8"}>
-      <div id={"question-mark"}>
+      <div className={"max-sm:hidden block"} id={"question-mark"}>
         <img src={question} alt="question mark" width={80} />
       </div>
-      <div className={"flex flex-col justify-center items-center gap-4"}>
+      <div
+        className={
+          "flex flex-col justify-center items-center gap-4 text-center"
+        }
+      >
         <h1 className={"text-6xl"}>404 Not Found</h1>
         <p className={"text-xl text-gray-500 italic"}>
           The page you are looking for does not exist.
@@ -53,7 +57,7 @@ const NotFound = () => {
           }}
         />
       </div>
-      <div id={"question-mark-2"}>
+      <div className={"max-sm:hidden block"} id={"question-mark-2"}>
         <img src={question} alt="question mark" width={80} />
       </div>
     </div>

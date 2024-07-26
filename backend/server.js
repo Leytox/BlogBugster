@@ -19,7 +19,6 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
-app.use("/images", express.static("uploads"));
 
 db()
   .then(() => {
@@ -32,5 +31,6 @@ db()
   });
 
 app.use("/api", apiRoutes);
+app.use("/api/uploads", express.static("uploads"));
 
 app.use(notFound);

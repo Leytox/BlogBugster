@@ -37,6 +37,8 @@ const modules = {
     [{ align: [] }],
     ["link", "image", "video"],
     ["clean"],
+    ["code-block"],
+    ["formula"],
   ],
 };
 

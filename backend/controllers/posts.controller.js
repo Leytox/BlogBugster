@@ -1,10 +1,19 @@
 import Post from "../models/post.model.js";
 import Tag from "../models/tag.model.js";
+import { isValidObjectId } from "mongoose";
 
 const getPost = async (req, res) => {
+  console.log(req.params.id);
   try {
-    const post = await Post.findById(req.params.id, null, null);
-    return res.status(200).json(post, { message: "Successes" });
+    if (!req.params.id) return res.status(404).json({ message: "Not found" });
+    if (!isValidObjectId(req.params.id))
+      return res.status(404).json({ message: "Not found" });
+    const post = await Post.findById(req.params.id, null, null).populate(
+      "author",
+      "-password",
+    );
+    if (!post) return res.status(404).json({ message: "Not found" });
+    return res.status(200).json({ post, message: "Successes" });
   } catch (error) {
     console.log(error);
     return res.status(404).json({ message: "Something went wrong" });
@@ -15,7 +24,7 @@ const getPosts = async (req, res) => {
   const { page, limit } = req.query;
   try {
     const posts = await Post.find({}, null, null);
-    return res.status(200).json(posts, { message: "Successes" });
+    return res.status(200).json({ posts, message: "Successes" });
   } catch (error) {
     console.log(error);
     return res.status(404).json({ message: "Something went wrong" });

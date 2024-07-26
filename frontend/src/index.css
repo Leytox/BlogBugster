@@ -6,7 +6,7 @@
 
 @layer components {
     .btn {
-        @apply bg-[#001B60] h-14 cursor-pointer min-w-52 text-white font-bold p-4 rounded w-72 transition font-poppins;
+        @apply bg-[#001B60] h-14 cursor-pointer text-white font-bold p-4 rounded w-72 transition font-poppins;
     }
 
     .btn:hover {
@@ -39,4 +39,33 @@
     margin: 0;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
+}
+
+.blog-content {
+    a {
+        color: #001B60;
+        text-decoration: underline;
+    }
+
+    em {
+        font-style: italic;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    h2 {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    h3 {
+        font-size: 1.75rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
 }
