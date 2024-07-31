@@ -7,7 +7,10 @@ import logo from "../assets/logo.png";
 import SearchContainer from "./SearchContainer.jsx";
 import { selectLocation } from "../features/location/locationSlice.js";
 import { useEffect, useState } from "react";
+
 const Header = () => {
+  const [position, setPosition] = useState(window.scrollY);
+  const [visible, setVisible] = useState(true);
   const { user } = useSelector(selectUser);
   const [logout] = useLogoutMutation();
   const dispatch = useDispatch();
@@ -17,13 +20,9 @@ const Header = () => {
     dispatch(setUser(null));
     toast.success(res.data.message);
   };
-
-  const [position, setPosition] = useState(window.scrollY);
-  const [visible, setVisible] = useState(true);
   useEffect(() => {
     const handleScroll = () => {
       let moving = window.scrollY;
-
       setVisible(position > moving);
       setPosition(moving);
     };
@@ -33,11 +32,9 @@ const Header = () => {
     };
   });
 
-  const cls = visible ? "top-0" : "-top-24";
-
   return (
     <header
-      className={`${cls} transition-all duration-300 sticky z-50 top-0 w-full h-[80px] gradient flex flex-row justify-between gap-12 items-center px-8`}
+      className={`${visible ? "top-0" : "-top-24"} transition-all duration-300 sticky z-50 w-full h-[80px] gradient flex flex-row justify-between gap-12 items-center px-8`}
     >
       <div className={"flex flex-row gap-12 items-center"}>
         <Link to={"/"}>

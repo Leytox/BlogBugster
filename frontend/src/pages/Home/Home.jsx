@@ -79,7 +79,7 @@ const Home = () => {
             />
           </div>
         </div>
-        <div className={"max-sm:hidden"}>
+        <div className={"hidden 2xl:block"}>
           <img
             src={heroImage}
             alt="computer filled with bugs"
@@ -93,15 +93,15 @@ const Home = () => {
       <section className={"min-h-screen shadow-2xl py-8"}>
         <div
           className={
-            "flex h-full justify-between gap-24 px-12 max-sm:flex-col max-sm:justify-center max-sm:items-center"
+            "flex h-full gap-24 px-12 flex-col justify-center items-center 2xl:flex-row 2xl:justify-between"
           }
         >
           <h1
             className={
-              "text-6xl font-bold text-center uppercase mt-20 overline hidden max-sm:block"
+              "text-6xl font-bold text-center uppercase mt-20 overline block 2xl:hidden"
             }
           >
-            Features
+            FEATURES
           </h1>
           <FeatureCard
             title={features[0].title}
@@ -109,13 +109,13 @@ const Home = () => {
             description={features[0].description}
             image={features[0].image}
           />
-          <div className={"flex flex-col justify-between gap-20 max-sm:hidden"}>
+          <div className={"flex-col justify-between gap-20 hidden 2xl:flex"}>
             <h1
               className={
                 "text-6xl font-bold text-center uppercase mt-20 overline"
               }
             >
-              Features
+              FEATURES
             </h1>
             <FeatureCard
               title={features[1].title}
@@ -129,7 +129,7 @@ const Home = () => {
             icon={features[1].icon}
             description={features[1].description}
             image={features[1].image}
-            styles={"max-sm:block hidden"}
+            styles={"hidden max-2xl:block"}
           />
           <FeatureCard
             title={features[2].title}
