@@ -1,14 +1,59 @@
-import { useEffect, useRef, useState } from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import Button from "../../components/Button.jsx";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../../features/auth/authSlice.js";
 import { useCreatePostMutation } from "../../features/posts/postsApiSlice.js";
-import { modules } from "../../constants/index.js";
 import { setLocation } from "../../features/location/locationSlice.js";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import {
+  Alignment,
+  Autoformat,
+  BlockQuote,
+  Bold,
+  CKFinder,
+  CKFinderUploadAdapter,
+  ClassicEditor,
+  CloudServices,
+  Code,
+  CodeBlock,
+  Essentials,
+  FontBackgroundColor,
+  FontColor,
+  FontFamily,
+  FontSize,
+  Heading,
+  Highlight,
+  HorizontalLine,
+  HtmlEmbed,
+  Image,
+  ImageCaption,
+  ImageResize,
+  ImageStyle,
+  ImageToolbar,
+  ImageUpload,
+  Indent,
+  IndentBlock,
+  Italic,
+  Link,
+  LinkImage,
+  List,
+  MediaEmbed,
+  Paragraph,
+  PasteFromOffice,
+  RemoveFormat,
+  SpecialCharacters,
+  Strikethrough,
+  Subscript,
+  Superscript,
+  Table,
+  TableToolbar,
+  TextTransformation,
+  TodoList,
+  Underline,
+  Undo,
+} from "ckeditor5";
+import "ckeditor5/ckeditor5.css";
 
 const NewPost = () => {
   const [title, setTitle] = useState("");
@@ -21,11 +66,9 @@ const NewPost = () => {
   const [isFormHidden, setIsFormHidden] = useState(false);
   const [preview, setPreview] = useState(false);
   const dispatch = useDispatch();
-  dispatch(setLocation("New post"));
   const { user } = useSelector(selectUser);
   const [post] = useCreatePostMutation();
   const navigate = useNavigate();
-  const editor = useRef();
 
   const handleCreatePost = async (e) => {
     e.preventDefault();
@@ -34,9 +77,9 @@ const NewPost = () => {
         toast.error("Please add at least one tag");
         return;
       }
-      if (contentLength < 512) {
+      if (content.length < 512) {
         toast.error(
-          `Please add more content, minimum length of content is 512 symbols, current is ${contentLength}`,
+          `Please add more content, minimum length of content is 512 symbols, current is ${content.length}`,
         );
         return;
       }
@@ -59,6 +102,7 @@ const NewPost = () => {
       toast.error(error.data?.message || error.error);
     }
   };
+
   const handleImageUpload = (event) => {
     try {
       setFile(event.target.files[0]);
@@ -67,13 +111,14 @@ const NewPost = () => {
       toast.error(error.message);
     }
   };
+
   const handleAddTag = () => {
     if (tagInput.trim()) {
       if (tags.includes(tagInput.trim())) {
         toast.error("Tag already exists");
         return;
       }
-      if (tags.length >= 8) {
+      if (tags.length >= 6) {
         toast.error("You can only add up to 6 tags");
         return;
       }
@@ -82,13 +127,14 @@ const NewPost = () => {
       toast.success("Tag added successfully");
     }
   };
+
   const handleRemoveTag = (tagToRemove) => {
     setTags(tags.filter((tag) => tag !== tagToRemove));
     toast.success("Tag removed successfully");
   };
 
-  let contentLength = editor.current?.getEditor().getLength();
   useEffect(() => {
+    dispatch(setLocation("New post"));
     const handleResize = () => {
       if (window.innerWidth >= 640) setIsFormHidden(false);
     };
@@ -96,16 +142,16 @@ const NewPost = () => {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [dispatch]);
 
   return (
-    <main className={"h-screen flex flex-col"}>
+    <main className={"min-h-screen flex flex-col"}>
       <form
         onSubmit={handleCreatePost}
-        className={`${isFormHidden ? "h-24" : null} w-full bg-gray-800 p-3 flex flex-row justify-between gap-12 max-2xl:flex-col`}
+        className={`${isFormHidden ? "h-24" : null} w-full bg-gray-800 p-3 flex flex-row justify-between gap-12 max-2xl:flex-col max-sm:gap-6`}
       >
         <div
-          className={`${isFormHidden ? "hidden" : "flex flex-row gap-8 justify-center items-center place-items-center max-xl:grid max-xl:grid-cols-2 max-lg:grid-cols-2 max-sm:flex max-sm:flex-col"} `}
+          className={`${isFormHidden ? "hidden" : "flex flex-row gap-8 justify-center items-center place-items-center max-xl:grid max-xl:grid-cols-2 max-lg:grid-cols-2 max-sm:flex max-sm:flex-col max-sm:gap-6"} `}
         >
           <div className={"flex-col flex"}>
             <input
@@ -131,7 +177,7 @@ const NewPost = () => {
               <option value={"miscellaneous"}>Miscellaneous</option>
             </select>
           </div>
-          <div className={"flex-row flex gap-2 w-72"}>
+          <div className={"flex-row flex w-72"}>
             <input
               type="text"
               placeholder="Add a tag"
@@ -139,31 +185,47 @@ const NewPost = () => {
               maxLength={20}
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={(e) =>
+                e.key === "Enter" && tagInput.length > 3 && handleAddTag()
+              }
               className={"input-transparent"}
             />
-            <div className={"relative flex flex-row gap-4 right-16 text-white"}>
-              <button
-                type="button"
-                onClick={handleAddTag}
-                className={"text-2xl transition hover:text-gray-300"}
-              >
-                +
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowTags(!showTags)}
-                className={"text-2xl rounded transition hover:text-gray-300 "}
-              >
-                ...
-              </button>
+            <div className={"relative flex flex-row gap-4 right-24 text-white"}>
+              {tagInput.length > 2 && (
+                <div className={"flex flex-row gap-4"}>
+                  <button
+                    type="button"
+                    onClick={handleAddTag}
+                    className={"text-2xl transition hover:text-gray-300"}
+                  >
+                    +
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTagInput("")}
+                    className={"text-2xl transition hover:text-gray-300"}
+                  >
+                    🗑️
+                  </button>
+                </div>
+              )}
+              {tags.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowTags(!showTags)}
+                  className={"text-2xl rounded transition hover:text-gray-300"}
+                >
+                  ...
+                </button>
+              )}
             </div>
           </div>
           <div className={"flex flex-row items-center"}>
             <label
-              className="bg-transparent transition border-r-4 border-l-2 border-b-4 border-t-[1px] w-72 items-center flex justify-center
-             shadow-2xl border-white text-white hover:text-gray-300 hover:border-gray-300 cursor-pointer p-4 h-14 rounded"
+              className="bg-transparent transition border-[1px] w-72 items-center flex justify-center
+            border-white text-white hover:text-gray-300 hover:border-gray-300 cursor-pointer p-4 h-14 rounded"
             >
-              {file ? file.name.substring(0, 22) + "..." : "Upload Image"}
+              {file ? file.name.substring(0, 22) + "..." : "Upload Image 📤"}
               <input
                 type="file"
                 accept="image/*"
@@ -189,21 +251,13 @@ const NewPost = () => {
           <button
             onClick={() => setPreview(!preview)}
             type={"button"}
-            title={"Preview"}
-            className={
-              `btn ${preview ? "bg-gray-400 scale-95 border-gray-400" : "scale-100"} w-24 bg-transparent transition border-r-4 border-l-2 border-b-4 border-t-[1px] shadow-2xl border-white text-white ` +
-              "hover:bg-gray-500 hover:text-gray-300 hover:border-gray-300 font-normal"
-            }
+            className={`btn-transparent ${preview ? "bg-gray-400 scale-95 border-gray-400" : "scale-100"} w-28 text-white py-4`}
           >
-            Preview
+            Preview 👀
           </button>
-          <Button
-            title={"Create Post"}
-            styles={
-              "bg-transparent transition border-r-4 border-l-2 border-b-4 border-t-[1px] shadow-2xl border-white text-white " +
-              "hover:bg-transparent hover:text-gray-300 hover:border-gray-300 font-normal"
-            }
-          />
+          <button className={"btn-transparent text-white py-4"}>
+            Create Post ✍🏼
+          </button>
         </div>
         <div
           className={"max-sm:flex w-full hidden justify-center items-center"}
@@ -217,36 +271,142 @@ const NewPost = () => {
           </button>
         </div>
       </form>
-      {preview ? (
-        <div
-          className={`h-[calc(100%-200px)] ${isFormHidden ? "h-full" : "max-2xl:h-[calc(100%-300px)] max-2xl:px-24 max-xl:px-0 max-xl:h-[calc(100%-400px)] max-lg:h-[calc(100%-500px)] max-md:h-[calc(100%-600px)] px-72"}`}
-        >
-          <h1
-            className={`text-gray-200 italic text-6xl text-center ${contentLength > 1 || contentLength === undefined ? "hidden" : "mt-20"}`}
-          >
-            Preview...
-          </h1>
-          <div
-            className={"blog-content text-xl w-full break-words"}
-            id={"content-preview"}
-            dangerouslySetInnerHTML={{ __html: content }}
-          ></div>
-        </div>
-      ) : (
-        <ReactQuill
-          ref={editor}
-          value={content}
-          onChange={setContent}
-          modules={modules}
-          className={`h-[calc(100%-200px)] ${
-            isFormHidden
-              ? "h-full"
-              : "max-2xl:h-[calc(100%-300px)] max-2xl:px-24" +
-                " max-xl:px-0 max-xl:h-[calc(100%-400px)] max-lg:h-[calc(100%-500px)] max-md:h-[calc(100%-625px)] px-72"
-          }`}
-          placeholder={"Write something amazing..."}
-        />
-      )}
+      <div
+        className={
+          "mt-4 mb-2 px-48 max-2xl:24px max-xl:px-16 max-lg:px-12 max-md:px-4 max-sm:px-2"
+        }
+      >
+        {preview ? (
+          <div>
+            <h1
+              className={`text-gray-200 italic text-6xl text-center ${content.length > 1 ? "hidden" : "mt-20"}`}
+            >
+              Preview...
+            </h1>
+            <div
+              className={"ck-content"}
+              id={"content-preview"}
+              dangerouslySetInnerHTML={{ __html: content }}
+            ></div>
+          </div>
+        ) : (
+          <CKEditor
+            editor={ClassicEditor}
+            config={{
+              toolbar: {
+                items: [
+                  "heading",
+                  "|",
+                  "bold",
+                  "italic",
+                  "underline",
+                  "strikethrough",
+                  "link",
+                  "bulletedList",
+                  "numberedList",
+                  "|",
+                  "blockQuote",
+                  "insertTable",
+                  "mediaEmbed",
+                  "undo",
+                  "redo",
+                  "|",
+                  "imageUpload",
+                  "imageStyle:inline",
+                  "imageStyle:block",
+                  "imageStyle:side",
+                  "linkImage",
+                  "imageTextAlternative",
+                  "|",
+                  "alignment:left",
+                  "alignment:center",
+                  "alignment:right",
+                  "alignment:justify",
+                  "|",
+                  "removeFormat",
+                  "specialCharacters",
+                  "highlight",
+                  "horizontalLine",
+                  "htmlEmbed",
+                  "code",
+                  "codeBlock",
+                  "fontBackgroundColor",
+                  "fontColor",
+                  "fontFamily",
+                  "fontSize",
+                  "subscript",
+                  "superscript",
+                  "todoList",
+                ],
+              },
+              plugins: [
+                Alignment,
+                Autoformat,
+                BlockQuote,
+                Bold,
+                CKFinder,
+                CKFinderUploadAdapter,
+                CloudServices,
+                Essentials,
+                FontBackgroundColor,
+                FontColor,
+                FontFamily,
+                FontSize,
+                Heading,
+                Highlight,
+                HorizontalLine,
+                HtmlEmbed,
+                Code,
+                CodeBlock,
+                Image,
+                ImageCaption,
+                ImageResize,
+                ImageStyle,
+                ImageToolbar,
+                ImageUpload,
+                Indent,
+                IndentBlock,
+                Italic,
+                Link,
+                List,
+                MediaEmbed,
+                Paragraph,
+                PasteFromOffice,
+                RemoveFormat,
+                SpecialCharacters,
+                Strikethrough,
+                Subscript,
+                Superscript,
+                Table,
+                TableToolbar,
+                TextTransformation,
+                TodoList,
+                Underline,
+                Undo,
+                LinkImage,
+              ],
+              image: {
+                toolbar: [
+                  "imageTextAlternative",
+                  "|",
+                  "imageStyle:inline",
+                  "imageStyle:block",
+                  "imageStyle:side",
+                  "linkImage",
+                ],
+              },
+              alignment: {
+                options: ["left", "center", "right", "justify"],
+              },
+              initialData: content,
+            }}
+            onChange={(event, editor) => {
+              const data = editor.getData();
+              setContent(data);
+            }}
+          />
+        )}
+      </div>
       {showTags && (
         <div
           className={

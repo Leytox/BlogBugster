@@ -18,14 +18,18 @@ export default function App() {
     <>
       <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
-        {/*{<Route path="/user/:username" element={<Profile />} />}*/}
+        {/*<Route path="/dashboard" element={<Dashboard />} />*/}
         <Route path="/new-post" element={<NewPost />} />
         <Route path="/edit-post/:id" element={<EditPost />} />
+
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+
+        <Route path="/" element={<Home />} />
+        {/*{<Route path="/user/:username" element={<User />} />}*/}
         <Route path="/post/:id" element={<Post />} />
+        {/*<Route path="/posts" element={<Posts />} />*/}
         <Route path="*" element={<NotFound />} />
       </Routes>
       <GoTop />

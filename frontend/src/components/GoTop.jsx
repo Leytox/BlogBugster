@@ -18,9 +18,9 @@ const GoTop = () => {
     <div
       onClick={goTop}
       className={
-        `${shown ? "opacity-100" : "opacity-0"} ` +
+        `${shown ? "" : "hidden"} ` +
         "fixed border-2 text-xl border-white z-50 bottom-6 right-6 w-16 h-16 gradient text-white" +
-        " flex justify-center items-center rounded-full cursor-pointer transition" +
+        " flex justify-center items-center rounded-full cursor-pointer transition-all duration-300" +
         " hover:bg-gray-300 hover:text-black"
       }
     >

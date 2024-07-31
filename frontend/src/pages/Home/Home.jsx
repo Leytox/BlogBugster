@@ -13,8 +13,8 @@ gsap.registerPlugin(TextPlugin);
 gsap.registerPlugin(ScrollTrigger);
 const Home = () => {
   const dispatch = useDispatch();
-  dispatch(setLocation("Home"));
   useGSAP(() => {
+    dispatch(setLocation("Home"));
     gsap.from("#blog-bugster-text", {
       text: "",
       duration: 2,

@@ -26,20 +26,4 @@ const features = [
   },
 ];
 
-const modules = {
-  toolbar: [
-    [{ header: "1" }, { header: "2" }, { font: [] }],
-    [{ list: "ordered" }, { list: "bullet" }],
-    ["bold", "italic", "underline", "strike", "blockquote"],
-    [{ script: "sub" }, { script: "super" }],
-    [{ indent: "-1" }, { indent: "+1" }, { direction: "rtl" }],
-    [{ color: [] }, { background: [] }],
-    [{ align: [] }],
-    ["link", "image", "video"],
-    ["clean"],
-    ["code-block"],
-    ["formula"],
-  ],
-};
-
-export { features, modules };
+export { features };

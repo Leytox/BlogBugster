@@ -6,7 +6,7 @@
 
 @layer components {
     .btn {
-        @apply bg-[#001B60] h-14 cursor-pointer text-white font-bold p-4 rounded w-72 transition font-poppins;
+        @apply bg-[#001B60] transition-all duration-300 min-h-14 cursor-pointer text-white font-bold p-4 rounded font-poppins;
     }
 
     .btn:hover {
@@ -15,6 +15,14 @@
 
     .btn:disabled {
         @apply bg-gray-500 cursor-not-allowed;
+    }
+
+    .btn-transparent {
+        @apply bg-transparent  flex text-center justify-center items-center transition ease-in-out rounded-md border-[1px] border-white px-2 py-2;
+    }
+
+    .btn-transparent:hover {
+        @apply border-gray-300;
     }
 
     .input-base {
@@ -32,6 +40,14 @@
     .gradient {
         @apply bg-gradient-to-r from-[#001B60] to-[#002b99] text-white;
     }
+
+    .btn-gradient {
+        @apply btn gradient;
+    }
+
+    .btn-gradient:hover {
+        @apply bg-gradient-to-r from-[#001447] to-[#002480];
+    }
 }
 
 * {
@@ -39,33 +55,4 @@
     margin: 0;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
-}
-
-.blog-content {
-    a {
-        color: #001B60;
-        text-decoration: underline;
-    }
-
-    em {
-        font-style: italic;
-    }
-
-    h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-    }
-
-    h2 {
-        font-size: 2rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-    }
-
-    h3 {
-        font-size: 1.75rem;
-        font-weight: 500;
-        margin-bottom: 1rem;
-    }
 }

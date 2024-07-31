@@ -5,6 +5,7 @@ import db from "./config/db.js";
 import { config } from "dotenv";
 import apiRoutes from "./routes/index.route.js";
 import { notFound } from "./middleware/error.middleware.js";
+import morgan from "morgan";
 
 config();
 
@@ -19,7 +20,9 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
-
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms"),
+);
 db()
   .then(() => {
     app.listen(process.env.PORT, () =>

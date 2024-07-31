@@ -3,7 +3,6 @@ import Tag from "../models/tag.model.js";
 import { isValidObjectId } from "mongoose";
 
 const getPost = async (req, res) => {
-  console.log(req.params.id);
   try {
     if (!req.params.id) return res.status(404).json({ message: "Not found" });
     if (!isValidObjectId(req.params.id))

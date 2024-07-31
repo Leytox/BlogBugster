@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import multer, { diskStorage } from "multer";
 import { extname } from "path";
 
@@ -7,7 +8,7 @@ function upload(destination) {
       cb(null, destination);
     },
     filename: function (req, file, cb) {
-      cb(null, Date.now() + extname(file.originalname));
+      cb(null, randomUUID() + extname(file.originalname));
     },
   });
 

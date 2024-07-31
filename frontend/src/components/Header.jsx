@@ -27,7 +27,9 @@ const Header = () => {
         <Link to={"/"}>
           <img src={logo} alt="logo" width={50} height={50} />
         </Link>
-        <h1 className={"text-xl font-bold max-sm:hidden uppercase"}>
+        <h1
+          className={"text-xl font-bold max-sm:hidden max-md:hidden uppercase"}
+        >
           {location}
         </h1>
       </div>
