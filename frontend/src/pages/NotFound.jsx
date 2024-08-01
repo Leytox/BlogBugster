@@ -5,10 +5,10 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useDispatch } from "react-redux";
 import { setLocation } from "../features/location/locationSlice.js";
+import { useEffect } from "react";
 
 const NotFound = () => {
   const dispatch = useDispatch();
-  dispatch(setLocation(":("));
   const navigate = useNavigate();
   useGSAP(() => {
     gsap.fromTo(
@@ -36,6 +36,9 @@ const NotFound = () => {
       },
     );
   }, []);
+  useEffect(() => {
+    dispatch(setLocation(":("));
+  }, [dispatch]);
   return (
     <div className={"h-screen flex flex-row justify-center items-center gap-8"}>
       <div className={"max-sm:hidden block"} id={"question-mark"}>

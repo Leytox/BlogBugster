@@ -1,7 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import Home from "./pages/Home/Home.jsx";
+import Home from "./pages/Home.jsx";
 import Login from "./pages/Auth/Login.jsx";
 import Register from "./pages/Auth/Register.jsx";
 import Header from "./components/Header.jsx";
@@ -9,27 +8,83 @@ import Footer from "./components/Footer.jsx";
 import Profile from "./pages/Profile.jsx";
 import NewPost from "./pages/Post/NewPost.jsx";
 import GoTop from "./components/GoTop.jsx";
-import EditPost from "./pages/Post/EditPost.jsx";
 import Post from "./pages/Post/Post.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import "react-toastify/dist/ReactToastify.css";
+import Posts from "./pages/Post/Posts.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import EditPost from "./pages/Post/EditPost.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 export default function App() {
   return (
     <>
       <Header />
       <Routes>
-        <Route path="/profile" element={<Profile />} />
-        {/*<Route path="/dashboard" element={<Dashboard />} />*/}
-        <Route path="/new-post" element={<NewPost />} />
-        <Route path="/edit-post/:id" element={<EditPost />} />
-
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-
-        <Route path="/" element={<Home />} />
-        {/*{<Route path="/user/:username" element={<User />} />}*/}
-        <Route path="/post/:id" element={<Post />} />
-        {/*<Route path="/posts" element={<Posts />} />*/}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute RouteType={"public"}>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="user">
+          <Route
+            path="dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
+        <Route path="auth">
+          <Route
+            path="register"
+            element={
+              <ProtectedRoute RouteType={"public"}>
+                <Register />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="login"
+            element={
+              <ProtectedRoute RouteType={"public"}>
+                <Login />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
+        <Route path="posts">
+          <Route index element={<Posts />} />
+          <Route
+            path="new-post"
+            element={
+              <ProtectedRoute>
+                <NewPost />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="edit-post/:id"
+            element={
+              <ProtectedRoute>
+                <EditPost />
+              </ProtectedRoute>
+            }
+          />
+          <Route path=":id" element={<Post />} />
+        </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
       <GoTop />

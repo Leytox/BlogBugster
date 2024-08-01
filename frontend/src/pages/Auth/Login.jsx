@@ -12,14 +12,12 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  dispatch(setLocation("Login"));
-
   const [login] = useLoginMutation();
   const { user } = useSelector(selectUser);
 
   useEffect(() => {
-    if (user) navigate("/");
-  }, [navigate, user]);
+    dispatch(setLocation("Login"));
+  }, [dispatch, user]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -66,10 +64,11 @@ const Login = () => {
       <Button
         disabled={email.length < 6 || password.length < 6}
         title={"Login"}
+        styles={"w-72"}
       />
       <p>
         Don&lsquo;t have an account?{" "}
-        <Link to={"/register"} className={"text-blue-500 hover:underline"}>
+        <Link to={"/auth/register"} className={"text-blue-500 hover:underline"}>
           Register
         </Link>
       </p>

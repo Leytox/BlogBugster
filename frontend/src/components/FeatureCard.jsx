@@ -3,7 +3,7 @@ const FeatureCard = ({ image, title, icon, description, styles }) => {
     <div
       id={"feature-card"}
       className={`flex flex-col gap-8 w-[500px] h-[700px] rounded-lg gradient text-center text-white p-4
-       hover:cursor-help max-sm:w-[300px] max-sm:h-[550px] shadow-2xl ${styles}`}
+       hover:cursor-help max-sm:w-[300px] max-sm:h-[550px] shadow-2xl drop-shadow-2xl ${styles}`}
     >
       <div>
         <img src={image} alt={title} />

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { selectUser, setUser } from "../features/auth/authSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import { useLogoutMutation } from "../features/auth/authApiSlice.js";
@@ -19,6 +19,7 @@ const Header = () => {
     const res = await logout();
     dispatch(setUser(null));
     toast.success(res.data.message);
+    return <Navigate to="/posts" />;
   };
   useEffect(() => {
     const handleScroll = () => {
@@ -37,7 +38,7 @@ const Header = () => {
       className={`${visible ? "top-0" : "-top-24"} transition-all duration-300 sticky z-50 w-full h-[80px] gradient flex flex-row justify-between gap-12 items-center px-8`}
     >
       <div className={"flex flex-row gap-12 items-center"}>
-        <Link to={"/"}>
+        <Link to={user ? "/user/dashboard" : "/"}>
           <img src={logo} alt="logo" width={50} height={50} />
         </Link>
         <h1
@@ -58,7 +59,7 @@ const Header = () => {
               className={
                 "uppercase hover:text-gray-300 hover:border-gray-300 flex text-center justify-center items-center transition ease-in-out rounded-md border-[1px] border-white px-2 py-2"
               }
-              to={"/new-post"}
+              to={"/posts/new-post"}
             >
               New post
             </Link>
@@ -66,19 +67,18 @@ const Header = () => {
               className={
                 "uppercase hover:text-gray-300 hover:border-gray-300 transition ease-in-out"
               }
-              to={"/profile"}
+              to={"/user/profile"}
             >
               {user.name}
             </Link>
-            <Link
+            <button
               className={
                 "uppercase hover:text-gray-300 hover:border-gray-300 transition ease-in-out"
               }
-              to={"/"}
               onClick={handleLogout}
             >
               Logout
-            </Link>
+            </button>
           </>
         ) : (
           <>
@@ -86,7 +86,7 @@ const Header = () => {
               className={
                 "uppercase hover:text-gray-300 hover:border-gray-300 transition ease-in-out"
               }
-              to={"/login"}
+              to={"/auth/login"}
             >
               Login
             </Link>
@@ -94,7 +94,7 @@ const Header = () => {
               className={
                 "uppercase hover:text-gray-300 hover:border-gray-300 transition ease-in-out rounded-md border-[1px] border-white px-4 py-2"
               }
-              to={"/register"}
+              to={"/auth/register"}
             >
               Register
             </Link>

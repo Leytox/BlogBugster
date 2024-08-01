@@ -14,14 +14,12 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  dispatch(setLocation("Register"));
-
   const [register] = useRegisterMutation();
   const { user } = useSelector(selectUser);
 
   useEffect(() => {
-    if (user) navigate("/");
-  }, [navigate, user]);
+    dispatch(setLocation("Register"));
+  }, [dispatch, user]);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -32,7 +30,7 @@ const Register = () => {
       }
       const res = await register({ name, email, password }).unwrap();
       dispatch(setUser(res.user));
-      navigate("/login");
+      navigate("/auth/login");
       toast.success("Successfully signed up");
     } catch (error) {
       console.log(error.data?.message || error.error);
@@ -96,10 +94,11 @@ const Register = () => {
       <Button
         title={"Register"}
         disabled={!name || !email || !password || !confirmPassword}
+        styles={"w-72"}
       />
       <p>
         Have an account already?{" "}
-        <Link to={"/login"} className={"text-blue-500 hover:underline"}>
+        <Link to={"/auth/login"} className={"text-blue-500 hover:underline"}>
           Login
         </Link>
       </p>

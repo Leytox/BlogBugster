@@ -96,7 +96,7 @@ const NewPost = () => {
       form.append("author", user.id);
       const res = await post(form).unwrap();
       toast.success("Post created successfully");
-      navigate(`/post/${res.id}`);
+      navigate(`/posts/${res.id}`);
     } catch (error) {
       console.log(error.data?.message || error.error);
       toast.error(error.data?.message || error.error);

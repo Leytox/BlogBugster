@@ -1,13 +1,14 @@
 import heroImage from "/Hero.jpg";
-import Button from "../../components/Button.jsx";
-import FeatureCard from "../../components/FeatureCard.jsx";
-import { features } from "../../constants/index.js";
+import Button from "../components/Button.jsx";
+import FeatureCard from "../components/FeatureCard.jsx";
+import { features } from "../constants/index.js";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TextPlugin } from "gsap/TextPlugin";
 import { useDispatch } from "react-redux";
-import { setLocation } from "../../features/location/locationSlice.js";
+import { setLocation } from "../features/location/locationSlice.js";
+import { Link } from "react-router-dom";
 
 gsap.registerPlugin(TextPlugin);
 gsap.registerPlugin(ScrollTrigger);
@@ -71,12 +72,14 @@ const Home = () => {
           </div>
           <div className={"flex flex-row gap-8 max-sm:flex-col"}>
             <Button title={"Latest Posts"} />
-            <Button
-              title={"Join Community"}
-              styles={
-                "bg-transparent border-2 border-[#001B60] text-[#001B60] hover:bg-transparent hover:text-[#0037c4] hover:border-[#0037c4]"
-              }
-            />
+            <Link to={"/register"}>
+              <Button
+                title={"Join Community"}
+                styles={
+                  "bg-transparent border-2 border-[#001B60] text-[#001B60] hover:bg-transparent hover:text-[#0037c4] hover:border-[#0037c4]"
+                }
+              />
+            </Link>
           </div>
         </div>
         <div className={"hidden 2xl:block"}>
