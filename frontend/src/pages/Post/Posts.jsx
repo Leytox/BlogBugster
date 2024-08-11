@@ -1,13 +1,13 @@
-import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { useEffect } from "react";
 import { setLocation } from "../../features/location/locationSlice.js";
 
-const EditPost = () => {
+const Posts = () => {
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(setLocation("Edit Post"));
+    dispatch(setLocation("Posts"));
   }, [dispatch]);
   return <div className={"min-h-screen"}></div>;
 };
 
-export default EditPost;
+export default Posts;

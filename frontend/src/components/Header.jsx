@@ -1,4 +1,4 @@
-import { Link, Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { selectUser, setUser } from "../features/auth/authSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import { useLogoutMutation } from "../features/auth/authApiSlice.js";
@@ -15,11 +15,12 @@ const Header = () => {
   const [logout] = useLogoutMutation();
   const dispatch = useDispatch();
   const { location } = useSelector(selectLocation);
+  const navigate = useNavigate();
   const handleLogout = async () => {
     const res = await logout();
     dispatch(setUser(null));
     toast.success(res.data.message);
-    return <Navigate to="/posts" />;
+    return navigate("/posts");
   };
   useEffect(() => {
     const handleScroll = () => {
@@ -59,7 +60,7 @@ const Header = () => {
               className={
                 "uppercase hover:text-gray-300 hover:border-gray-300 flex text-center justify-center items-center transition ease-in-out rounded-md border-[1px] border-white px-2 py-2"
               }
-              to={"/posts/new-post"}
+              to={"/posts/new"}
             >
               New post
             </Link>
@@ -69,7 +70,7 @@ const Header = () => {
               }
               to={"/user/profile"}
             >
-              {user.name}
+              Profile
             </Link>
             <button
               className={

@@ -20,40 +20,42 @@ const userSchema = new mongoose.Schema(
       required: true,
       default: false,
     },
-    profilePic: {
+    ban: {
+      status: {
+        type: Boolean,
+        default: false,
+      },
+      reason: {
+        type: String,
+        default: null,
+      },
+      date: {
+        type: Date,
+        default: null,
+      },
+    },
+    avatar: {
       type: String,
-      default: "users/default.png",
+      default: "uploads/users/default.png",
     },
     social: {
       facebook: {
         type: String,
-        default: "",
+        default: null,
       },
       twitter: {
         type: String,
-        default: "",
+        default: null,
       },
       github: {
         type: String,
-        default: "",
+        default: null,
       },
       linkedin: {
         type: String,
-        default: "",
+        default: null,
       },
     },
-    posts: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Post",
-      },
-    ],
-    comments: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Comment",
-      },
-    ],
     likes: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -66,12 +68,10 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-    subscribers: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
+    subscribers: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

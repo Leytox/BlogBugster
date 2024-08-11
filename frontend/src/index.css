@@ -56,3 +56,28 @@
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
+
+/* Add this to your CSS file */
+.ck-content h1 {
+    font-size: 2em;
+}
+
+.ck-content h2 {
+    font-size: 1.75em;
+}
+
+.ck-content h3 {
+    font-size: 1.5em;
+}
+
+.ck-content h4 {
+    font-size: 1.25em;
+}
+
+.ck-content h5 {
+    font-size: 1em;
+}
+
+.ck-content h6 {
+    font-size: 0.875em;
+}

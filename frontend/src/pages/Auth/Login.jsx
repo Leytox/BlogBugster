@@ -52,7 +52,7 @@ const Login = () => {
       <div className={"flex flex-col gap-2"}>
         <label className={"text-md"}>Password</label>
         <input
-          minLength={6}
+          minLength={8}
           required={true}
           className="input-default"
           type="password"
@@ -62,7 +62,7 @@ const Login = () => {
         />
       </div>
       <Button
-        disabled={email.length < 6 || password.length < 6}
+        disabled={email.length < 6 || password.length < 8}
         title={"Login"}
         styles={"w-72"}
       />

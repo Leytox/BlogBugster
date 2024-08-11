@@ -7,16 +7,25 @@ const router = Router();
 
 router
   .route("/")
+  .get(postController.getPosts)
   .post(
     userProtect,
     upload("uploads/posts").single("image"),
     postController.createPost,
-  )
-  .get(postController.getPosts);
+  );
+
 router
   .route("/:id")
   .get(postController.getPost)
   .put(userProtect, postController.updatePost)
   .delete(userProtect, postController.deletePost);
+
+router.post("/:id/like", userProtect, postController.likePost);
+router.post("/:id/unlike", userProtect, postController.unlikePost);
+router.post("/:id/comment", userProtect, postController.createComment);
+router
+  .route("/:id/comment/:commentId")
+  .put(userProtect, postController.updateComment)
+  .delete(userProtect, postController.deleteComment);
 
 export default router;

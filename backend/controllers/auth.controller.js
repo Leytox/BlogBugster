@@ -30,6 +30,13 @@ const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res.status(400).json({ message: "Incorrect password" });
+    if (user.ban.isBanned) {
+      console.log({ banReason: user.ban, message: "User is banned" });
+      return res.status(403).json({
+        banReason: user.ban,
+        message: "User is banned",
+      });
+    }
     const access_token = genAccessToken(user);
     const refresh_token = genRefreshToken(user);
     setAccessTokenCookie(res, access_token);
@@ -37,8 +44,6 @@ const login = async (req, res) => {
     return res.status(200).json({
       user: {
         id: user._id,
-        name: user.name,
-        email: user.email,
         isAdmin: user.isAdmin,
       },
       message: "Successes",
@@ -48,7 +53,6 @@ const login = async (req, res) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
-
 const logout = async (req, res) => {
   return res
     .cookie("access_token", "", {

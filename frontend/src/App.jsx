@@ -68,7 +68,7 @@ export default function App() {
         <Route path="posts">
           <Route index element={<Posts />} />
           <Route
-            path="new-post"
+            path="new"
             element={
               <ProtectedRoute>
                 <NewPost />
@@ -76,7 +76,7 @@ export default function App() {
             }
           />
           <Route
-            path="edit-post/:id"
+            path="edit/:id"
             element={
               <ProtectedRoute>
                 <EditPost />
@@ -93,6 +93,7 @@ export default function App() {
         theme={"dark"}
         limit={4}
         newestOnTop={true}
+        autoClose={2000}
       />
       <Footer />
     </>

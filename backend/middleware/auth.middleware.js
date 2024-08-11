@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 
 export const userProtect = async (req, res, next) => {
-  let { access_token } = req.cookies;
+  const { access_token } = req.cookies;
   if (!access_token) return res.status(401).json({ message: "Unauthorized" });
   else {
     try {
@@ -11,6 +11,10 @@ export const userProtect = async (req, res, next) => {
         "-password",
       );
       if (!user) return res.status(401).json({ message: "Unauthorized" });
+      if (user.ban.isBanned)
+        return res
+          .status(403)
+          .json({ message: "User is banned", reason: user.ban.reason });
       req.user = user;
       next();
     } catch (error) {
@@ -21,13 +25,13 @@ export const userProtect = async (req, res, next) => {
 };
 
 export const adminProtect = async (req, res, next) => {
-  let { access_token } = req.cookies;
+  const { access_token } = req.cookies;
   if (!access_token) return res.status(401).json({ message: "Unauthorized" });
   else {
     try {
       const decoded = jwt.verify(access_token, process.env.JWT_ACCESS_SECRET);
       const admin = await User.findById(decoded.id, null, null).select(
-        "password",
+        "-password, -subscriptions",
       );
       if (!admin) return res.status(401).json({ message: "Unauthorized" });
       if (admin.isAdmin) {

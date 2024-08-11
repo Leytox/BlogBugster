@@ -71,8 +71,10 @@ const Home = () => {
             </p>
           </div>
           <div className={"flex flex-row gap-8 max-sm:flex-col"}>
-            <Button title={"Latest Posts"} />
-            <Link to={"/register"}>
+            <Link to={"/posts"}>
+              <Button title={"Latest Posts"} />
+            </Link>
+            <Link to={"/auth/register"}>
               <Button
                 title={"Join Community"}
                 styles={
