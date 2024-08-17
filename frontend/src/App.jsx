@@ -38,14 +38,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="profile/:id" element={<Profile />} />
         </Route>
         <Route path="auth">
           <Route

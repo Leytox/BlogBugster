@@ -44,7 +44,9 @@ const login = async (req, res) => {
     return res.status(200).json({
       user: {
         id: user._id,
+        name: user.name,
         isAdmin: user.isAdmin,
+        avatar: user.avatar,
       },
       message: "Successes",
     });

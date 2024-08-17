@@ -2,7 +2,7 @@ import User from "../models/user.model.js";
 
 const getAccount = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id, "-password", null);
+    const user = await User.findById(req.user.id, "-password -_id -__v", null);
     return res.status(200).json({ user, message: "Successes" });
   } catch (error) {
     console.log(error);

@@ -8,10 +8,12 @@ const getPost = async (req, res) => {
     if (!req.params.id) return res.status(404).json({ message: "Not found" });
     if (!isValidObjectId(req.params.id))
       return res.status(404).json({ message: "Not found" });
-    const post = await Post.findById(req.params.id, null, null).populate(
-      "author",
-      "-password",
-    );
+    const post = await Post.findById(req.params.id, null, null)
+      .populate(
+        "author",
+        "-password -__v -_about -email -createdAt -updatedAt -likes -subscriptions -social -about",
+      )
+      .populate("comments.author", "_id avatar ban isAdmin name");
     if (!post) return res.status(404).json({ message: "Not found" });
     return res.status(200).json({ post, message: "Successes" });
   } catch (error) {
@@ -22,8 +24,9 @@ const getPost = async (req, res) => {
 
 const getPosts = async (req, res) => {
   const { page, limit } = req.query;
+  const skip = (page - 1) * limit;
   try {
-    const posts = await Post.find({}, null, null);
+    const posts = await Post.find({}, null, null).skip(skip).limit(limit);
     return res.status(200).json({ posts, message: "Successes" });
   } catch (error) {
     console.log(error);
@@ -172,6 +175,36 @@ const deleteComment = async (req, res) => {
   }
 };
 
+const likeComment = async (req, res) => {
+  const { id, commentId } = req.params;
+  try {
+    await Post.findOneAndUpdate(
+      { _id: id, "comments._id": commentId },
+      { $inc: { "comments.$.likes": 1 } },
+      null,
+    );
+    return res.status(308).json({ message: "Successes" });
+  } catch (error) {
+    console.log(error);
+    return res.status(409).json({ message: "Something went wrong" });
+  }
+};
+
+const unlikeComment = async (req, res) => {
+  const { id, commentId } = req.params;
+  try {
+    await Post.findOneAndUpdate(
+      { _id: id, "comments._id": commentId },
+      { $inc: { "comments.$.likes": -1 } },
+      null,
+    );
+    return res.status(308).json({ message: "Successes" });
+  } catch (error) {
+    console.log(error);
+    return res.status(409).json({ message: "Something went wrong" });
+  }
+};
+
 export default {
   getPost,
   getPosts,
@@ -183,4 +216,6 @@ export default {
   createComment,
   updateComment,
   deleteComment,
+  likeComment,
+  unlikeComment,
 };

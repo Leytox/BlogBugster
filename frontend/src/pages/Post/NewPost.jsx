@@ -9,6 +9,7 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import {
   Alignment,
   Autoformat,
+  Base64UploadAdapter,
   BlockQuote,
   Bold,
   CKFinder,
@@ -54,6 +55,15 @@ import {
   Undo,
 } from "ckeditor5";
 import "ckeditor5/ckeditor5.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faAngleRight,
+  faEye,
+  faEyeSlash,
+  faMinus,
+  faPlus,
+  faUpload,
+} from "@fortawesome/free-solid-svg-icons";
 
 const NewPost = () => {
   const [title, setTitle] = useState("");
@@ -198,14 +208,14 @@ const NewPost = () => {
                     onClick={handleAddTag}
                     className={"text-2xl transition hover:text-gray-300"}
                   >
-                    +
+                    <FontAwesomeIcon icon={faPlus} />
                   </button>
                   <button
                     type="button"
                     onClick={() => setTagInput("")}
                     className={"text-2xl transition hover:text-gray-300"}
                   >
-                    🗑️
+                    <FontAwesomeIcon icon={faMinus} />
                   </button>
                 </div>
               )}
@@ -215,7 +225,7 @@ const NewPost = () => {
                   onClick={() => setShowTags(!showTags)}
                   className={"text-2xl rounded transition hover:text-gray-300"}
                 >
-                  ...
+                  <FontAwesomeIcon icon={faAngleRight} />
                 </button>
               )}
             </div>
@@ -223,9 +233,10 @@ const NewPost = () => {
           <div className={"flex flex-row items-center"}>
             <label
               className="bg-transparent transition border-[1px] w-72 items-center flex justify-center
-            border-white text-white hover:text-gray-300 hover:border-gray-300 cursor-pointer p-4 h-14 rounded"
+            border-white text-white hover:text-gray-300 hover:border-gray-300 cursor-pointer p-4 h-14 rounded gap-2"
             >
-              {file ? file.name.substring(0, 22) + "..." : "Upload Image 📤"}
+              {file ? file.name.substring(0, 22) + "..." : "Upload Image"}
+              <FontAwesomeIcon icon={faUpload} />
               <input
                 type="file"
                 accept="image/*"
@@ -251,12 +262,12 @@ const NewPost = () => {
           <button
             onClick={() => setPreview(!preview)}
             type={"button"}
-            className={`btn-transparent ${preview ? "bg-gray-400 scale-95 border-gray-400" : "scale-100"} w-28 text-white py-4`}
+            className={`btn-transparent gap-2 ${preview ? "bg-gray-400 scale-95 border-gray-400" : "scale-100"} w-28 text-white py-4`}
           >
-            Preview 👀
+            Preview <FontAwesomeIcon icon={preview ? faEye : faEyeSlash} />
           </button>
-          <button className={"btn-transparent text-white py-4"}>
-            Create Post ✍🏼
+          <button className={"btn-transparent text-white py-4 gap-2"}>
+            Create Post <FontAwesomeIcon icon={faPlus} />
           </button>
         </div>
         <div
@@ -346,6 +357,7 @@ const NewPost = () => {
                 Bold,
                 CKFinder,
                 CKFinderUploadAdapter,
+                Base64UploadAdapter,
                 CloudServices,
                 Essentials,
                 FontBackgroundColor,
@@ -415,18 +427,6 @@ const NewPost = () => {
                     view: "h4",
                     title: "Heading 4",
                     class: "ck-heading_heading4",
-                  },
-                  {
-                    model: "heading5",
-                    view: "h5",
-                    title: "Heading 5",
-                    class: "ck-heading_heading5",
-                  },
-                  {
-                    model: "heading6",
-                    view: "h6",
-                    title: "Heading 6",
-                    class: "ck-heading_heading6",
                   },
                 ],
               },

@@ -22,9 +22,9 @@ router
 
 router.post("/:id/like", userProtect, postController.likePost);
 router.post("/:id/unlike", userProtect, postController.unlikePost);
-router.post("/:id/comment", userProtect, postController.createComment);
+router.post("/:id/comments", userProtect, postController.createComment);
 router
-  .route("/:id/comment/:commentId")
+  .route("/:id/comments/:commentId")
   .put(userProtect, postController.updateComment)
   .delete(userProtect, postController.deleteComment);
 

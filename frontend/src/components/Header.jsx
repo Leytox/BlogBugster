@@ -7,10 +7,13 @@ import logo from "../assets/logo.png";
 import SearchContainer from "./SearchContainer.jsx";
 import { selectLocation } from "../features/location/locationSlice.js";
 import { useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
   const [position, setPosition] = useState(window.scrollY);
   const [visible, setVisible] = useState(true);
+  const [menuVisible, setMenuVisible] = useState();
   const { user } = useSelector(selectUser);
   const [logout] = useLogoutMutation();
   const dispatch = useDispatch();
@@ -58,28 +61,42 @@ const Header = () => {
           <>
             <Link
               className={
-                "uppercase hover:text-gray-300 hover:border-gray-300 flex text-center justify-center items-center transition ease-in-out rounded-md border-[1px] border-white px-2 py-2"
+                "gap-2 uppercase hover:text-gray-300 hover:border-gray-300 flex text-center justify-center items-center transition ease-in-out rounded-md border-[1px] border-white px-2 py-2"
               }
               to={"/posts/new"}
             >
-              New post
+              New post <FontAwesomeIcon icon={faPlus} />
             </Link>
-            <Link
+            <div
               className={
-                "uppercase hover:text-gray-300 hover:border-gray-300 transition ease-in-out"
+                "cursor-pointer uppercase hover:text-gray-300 hover:border-gray-300 transition ease-in-out"
               }
-              to={"/user/profile"}
+              onClick={() => setMenuVisible(!menuVisible)}
             >
-              Profile
-            </Link>
-            <button
-              className={
-                "uppercase hover:text-gray-300 hover:border-gray-300 transition ease-in-out"
-              }
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
+              <img
+                src={import.meta.env.VITE_BACKEND_URI + "/" + user?.avatar}
+                alt={"avatar"}
+                width={40}
+                height={40}
+                className={"rounded-full bg-white border-[1px] border-white"}
+              />
+              {menuVisible && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+                  <Link
+                    to={`/user/profile/${user.id}`}
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    PROFILE
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    LOGOUT
+                  </button>
+                </div>
+              )}
+            </div>
           </>
         ) : (
           <>

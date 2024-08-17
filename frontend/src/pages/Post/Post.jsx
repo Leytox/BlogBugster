@@ -1,28 +1,148 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { useGetPostQuery } from "../../features/posts/postsApiSlice.js";
+import { useCallback, useEffect, useState } from "react";
+import {
+  useCreateCommentMutation,
+  useGetPostQuery,
+  useLikePostMutation,
+  useUnlikePostMutation,
+} from "../../features/posts/postsApiSlice.js";
 import { selectUser } from "../../features/auth/authSlice.js";
 import "ckeditor5/ckeditor5-content.css";
 import Loader from "../../components/Loader.jsx";
 import { setLocation } from "../../features/location/locationSlice.js";
+import { toast } from "react-toastify";
+import { useGetAccountQuery } from "../../features/account/accountApiSlice.js";
+import {
+  useSubscribeMutation,
+  useUnsubscribeMutation,
+} from "../../features/users/usersApiSlice.js";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBell,
+  faBellSlash,
+  faCalendar,
+  faComment,
+  faList,
+  faShare,
+  faTags,
+  faThumbsDown,
+  faThumbsUp,
+  faUserGroup,
+} from "@fortawesome/free-solid-svg-icons";
+import CommentCard from "../../components/Comment.jsx";
+import ShareWindow from "../../components/ShareWindow.jsx";
 
 const Post = () => {
   const [commentAreaActive, setCommentAreaActive] = useState(false);
+  const [likes, setLikes] = useState(0);
+  const [subscribers, setSubscribers] = useState(0);
+  const [comments, setComments] = useState([]);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isShareWindowShown, setIsShareWindowShown] = useState(false);
+  const [commentBody, setCommentBody] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector(selectUser);
   const { id } = useParams();
 
   const { data, error, isLoading } = useGetPostQuery(id);
+  const userData = useGetAccountQuery();
+  const [likePost] = useLikePostMutation();
+  const [unlikePost] = useUnlikePostMutation();
+  const [subscribe] = useSubscribeMutation();
+  const [unsubscribe] = useUnsubscribeMutation();
+  const [comment] = useCreateCommentMutation();
+
+  const handleLike = useCallback(async () => {
+    try {
+      await likePost(id).unwrap();
+      setLikes(likes + 1);
+      setIsLiked(true);
+      toast.success("Post liked");
+    } catch (error) {
+      console.log(error);
+      toast.error("An error occurred while liking the post");
+    }
+  }, [id, likePost, likes]);
+
+  const handleUnlike = useCallback(async () => {
+    try {
+      await unlikePost(id).unwrap();
+      setLikes(likes - 1);
+      setIsLiked(false);
+      toast.success("Post unliked");
+    } catch (error) {
+      console.log(error);
+      toast.error("An error occurred while unliking the post");
+    }
+  }, [id, likes, unlikePost]);
+
+  const handleSubscribe = useCallback(async () => {
+    try {
+      await subscribe(data.post.author._id).unwrap();
+      setSubscribers((prev) => prev + 1);
+      setIsSubscribed(true);
+      toast.success("Subscribed");
+    } catch (error) {
+      console.log(error);
+      toast.error("An error occurred while subscribing to the author");
+    }
+  }, [data, subscribe]);
+
+  const handleUnsubscribe = useCallback(async () => {
+    try {
+      await unsubscribe(data.post.author._id).unwrap();
+      setSubscribers((prev) => prev - 1);
+      setIsSubscribed(false);
+      toast.success("Unsubscribed");
+    } catch (error) {
+      console.log(error);
+      toast.error("An error occurred while unsubscribing from the author");
+    }
+  }, [data, unsubscribe]);
+
+  const handleCreateComment = useCallback(async () => {
+    try {
+      if (commentBody.length < 10) {
+        toast.error("Comment must be at least 10 characters long");
+        return;
+      }
+      await comment({
+        id,
+        body: { content: commentBody },
+      }).unwrap();
+      toast.success("Comment created");
+      setComments((prev) => [
+        ...prev,
+        { content: commentBody, author: user, date: new Date() },
+      ]);
+      setCommentAreaActive(false);
+      setCommentBody("");
+    } catch (error) {
+      console.log(error);
+      toast.error("An error occurred while creating the comment");
+    }
+  }, [comment, commentBody, comments, id, user]);
 
   useEffect(() => {
-    if (id) dispatch(setLocation("Post"));
-  }, [id, dispatch]);
-
-  useEffect(() => {
+    if (data) {
+      setLikes(data.post.likes);
+      setSubscribers(data.post.author.subscribers);
+      setComments(data.post.comments);
+      if (userData) {
+        const isPostLiked = userData.data?.user?.likes.includes(id);
+        const isUserSubscribed = userData.data?.user?.subscriptions.includes(
+          data.post.author._id,
+        );
+        setIsLiked(isPostLiked);
+        setIsSubscribed(isUserSubscribed);
+      }
+      if (id) dispatch(setLocation("Post"));
+    }
     if (error) navigate("/not-found");
-  }, [error, navigate]);
+  }, [id, data, userData, dispatch, error, navigate]);
 
   if (isLoading)
     return (
@@ -31,15 +151,50 @@ const Post = () => {
       </div>
     );
 
-  if (error) return null;
-
   return (
     <div className="min-h-screen flex flex-col px-24 mt-16 gap-12 max-lg:px-8 max-md:px-6 max-sm:px-0">
       <div className="max-lg:hidden z-0 fixed left-10 top-56 flex flex-col justify-center items-center gap-10">
-        <button className="text-2xl">👍 {data?.post?.likes}</button>
-        <button className="text-2xl">🔁</button>
-        <button className="text-2xl">🔔</button>
+        <button
+          className={`text-2xl flex flex-col ${isLiked ? "border-b-blue-500 border-b-2" : ""}`}
+          onClick={
+            user ? (isLiked ? () => handleUnlike() : () => handleLike()) : null
+          }
+        >
+          <FontAwesomeIcon
+            icon={isLiked ? faThumbsDown : faThumbsUp}
+            className={"transition-all hover:scale-125 cursor-pointer"}
+          />{" "}
+          <span>{likes}</span>
+        </button>
+        <button
+          className="text-2xl"
+          onClick={() => setIsShareWindowShown(true)}
+        >
+          <FontAwesomeIcon
+            icon={faShare}
+            className={"transition-all hover:scale-125 cursor-pointer"}
+          />
+        </button>
+        <button
+          className={`text-2xl ${isSubscribed ? "border-b-blue-500 border-b-2" : ""}`}
+          onClick={
+            user
+              ? isSubscribed
+                ? () => handleUnsubscribe()
+                : () => handleSubscribe()
+              : null
+          }
+        >
+          <FontAwesomeIcon
+            icon={isSubscribed ? faBellSlash : faBell}
+            className={"transition-all hover:scale-125 cursor-pointer"}
+          />
+        </button>
       </div>
+      {isShareWindowShown && (
+        <ShareWindow setIsShareWindowShown={setIsShareWindowShown} />
+      )}
+
       <div className="flex flex-col gap-4 p-8 max-sm:px-4">
         <div
           className={
@@ -60,33 +215,62 @@ const Post = () => {
                   src={
                     import.meta.env.VITE_BACKEND_URI +
                     "/" +
-                    data?.post?.author?.profilePic
+                    data?.post?.author?.avatar
                   }
                   alt={data?.post?.author?.name + "'s avatar"}
                   width={48}
                   height={48}
+                  className={
+                    "rounded-full shadow-2xl border-black border-[1px]"
+                  }
                 />
                 <div>
-                  <p className={"text-gray-700"}>{data?.post?.author?.name}</p>
-                  <p className={"text-gray-600"}>
-                    {data?.post?.author?.subscribers?.length === 0
-                      ? 0 + " Subscribers"
-                      : data?.post?.author?.subscribers?.length > 1
-                        ? data?.post?.author?.subscribers?.length +
-                          " Subscribers"
-                        : 1 + " Subscriber"}
+                  <Link
+                    to={`/user/profile/${data?.post?.author?._id}`}
+                    className={"w-fit"}
+                  >
+                    <p className={"text-gray-700 w-fit hover:text-blue-500"}>
+                      {data?.post?.author?.name}
+                    </p>
+                  </Link>
+                  <p className={"text-gray-600 gap-2 flex items-center"}>
+                    <FontAwesomeIcon icon={faUserGroup} />
+                    {`${subscribers} Subscriber${subscribers === 1 ? "" : "s"}`}
                   </p>
                 </div>
               </div>
               <div className="max-lg:flex flex-row hidden items-center gap-2">
-                <button className="btn-gradient w-40 text-lg max-sm:w-32">
-                  Like 👍 {data?.post?.likes}
+                <button
+                  className="btn-gradient w-40 text-md max-sm:w-28"
+                  onClick={
+                    user
+                      ? isLiked
+                        ? () => handleUnlike()
+                        : () => handleLike()
+                      : null
+                  }
+                >
+                  <FontAwesomeIcon icon={isLiked ? faThumbsDown : faThumbsUp} />{" "}
+                  {likes}
                 </button>
-                <button className="btn-gradient w-40 text-lg max-sm:w-32">
-                  Share 🔁
+                <button
+                  className="btn-gradient w-40 text-md max-sm:w-28"
+                  onClick={() => setIsShareWindowShown(true)}
+                >
+                  <FontAwesomeIcon icon={faShare} />
                 </button>
-                <button className="btn-gradient w-40 text-lg max-sm:w-32">
-                  Sub 🔔
+                <button
+                  className="btn-gradient w-40 text-sm max-sm:w-32"
+                  onClick={
+                    user
+                      ? isSubscribed
+                        ? () => handleUnsubscribe()
+                        : () => handleSubscribe()
+                      : null
+                  }
+                >
+                  Subscribe{" "}
+                  <FontAwesomeIcon icon={isSubscribed ? faBellSlash : faBell} />
                 </button>
               </div>
             </div>
@@ -96,20 +280,24 @@ const Post = () => {
               }
             >
               <p className="text-gray-500 mb-4">
-                Category:{" "}
+                <FontAwesomeIcon icon={faList} /> Category:{" "}
                 {data?.post?.category.at(0).toUpperCase() +
                   data?.post?.category.slice(1)}
               </p>
               <p className="text-gray-500 mb-4">
-                Tags:{" "}
+                <FontAwesomeIcon icon={faTags} /> Tags:{" "}
                 {data?.post?.tags.map((tag) => (
-                  <span key={tag} className="bg-gray-200 p-1 rounded-md mr-2">
+                  <span
+                    key={tag.toString()}
+                    className="bg-gray-200 p-1 rounded-md mr-2"
+                  >
                     #{tag}
                   </span>
                 ))}
               </p>
               <p className="text-gray-500 mb-4">
-                Date: {new Date(data?.post?.createdAt).toLocaleDateString()}
+                <FontAwesomeIcon icon={faCalendar} /> Date:{" "}
+                {new Date(data?.post?.createdAt).toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -119,23 +307,21 @@ const Post = () => {
             className="max-w-[500px] max-sm:max-w-full rounded-md shadow-2xl"
           />
         </div>
-        <hr className={"border-[1px] border-gray-300 my-10"} />
         <div
-          className="ck-content break-words mb-4"
+          className="ck-content break-words mb-4 my-10"
           dangerouslySetInnerHTML={{
             __html: data?.post?.content,
           }}
         />
-        <hr className={"border-[1px] border-gray-300 my-10"} />
       </div>
-      <div className="p-8">
+      <div className="p-8 flex flex-col gap-8">
         <h2 className="text-3xl font-bold mb-4">
-          {data?.post?.comments.length === 0
+          {comments.length === 0
             ? "No Comments"
-            : data?.post?.comments.length === 1
+            : comments.length === 1
               ? "1 Comment"
-              : data?.post?.comments.length + " Comments"}{" "}
-          💬
+              : comments.length + " Comments"}{" "}
+          <FontAwesomeIcon icon={faComment} />
         </h2>
         {user ? (
           <form>
@@ -143,18 +329,24 @@ const Post = () => {
               onFocus={() => setCommentAreaActive(true)}
               className="border-b-2 border-b-gray-300 w-full outline-none min-h-6 resize-none p-4"
               placeholder="Write a comment..."
+              value={commentBody}
+              onChange={(e) => setCommentBody(e.target.value)}
             />
             {commentAreaActive && (
               <div className="flex flex-row gap-4 mt-2">
                 <button
                   type="button"
                   onClick={() => setCommentAreaActive(false)}
-                  className="btn-transparent"
+                  className="btn-transparent gap-2"
                 >
                   Cancel
                 </button>
-                <button type="button" className="btn-gradient">
-                  Comment 💬
+                <button
+                  type="button"
+                  className="btn-gradient gap-2"
+                  onClick={handleCreateComment}
+                >
+                  Comment
                 </button>
               </div>
             )}
@@ -164,31 +356,8 @@ const Post = () => {
             <button className={"btn"}>Log in to left a comment</button>
           </Link>
         )}
-        {data?.post?.comments.map((comment) => (
-          <div
-            key={comment._id}
-            className="flex flex-col gap-4 p-4 border-2 border-gray-100 rounded-xl"
-          >
-            <div className="flex flex-row items-center gap-4">
-              <img
-                src={
-                  import.meta.env.VITE_BACKEND_URI +
-                  "/" +
-                  comment.author.profilePic
-                }
-                alt={comment.author.name + "'s avatar"}
-                width={48}
-                height={48}
-              />
-              <div>
-                <p className="text-xl font-bold">{comment.author.name}</p>
-                <p className="text-gray-500">
-                  {new Date(comment.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-            </div>
-            <p className="text-lg">{comment.content}</p>
-          </div>
+        {comments.map((comment) => (
+          <CommentCard key={comment._id} comment={comment} />
         ))}
       </div>
     </div>

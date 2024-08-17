@@ -17,26 +17,34 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
-    getAccount: build.query({
-      query: () => ({
-        url: "/users/account",
-        method: "GET",
-      }),
-    }),
-
-    updateAccount: build.mutation({
-      query: (body) => ({
-        url: "/users/account",
-        method: "PUT",
-        body,
+    subscribe: build.mutation({
+      query: (id) => ({
+        url: `/users/${id}/subscribe`,
+        method: "POST",
       }),
       invalidatesTags: ["User"],
     }),
 
-    deleteAccount: build.mutation({
-      query: () => ({
-        url: "/users/account",
-        method: "DELETE",
+    unsubscribe: build.mutation({
+      query: (id) => ({
+        url: `/users/${id}/unsubscribe`,
+        method: "POST",
+      }),
+      invalidatesTags: ["User"],
+    }),
+
+    ban: build.mutation({
+      query: (id) => ({
+        url: `/users/${id}/ban`,
+        method: "POST",
+      }),
+      invalidatesTags: ["User"],
+    }),
+
+    unban: build.mutation({
+      query: (id) => ({
+        url: `/users/${id}/unban`,
+        method: "POST",
       }),
       invalidatesTags: ["User"],
     }),
@@ -46,7 +54,8 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetUsersQuery,
   useGetUserQuery,
-  useGetAccountQuery,
-  useUpdateAccountMutation,
-  useDeleteAccountMutation,
+  useSubscribeMutation,
+  useUnsubscribeMutation,
+  useBanMutation,
+  useUnbanMutation,
 } = usersApiSlice;

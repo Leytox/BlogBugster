@@ -1,10 +1,16 @@
 import User from "../models/user.model.js";
+import Post from "../models/post.model.js";
 
 const getUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id, "-password -likes", null);
+    const user = await User.findById(
+      req.params.id,
+      "-password -likes -_id -__v -subscriptions -updatedAt",
+      null,
+    );
     if (!user) return res.status(404).json({ message: "User not found" });
-    return res.status(200).json({ user, message: "Successes" });
+    const posts = await Post.find({ author: req.params.id }, null, null);
+    return res.status(200).json({ user, posts, message: "Successes" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Something went wrong" });
@@ -12,14 +18,13 @@ const getUser = async (req, res) => {
 };
 
 const getUsers = async (req, res) => {
-  const page = parseInt(req.query.page, 0);
-  const limit = parseInt(req.query.limit, 10);
+  const { page, limit } = req.query;
   const skip = (page - 1) * limit;
   console.log(req.admin);
   try {
     const users = await User.find(
       null,
-      "-password -subscriptions -likes -social",
+      "-password -subscriptions -likes -social -__v -updatedAt -createdAt",
       null,
     )
       .skip(skip)
