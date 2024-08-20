@@ -3,7 +3,7 @@ import facebook from "../assets/facebook.png";
 import x from "../assets/x.png";
 import github from "../assets/github.png";
 import linkedin from "../assets/linkedin.png";
-import logo from "../assets/logo.png";
+import logo from "../../public/logo.png";
 
 const Footer = () => {
   return (

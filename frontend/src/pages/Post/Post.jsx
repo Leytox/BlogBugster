@@ -124,7 +124,7 @@ const Post = () => {
       console.log(error);
       toast.error("An error occurred while creating the comment");
     }
-  }, [comment, commentBody, comments, id, user]);
+  }, [comment, commentBody, id, user]);
 
   useEffect(() => {
     if (data) {

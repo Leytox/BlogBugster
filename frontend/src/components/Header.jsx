@@ -3,7 +3,7 @@ import { selectUser, setUser } from "../features/auth/authSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import { useLogoutMutation } from "../features/auth/authApiSlice.js";
 import { toast } from "react-toastify";
-import logo from "../assets/logo.png";
+import logo from "../../public/logo.png";
 import SearchContainer from "./SearchContainer.jsx";
 import { selectLocation } from "../features/location/locationSlice.js";
 import { useEffect, useState } from "react";
