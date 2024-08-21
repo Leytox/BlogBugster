@@ -8,12 +8,12 @@ import SearchContainer from "./SearchContainer.jsx";
 import { selectLocation } from "../features/location/locationSlice.js";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faSignOut, faUser } from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
   const [position, setPosition] = useState(window.scrollY);
   const [visible, setVisible] = useState(true);
-  const [menuVisible, setMenuVisible] = useState();
+  const [menuVisible, setMenuVisible] = useState(false);
   const { user } = useSelector(selectUser);
   const [logout] = useLogoutMutation();
   const dispatch = useDispatch();
@@ -86,13 +86,13 @@ const Header = () => {
                     to={`/user/profile/${user.id}`}
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
-                    PROFILE
+                    <FontAwesomeIcon icon={faUser} /> PROFILE
                   </Link>
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
-                    LOGOUT
+                    <FontAwesomeIcon icon={faSignOut} /> LOGOUT
                   </button>
                 </div>
               )}
