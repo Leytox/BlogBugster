@@ -1,11 +1,12 @@
 import Button from "../components/Button.jsx";
 import { useNavigate } from "react-router-dom";
-import question from "../assets/question.svg";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useDispatch } from "react-redux";
 import { setLocation } from "../features/location/locationSlice.js";
 import { useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 
 const NotFound = () => {
   const dispatch = useDispatch();
@@ -41,8 +42,8 @@ const NotFound = () => {
   }, [dispatch]);
   return (
     <div className={"h-screen flex flex-row justify-center items-center gap-8"}>
-      <div className={"max-sm:hidden block"} id={"question-mark"}>
-        <img src={question} alt="question mark" width={80} />
+      <div className={"max-sm:hidden block text-blue-950"} id={"question-mark"}>
+        <FontAwesomeIcon icon={faQuestion} size={"6x"} />
       </div>
       <div
         className={
@@ -60,8 +61,11 @@ const NotFound = () => {
           }}
         />
       </div>
-      <div className={"max-sm:hidden block"} id={"question-mark-2"}>
-        <img src={question} alt="question mark" width={80} />
+      <div
+        className={"max-sm:hidden block text-blue-950"}
+        id={"question-mark-2"}
+      >
+        <FontAwesomeIcon icon={faQuestion} size={"6x"} />
       </div>
     </div>
   );
