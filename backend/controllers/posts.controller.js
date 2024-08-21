@@ -2,6 +2,7 @@ import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import Tag from "../models/tag.model.js";
 import { isValidObjectId } from "mongoose";
+import * as fs from "node:fs";
 
 const getPost = async (req, res) => {
   try {
@@ -69,10 +70,37 @@ const createPost = async (req, res) => {
 
 const updatePost = async (req, res) => {
   const { id } = req.params;
-  const post = req.body;
+  let { title, content, category, tags } = req.body;
+  const image = req.file;
+  tags = tags.split(",");
+  console.log(req.body, req.params, req.file);
   try {
-    await Post.findByIdAndUpdate(id, post, null);
-    return res.status(308).json({ message: "Successes" });
+    const candidate = await Post.findById(id, null, null);
+    if (candidate.author.toString() !== req.user.id)
+      return res.status(403).json({ message: "Forbidden" });
+    const tagIds = await Promise.all(
+      tags.map(async (tagName) => {
+        let tag = await Tag.findOne({ name: tagName }, null, null);
+        if (!tag) {
+          tag = new Tag({ name: tagName, category });
+          await tag.save();
+        }
+        return tag.name;
+      }),
+    );
+    await Post.findByIdAndUpdate(
+      id,
+      {
+        title,
+        content,
+        category,
+        tags: tagIds,
+        image: image ? image.path : candidate.image,
+      },
+      null,
+    );
+    image ? fs.unlinkSync(candidate.image) : null;
+    return res.status(200).json({ message: "Successes" });
   } catch (error) {
     console.log(error);
     return res.status(409).json({ message: "Something went wrong" });
@@ -82,6 +110,10 @@ const updatePost = async (req, res) => {
 const deletePost = async (req, res) => {
   const { id } = req.params;
   try {
+    const post = await Post.find(id, null, null);
+    if (post.author.toString() !== req.user.id)
+      return res.status(403).json({ message: "Forbidden" });
+    fs.unlinkSync(post.image);
     await Post.findByIdAndDelete(id, null);
     return res.status(200).json({ message: "Successes" });
   } catch (error) {

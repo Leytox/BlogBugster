@@ -235,7 +235,7 @@ const NewPost = () => {
               className="bg-transparent transition border-[1px] w-72 items-center flex justify-center
             border-white text-white hover:text-gray-300 hover:border-gray-300 cursor-pointer p-4 h-14 rounded gap-2"
             >
-              {file ? file.name.substring(0, 22) + "..." : "Upload Image"}
+              {file ? file.name.substring(0, 18) + "..." : "Upload Image"}
               <FontAwesomeIcon icon={faUpload} />
               <input
                 type="file"

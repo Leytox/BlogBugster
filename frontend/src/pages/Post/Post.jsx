@@ -47,7 +47,7 @@ const Post = () => {
   const { user } = useSelector(selectUser);
   const { id } = useParams();
 
-  const { data, error, isLoading } = useGetPostQuery(id);
+  const { data, error, isLoading, refetch } = useGetPostQuery(id);
   const userData = useGetAccountQuery();
   const [likePost] = useLikePostMutation();
   const [unlikePost] = useUnlikePostMutation();
@@ -144,6 +144,10 @@ const Post = () => {
     if (error) navigate("/not-found");
   }, [id, data, userData, dispatch, error, navigate]);
 
+  useEffect(() => {
+    refetch();
+  }, [id, refetch]);
+
   if (isLoading)
     return (
       <div className={"h-screen flex justify-center items-center"}>
@@ -194,7 +198,6 @@ const Post = () => {
       {isShareWindowShown && (
         <ShareWindow setIsShareWindowShown={setIsShareWindowShown} />
       )}
-
       <div className="flex flex-col gap-4 p-8 max-sm:px-4">
         <div
           className={

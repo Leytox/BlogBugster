@@ -17,7 +17,11 @@ router
 router
   .route("/:id")
   .get(postController.getPost)
-  .put(userProtect, postController.updatePost)
+  .put(
+    upload("uploads/posts").single("image"),
+    userProtect,
+    postController.updatePost,
+  )
   .delete(userProtect, postController.deletePost);
 
 router.post("/:id/like", userProtect, postController.likePost);
