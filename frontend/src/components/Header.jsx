@@ -24,7 +24,7 @@ const Header = () => {
     const res = await logout();
     dispatch(setUser(null));
     toast.success(res.data.message);
-    return navigate("/posts");
+    return navigate("/");
   };
 
   useEffect(() => {

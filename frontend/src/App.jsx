@@ -54,26 +54,24 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="posts">
-          <Route index element={<Posts />} />
-          <Route
-            path="new"
-            element={
-              <ProtectedRoute>
-                <NewPost />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path=":id/edit"
-            element={
-              <ProtectedRoute>
-                <EditPost />
-              </ProtectedRoute>
-            }
-          />
-          <Route path=":id" element={<Post />} />
-        </Route>
+        <Route path={"/"} element={<Posts />} />
+        <Route
+          path="posts/new"
+          element={
+            <ProtectedRoute>
+              <NewPost />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="posts/:id/edit"
+          element={
+            <ProtectedRoute>
+              <EditPost />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="posts/:id" element={<Post />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <GoTop />
