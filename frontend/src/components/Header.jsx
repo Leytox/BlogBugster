@@ -1,12 +1,12 @@
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { selectUser, setUser } from "../features/auth/authSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import { useLogoutMutation } from "../features/auth/authApiSlice.js";
+import { selectUser, setUser } from "../features/auth/authSlice.js";
+import { selectLocation } from "../features/location/locationSlice.js";
 import { toast } from "react-toastify";
 import logo from "/logo.png";
 import SearchContainer from "./SearchContainer.jsx";
-import { selectLocation } from "../features/location/locationSlice.js";
-import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSignOut, faUser } from "@fortawesome/free-solid-svg-icons";
 
@@ -19,12 +19,14 @@ const Header = () => {
   const dispatch = useDispatch();
   const { location } = useSelector(selectLocation);
   const navigate = useNavigate();
+
   const handleLogout = async () => {
     const res = await logout();
     dispatch(setUser(null));
     toast.success(res.data.message);
     return navigate("/posts");
   };
+
   useEffect(() => {
     const handleScroll = () => {
       let moving = window.scrollY;
@@ -35,7 +37,7 @@ const Header = () => {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  });
+  }, [position]);
 
   return (
     <header
