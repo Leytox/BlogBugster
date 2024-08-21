@@ -25,6 +25,7 @@ import {
   faComment,
   faList,
   faShare,
+  faSignIn,
   faTags,
   faThumbsDown,
   faThumbsUp,
@@ -32,6 +33,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import CommentCard from "../../components/Comment.jsx";
 import ShareWindow from "../../components/ShareWindow.jsx";
+import AuthWindow from "../../components/AuthWindow.jsx";
 
 const Post = () => {
   const [commentAreaActive, setCommentAreaActive] = useState(false);
@@ -41,14 +43,16 @@ const Post = () => {
   const [isLiked, setIsLiked] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isShareWindowShown, setIsShareWindowShown] = useState(false);
+  const [isAuthWindowShown, setIsAuthWindowShown] = useState(false);
   const [commentBody, setCommentBody] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector(selectUser);
   const { id } = useParams();
-
   const { data, error, isLoading, refetch } = useGetPostQuery(id);
-  const userData = useGetAccountQuery();
+  const userData = useGetAccountQuery(undefined, {
+    skip: !user,
+  });
   const [likePost] = useLikePostMutation();
   const [unlikePost] = useUnlikePostMutation();
   const [subscribe] = useSubscribeMutation();
@@ -56,6 +60,10 @@ const Post = () => {
   const [comment] = useCreateCommentMutation();
 
   const handleLike = useCallback(async () => {
+    if (!user) {
+      setIsAuthWindowShown(true);
+      return;
+    }
     try {
       await likePost(id).unwrap();
       setLikes(likes + 1);
@@ -63,9 +71,9 @@ const Post = () => {
       toast.success("Post liked");
     } catch (error) {
       console.log(error);
-      toast.error("An error occurred while liking the post");
+      toast.error(error.data.message);
     }
-  }, [id, likePost, likes]);
+  }, [id, likePost, likes, user]);
 
   const handleUnlike = useCallback(async () => {
     try {
@@ -75,11 +83,15 @@ const Post = () => {
       toast.success("Post unliked");
     } catch (error) {
       console.log(error);
-      toast.error("An error occurred while unliking the post");
+      toast.error(error.data.message);
     }
   }, [id, likes, unlikePost]);
 
   const handleSubscribe = useCallback(async () => {
+    if (!user) {
+      setIsAuthWindowShown(true);
+      return;
+    }
     try {
       await subscribe(data.post.author._id).unwrap();
       setSubscribers((prev) => prev + 1);
@@ -87,9 +99,9 @@ const Post = () => {
       toast.success("Subscribed");
     } catch (error) {
       console.log(error);
-      toast.error("An error occurred while subscribing to the author");
+      toast.error(error.data.message);
     }
-  }, [data, subscribe]);
+  }, [data.post.author._id, subscribe, user]);
 
   const handleUnsubscribe = useCallback(async () => {
     try {
@@ -99,7 +111,7 @@ const Post = () => {
       toast.success("Unsubscribed");
     } catch (error) {
       console.log(error);
-      toast.error("An error occurred while unsubscribing from the author");
+      toast.error(error.data.message);
     }
   }, [data, unsubscribe]);
 
@@ -131,7 +143,7 @@ const Post = () => {
       setLikes(data.post.likes);
       setSubscribers(data.post.author.subscribers);
       setComments(data.post.comments);
-      if (userData) {
+      if (userData.data) {
         const isPostLiked = userData.data?.user?.likes.includes(id);
         const isUserSubscribed = userData.data?.user?.subscriptions.includes(
           data.post.author._id,
@@ -142,7 +154,7 @@ const Post = () => {
       if (id) dispatch(setLocation("Post"));
     }
     if (error) navigate("/not-found");
-  }, [id, data, userData, dispatch, error, navigate]);
+  }, [id, data, dispatch, error, navigate, userData.data]);
 
   useEffect(() => {
     refetch();
@@ -161,7 +173,11 @@ const Post = () => {
         <button
           className={`text-2xl flex flex-col ${isLiked ? "border-b-blue-500 border-b-2" : ""}`}
           onClick={
-            user ? (isLiked ? () => handleUnlike() : () => handleLike()) : null
+            user
+              ? isLiked
+                ? () => handleUnlike()
+                : () => handleLike()
+              : () => handleLike()
           }
         >
           <FontAwesomeIcon
@@ -186,7 +202,7 @@ const Post = () => {
               ? isSubscribed
                 ? () => handleUnsubscribe()
                 : () => handleSubscribe()
-              : null
+              : () => handleSubscribe()
           }
         >
           <FontAwesomeIcon
@@ -195,6 +211,9 @@ const Post = () => {
           />
         </button>
       </div>
+      {isAuthWindowShown && (
+        <AuthWindow setIsAuthWindowShown={setIsAuthWindowShown} />
+      )}
       {isShareWindowShown && (
         <ShareWindow setIsShareWindowShown={setIsShareWindowShown} />
       )}
@@ -250,7 +269,7 @@ const Post = () => {
                       ? isLiked
                         ? () => handleUnlike()
                         : () => handleLike()
-                      : null
+                      : () => handleLike()
                   }
                 >
                   <FontAwesomeIcon icon={isLiked ? faThumbsDown : faThumbsUp} />{" "}
@@ -269,7 +288,7 @@ const Post = () => {
                       ? isSubscribed
                         ? () => handleUnsubscribe()
                         : () => handleSubscribe()
-                      : null
+                      : () => handleSubscribe()
                   }
                 >
                   Subscribe{" "}
@@ -356,7 +375,9 @@ const Post = () => {
           </form>
         ) : (
           <Link to={"/auth/login"}>
-            <button className={"btn"}>Log in to left a comment</button>
+            <button className={"btn"}>
+              <FontAwesomeIcon icon={faSignIn} /> Log in to comment
+            </button>
           </Link>
         )}
         {comments.map((comment) => (
