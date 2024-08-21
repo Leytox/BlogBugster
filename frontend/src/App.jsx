@@ -29,35 +29,31 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="user">
-          <Route
-            path="dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="profile/:id" element={<Profile />} />
-        </Route>
-        <Route path="auth">
-          <Route
-            path="register"
-            element={
-              <ProtectedRoute RouteType={"public"}>
-                <Register />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="login"
-            element={
-              <ProtectedRoute RouteType={"public"}>
-                <Login />
-              </ProtectedRoute>
-            }
-          />
-        </Route>
+        <Route
+          path="user/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="user/profile/:id" element={<Profile />} />
+        <Route
+          path="auth/register"
+          element={
+            <ProtectedRoute RouteType={"public"}>
+              <Register />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="auth/login"
+          element={
+            <ProtectedRoute RouteType={"public"}>
+              <Login />
+            </ProtectedRoute>
+          }
+        />
         <Route path="posts">
           <Route index element={<Posts />} />
           <Route
