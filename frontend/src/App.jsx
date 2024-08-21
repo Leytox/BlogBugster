@@ -69,7 +69,7 @@ export default function App() {
             }
           />
           <Route
-            path="edit/:id"
+            path=":id/edit"
             element={
               <ProtectedRoute>
                 <EditPost />
