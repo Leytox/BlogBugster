@@ -1,4 +1,3 @@
-// ShareWindow.jsx
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink, faX } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -82,7 +81,7 @@ const ShareWindow = ({ setIsShareWindowShown }) => {
           </p>
           <FontAwesomeIcon
             icon={faLink}
-            className="text-3xl text-gray-200 transition-all duration-300 hover:bg-blue-600 hover:text-gray-300 cursor-pointer rounded-full bg-blue-500 p-2"
+            className="text-3xl text-white transition-all duration-300 hover:text-gray-300 cursor-pointer rounded-full gradient p-2"
             onClick={() => {
               navigator.clipboard
                 ? navigator.clipboard
