@@ -1,6 +1,6 @@
-import author from "/author.jpg";
-import community from "/community.jpg";
-import expert from "/expert.jpg";
+import author from "../assets/author.jpg";
+import community from "../assets/community.jpg";
+import expert from "../assets/expert.jpg";
 
 const features = [
   {

@@ -1,4 +1,4 @@
-import heroImage from "/Hero.jpg";
+import heroImage from "../assets/Hero.jpg";
 import Button from "../components/Button.jsx";
 import FeatureCard from "../components/FeatureCard.jsx";
 import { features } from "../constants/index.js";
