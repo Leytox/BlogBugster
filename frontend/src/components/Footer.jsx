@@ -31,7 +31,17 @@ const Footer = () => {
         <div className="md:col-span-2 lg:col-span-1 flex flex-col gap-2">
           <p>Copyright © 2024 BlogBugster. All rights reserved.</p>
           <p>Powered by MERN stack.</p>
-          <p>Website Design by Devder Ilya.</p>
+          <p>
+            Website Design by{" "}
+            <a
+              href="https://portfolio-five-bice-65.vercel.app/"
+              className={"hover:underline font-bold"}
+              target={"_blank"}
+            >
+              Devder Ilya
+            </a>
+            .
+          </p>
         </div>
         <div className={"flex flex-col gap-2"}>
           <h5 className="font-bold">Contact Information</h5>

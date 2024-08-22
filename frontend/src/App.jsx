@@ -5,7 +5,7 @@ import Login from "./pages/Auth/Login.jsx";
 import Register from "./pages/Auth/Register.jsx";
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
-import Profile from "./pages/Profile.jsx";
+import Profile from "./pages/Profile/Profile.jsx";
 import NewPost from "./pages/Post/NewPost.jsx";
 import GoTop from "./components/GoTop.jsx";
 import Post from "./pages/Post/Post.jsx";

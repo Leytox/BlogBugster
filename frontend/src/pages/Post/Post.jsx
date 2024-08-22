@@ -101,7 +101,7 @@ const Post = () => {
       console.log(error);
       toast.error(error.data.message);
     }
-  }, [data.post.author._id, subscribe, user]);
+  }, [data, subscribe, user]);
 
   const handleUnsubscribe = useCallback(async () => {
     try {

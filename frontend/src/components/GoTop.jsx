@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const GoTop = () => {
   const [shown, setShown] = useState(false);
+  const { pathname } = useLocation();
+
   const goTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -14,6 +17,10 @@ const GoTop = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
   return (
     <div
       onClick={goTop}

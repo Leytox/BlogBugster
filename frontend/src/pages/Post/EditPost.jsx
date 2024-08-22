@@ -140,8 +140,8 @@ const EditPost = () => {
         toast.error("Tag already exists");
         return;
       }
-      if (tags.length >= 6) {
-        toast.error("You can only add up to 6 tags");
+      if (tags.length >= 4) {
+        toast.error("You can only add up to 4 tags");
         return;
       }
       setTags([...tags, tagInput.trim()]);
@@ -208,7 +208,7 @@ const EditPost = () => {
               type="text"
               placeholder="Add a tag"
               minLength={3}
-              maxLength={20}
+              maxLength={12}
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={(e) =>

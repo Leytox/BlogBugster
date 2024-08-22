@@ -12,11 +12,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     dispatch(setLocation("Dashboard"));
-  }, [dispatch]);
-
-  useEffect(() => {
     if (error) navigate("/not-found");
-  }, [error, navigate]);
+  }, [dispatch, error, navigate]);
 
   if (isLoading)
     return (
@@ -24,9 +21,6 @@ const Dashboard = () => {
         <Loader />
       </div>
     );
-
-  if (error) return null;
-  console.log(data);
 
   return <main className={"min-h-screen"}></main>;
 };

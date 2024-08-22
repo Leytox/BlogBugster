@@ -41,7 +41,7 @@ const Header = () => {
 
   return (
     <header
-      className={`${visible ? "top-0" : "-top-24"} transition-all duration-300 sticky z-50 w-full h-[80px] gradient flex flex-row justify-between gap-12 items-center px-8`}
+      className={`${visible ? "top-0" : "-top-24"} transition-all duration-300 sticky z-50 w-full h-[80px] gradient flex flex-row justify-between gap-12 items-center px-6`}
     >
       <div className={"flex flex-row gap-12 items-center"}>
         <Link to={user ? "/user/dashboard" : "/"}>
