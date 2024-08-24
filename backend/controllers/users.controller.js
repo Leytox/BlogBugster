@@ -9,7 +9,9 @@ const getUser = async (req, res) => {
       null,
     );
     if (!user) return res.status(404).json({ message: "User not found" });
-    const posts = await Post.find({ author: req.params.id }, null, null);
+    const posts = await Post.find({ author: req.params.id }, null, null).select(
+      "-content -__v -updatedAt -comments",
+    );
     return res.status(200).json({ user, posts, message: "Successes" });
   } catch (error) {
     console.log(error);

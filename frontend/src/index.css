@@ -6,7 +6,7 @@
 
 @layer components {
     .btn {
-        @apply bg-[#001B60] transition-all duration-300 min-h-14 cursor-pointer text-white font-bold p-4 rounded font-poppins;
+        @apply bg-[#001B60] transition-all duration-300 min-h-14 cursor-pointer text-white font-bold p-4 border-[1px] border-transparent rounded font-poppins;
     }
 
     .btn:hover {
@@ -18,11 +18,11 @@
     }
 
     .btn-transparent {
-        @apply bg-transparent  flex text-center justify-center items-center transition ease-in-out rounded-md border-[1px] border-white px-2 py-2;
+        @apply bg-transparent text-center transition ease-in-out rounded-md border-[1px] p-4;
     }
 
     .btn-transparent:hover {
-        @apply border-gray-300;
+        @apply border-gray-400;
     }
 
     .input-base {

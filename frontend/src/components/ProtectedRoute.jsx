@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 import { selectUser } from "../features/auth/authSlice.js";
+import PropTypes from "prop-types";
 
 const ProtectedRoute = ({ children, RouteType }) => {
   const { user } = useSelector(selectUser);
@@ -19,6 +20,11 @@ const ProtectedRoute = ({ children, RouteType }) => {
       break;
   }
   return children;
+};
+
+ProtectedRoute.propTypes = {
+  children: PropTypes.node.isRequired,
+  RouteType: PropTypes.oneOf(["private", "public", "admin"]),
 };
 
 export default ProtectedRoute;

@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 const Button = ({ disabled, styles, handleClick, title }) => {
   return (
     <button
@@ -8,6 +10,13 @@ const Button = ({ disabled, styles, handleClick, title }) => {
       {title}
     </button>
   );
+};
+
+Button.propTypes = {
+  disabled: PropTypes.bool,
+  styles: PropTypes.string,
+  handleClick: PropTypes.func,
+  title: PropTypes.string.isRequired,
 };
 
 export default Button;

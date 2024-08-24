@@ -8,6 +8,9 @@ const postsApiSlice = apiSlice.injectEndpoints({
     getPost: build.query({
       query: (id) => `/posts/${id}`,
     }),
+    getUserPosts: build.query({
+      query: (userid) => `/posts/user/${userid}`,
+    }),
     likePost: build.mutation({
       query: (id) => ({
         url: `/posts/${id}/like`,
@@ -66,6 +69,7 @@ const postsApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetAllPostsQuery,
   useGetPostQuery,
+  useGetUserPostsQuery,
   useLikePostMutation,
   useUnlikePostMutation,
   useCreatePostMutation,

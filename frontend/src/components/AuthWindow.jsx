@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const AuthWindow = ({ setIsAuthWindowShown }) => {
   return (
@@ -30,11 +31,11 @@ const AuthWindow = ({ setIsAuthWindowShown }) => {
         <h2 className="text-3xl font-bold text-center">Login to account</h2>
         <p className="text-center"> Please login to your account to continue</p>
         <div className={"w-full flex flex-col items-center gap-2"}>
-          <Link to={"auth/login"} className={"w-full"}>
+          <Link to="auth/login" className={"w-full"}>
             <button className={"btn w-full"}>Login</button>
           </Link>
-          <p className="text-center"> Don't have an account?</p>
-          <Link to={"auth/register"} className={"w-full"}>
+          <p className="text-center"> Don&apos;t have an account?</p>
+          <Link to="auth/register" className={"w-full"}>
             <button className={"btn  w-full"}>Register</button>
           </Link>
         </div>
@@ -42,5 +43,7 @@ const AuthWindow = ({ setIsAuthWindowShown }) => {
     </div>
   );
 };
-
+AuthWindow.propTypes = {
+  setIsAuthWindowShown: PropTypes.func.isRequired,
+};
 export default AuthWindow;

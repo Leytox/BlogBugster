@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 const CommentCard = ({ comment }) => {
   return (
     <div key={comment._id} className="flex flex-col gap-4 p-4 rounded-xl">
@@ -18,6 +20,18 @@ const CommentCard = ({ comment }) => {
       <p className="text-lg">{comment.content}</p>
     </div>
   );
+};
+
+CommentCard.propTypes = {
+  comment: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    author: PropTypes.shape({
+      avatar: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+    }).isRequired,
+    date: PropTypes.string.isRequired,
+    content: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default CommentCard;

@@ -18,7 +18,6 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
     // Check if there is an active user
     const state = api.getState();
     const user = state.auth.user; // Adjust this line based on your state structure
-
     if (user) {
       // The token has expired
       if (!mutex.isLocked()) {

@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 const FeatureCard = ({ image, title, icon, description, styles }) => {
   return (
     <div
@@ -16,6 +18,14 @@ const FeatureCard = ({ image, title, icon, description, styles }) => {
       </div>
     </div>
   );
+};
+
+FeatureCard.propTypes = {
+  image: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  icon: PropTypes.node,
+  description: PropTypes.string.isRequired,
+  styles: PropTypes.string,
 };
 
 export default FeatureCard;
