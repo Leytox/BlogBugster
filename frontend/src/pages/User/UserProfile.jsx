@@ -96,11 +96,23 @@ const UserProfile = () => {
                       Subscribe <FontAwesomeIcon icon={faBell}/>
                     </button>
                 ) : (
-                    <Link to={`/user/dashboard`} className={"w-fit"}>
-                      <button className={"btn-gradient"}>
-                        <FontAwesomeIcon icon={faDashboard}/> Dashboard
-                      </button>
-                    </Link>
+                    <div className={"flex gap-2"}>
+                      <Link to={`/user/dashboard`} className={"w-fit"}>
+                        <button className={"btn-gradient rounded-xl py-0"}>
+                          <FontAwesomeIcon icon={faDashboard}/> Dashboard
+                        </button>
+                      </Link>
+                      <Link
+                          to={`/user/${id}/settings`}
+                          className={
+                            "w-fit"
+                          }
+                      >
+                        <button className={"btn-gradient rounded-xl py-0"}>
+                          <FontAwesomeIcon icon={faGear}/> Settings
+                        </button>
+                      </Link>
+                    </div>
                 )}
               </div>
             </div>
@@ -116,16 +128,6 @@ const UserProfile = () => {
                 </p>
             )}
           </div>
-          {user && user?.id.toString() === id && (
-              <Link
-                  to={`/user/${id}/preferences`}
-                  className={
-                    "max-md:hidden text-gray-600 hover:text-gray-700 transition-colors"
-                  }
-              >
-                <FontAwesomeIcon icon={faGear} size="2x"/>
-              </Link>
-          )}
         </div>
         <div
             className={
