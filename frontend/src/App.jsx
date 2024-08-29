@@ -5,16 +5,17 @@ import Login from "./pages/Auth/Login.jsx";
 import Register from "./pages/Auth/Register.jsx";
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
-import UserProfile from "./pages/Profile/UserProfile.jsx";
+import UserProfile from "./pages/User/UserProfile.jsx";
 import NewPost from "./pages/Post/NewPost.jsx";
 import GoTop from "./components/GoTop.jsx";
 import Post from "./pages/Post/Post.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import "react-toastify/dist/ReactToastify.css";
 import Posts from "./pages/Post/Posts.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
+import Dashboard from "./pages/User/Dashboard.jsx";
 import EditPost from "./pages/Post/EditPost.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import UserSettings from "./pages/User/UserSettings.jsx";
 
 export default function App() {
   return (
@@ -38,6 +39,7 @@ export default function App() {
               }
           />
           <Route path="user/:id" element={<UserProfile/>}/>
+          <Route path="user/:id/settings" element={<UserSettings/>}/>
           <Route
               path="auth/register"
               element={

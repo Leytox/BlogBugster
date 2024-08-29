@@ -6,9 +6,9 @@ import {selectUser, setUser} from "../features/auth/authSlice.js";
 import {selectLocation} from "../features/location/locationSlice.js";
 import {toast} from "react-toastify";
 import logo from "/logo.png";
-import SearchContainer from "./SearchContainer.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faGear, faPlus, faSignOut, faUser,} from "@fortawesome/free-solid-svg-icons";
+import SearchContainer from "./SearchContainer.jsx";
 
 const Header = () => {
   const [position, setPosition] = useState(window.scrollY);
@@ -41,14 +41,14 @@ const Header = () => {
 
   return (
       <header
-          className={`${visible ? "top-0" : "-top-24"} transition-all duration-300 sticky z-50 w-full h-[80px] gradient flex flex-row justify-between gap-12 items-center px-6`}
+          className={`${visible ? "top-0" : "-top-24"} transition-all duration-300 sticky z-50 w-full h-[80px] gradient flex flex-row justify-between gap-12 items-center px-48 max-lg:px-6`}
       >
         <div className={"flex flex-row gap-12 items-center"}>
           <Link to={user ? "/user/dashboard" : "/"}>
             <img src={logo} alt="logo" width={48} height={48}/>
           </Link>
           <h1
-              className={"text-xl font-bold max-sm:hidden max-md:hidden uppercase"}
+              className={"text-xl font-bold max-md:hidden uppercase"}
           >
             {location}
           </h1>
@@ -91,12 +91,12 @@ const Header = () => {
                           <FontAwesomeIcon icon={faUser}/> PROFILE
                         </Link>
                         <Link
-                            to={`/user/${user.id}/preferences`}
+                            to={`/user/${user.id}/settings`}
                             className={
                               "block px-4 py-2 text-gray-800 hover:bg-gray-100"
                             }
                         >
-                          <FontAwesomeIcon icon={faGear}/> PREFERENCES
+                          <FontAwesomeIcon icon={faGear}/> SETTINGS
                         </Link>
                         <button
                             onClick={handleLogout}
