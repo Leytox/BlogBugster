@@ -33,13 +33,16 @@ export default function App() {
           <Route
               path="user/dashboard"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute RouteType={"private"}>
                   <Dashboard/>
                 </ProtectedRoute>
               }
           />
           <Route path="user/:id" element={<UserProfile/>}/>
-          <Route path="user/:id/settings" element={<UserSettings/>}/>
+          <Route path="user/:id/settings" element={
+            <ProtectedRoute RouteType={"private"}>
+              <UserSettings/>
+            </ProtectedRoute>}/>
           <Route
               path="auth/register"
               element={

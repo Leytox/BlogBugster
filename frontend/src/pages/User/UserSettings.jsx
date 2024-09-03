@@ -10,12 +10,17 @@ const UserSettings = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   useEffect(() => {
-    if (!user || user.id.toString() !== id) navigate("/");
+    if (user.id.toString() !== id) navigate("/");
     dispatch(setLocation("Settings"));
   }, [dispatch, id, navigate, user, user.id]);
+  const handleUpdateSettings = (e) => {
+    e.preventDefault();
+  }
   return (
       <section className={"min-h-screen"}>
-
+        <form onSubmit={handleUpdateSettings}>
+          
+        </form>
       </section>
   );
 };

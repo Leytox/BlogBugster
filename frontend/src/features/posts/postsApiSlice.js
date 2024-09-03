@@ -44,10 +44,23 @@ const postsApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     createComment: build.mutation({
-      query: ({ id, body }) => ({
+      query: ({ id, body, parentCommentId }) => ({
         url: `/posts/${id}/comments`,
         method: "POST",
         body,
+        parentCommentId,
+      }),
+    }),
+    likeComment: build.mutation({
+      query: ({ id, commentId }) => ({
+        url: `/posts/${id}/comments/${commentId}/like`,
+        method: "POST",
+      }),
+    }),
+    unlikeComment: build.mutation({
+      query: ({ id, commentId }) => ({
+        url: `/posts/${id}/comments/${commentId}/unlike`,
+        method: "POST",
       }),
     }),
     updateComment: build.mutation({
@@ -63,6 +76,10 @@ const postsApiSlice = apiSlice.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    loadCommentReplies: build.query({
+      query: ({ id, commentId }) =>
+        `/posts/${id}/comments/${commentId}/replies`,
+    }),
   }),
 });
 
@@ -75,7 +92,10 @@ export const {
   useCreatePostMutation,
   useUpdatePostMutation,
   useDeletePostMutation,
+  useLoadCommentRepliesQuery,
   useCreateCommentMutation,
+  useLikeCommentMutation,
+  useUnlikeCommentMutation,
   useUpdateCommentMutation,
   useDeleteCommentMutation,
 } = postsApiSlice;

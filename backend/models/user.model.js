@@ -66,6 +66,18 @@ const userSchema = new mongoose.Schema(
         ref: "Post",
       },
     ],
+    views: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Post",
+      },
+    ],
+    commentLikes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment",
+      },
+    ],
     subscriptions: [
       {
         type: mongoose.Schema.Types.ObjectId,

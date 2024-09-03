@@ -35,5 +35,19 @@ router
   .route("/:id/comments/:commentId")
   .put(userProtect, postController.updateComment)
   .delete(userProtect, postController.deleteComment);
+router.get(
+  "/:id/comments/:commentId/replies",
+  postController.getCommentReplies,
+);
+router.post(
+  "/:id/comments/:commentId/like",
+  userProtect,
+  postController.likeComment,
+);
+router.post(
+  "/:id/comments/:commentId/unlike",
+  userProtect,
+  postController.unlikeComment,
+);
 
 export default router;

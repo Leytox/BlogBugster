@@ -205,7 +205,7 @@ const Editor = ({content, setContent}) => {
 };
 
 Editor.propTypes = {
-  content: PropTypes.string.isRequired,
+  content: PropTypes.string,
   setContent: PropTypes.func.isRequired,
 }
 

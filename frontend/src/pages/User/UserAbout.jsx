@@ -9,7 +9,7 @@ import {useState} from "react";
 import {useUpdateAccountMutation} from "../../features/account/accountApiSlice.js";
 import {toast} from "react-toastify";
 
-const UserAbout = ({about}) => {
+const UserAbout = ({about, setAbout}) => {
   const [content, setContent] = useState(about)
   const [preview, setPreview] = useState(about.length > 0);
   const {id} = useParams();
@@ -21,6 +21,7 @@ const UserAbout = ({about}) => {
       await updateAccount({about: content});
       setContent(content);
       setPreview(true);
+      setAbout(content);
       toast.success("About updated successfully");
     } catch (err) {
       toast.error("Failed to update");
@@ -29,7 +30,7 @@ const UserAbout = ({about}) => {
   }
 
   return (
-      <section className={"mt-8 max-sm:p-4 gap-4 flex flex-col max-md:items-center"}>
+      <section className={"mt-8 max-sm:px-2 gap-4 flex flex-col"}>
         {!preview ? user?.id.toString() !== id ?
             <h1 className="text-5xl text-center m-auto italic text-gray-400 "><FontAwesomeIcon icon={faHeartCrack}/> No
               information about user yet...</h1> :
@@ -44,7 +45,7 @@ const UserAbout = ({about}) => {
               </div>
             </> : <>
           <div className={"break-words ck-content"}
-               dangerouslySetInnerHTML={{__html: content.toString()}}></div>
+               dangerouslySetInnerHTML={{__html: content.toString()}}/>
           {user?.id.toString() === id &&
               <button className={"btn"} onClick={() => setPreview(false)}><FontAwesomeIcon icon={faEdit}/> Edit
               </button>}</>
@@ -54,7 +55,8 @@ const UserAbout = ({about}) => {
 };
 
 UserAbout.propTypes = {
-  about: PropTypes.string
+  about: PropTypes.string,
+  setAbout: PropTypes.func.isRequired,
 };
 
 

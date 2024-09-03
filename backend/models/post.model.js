@@ -1,72 +1,62 @@
 import mongoose from "mongoose";
 
 const postSchema = new mongoose.Schema(
-    {
-      title: {
+  {
+    title: {
+      type: String,
+      required: true,
+      minlength: 8,
+      maxlength: 64,
+      unique: true,
+    },
+    content: {
+      type: String,
+      required: true,
+    },
+    image: {
+      type: String,
+      required: true,
+    },
+    category: {
+      type: String,
+      enum: ["software", "hardware", "miscellaneous"],
+      required: true,
+    },
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    tags: [
+      {
         type: String,
-        required: true,
-        minlength: 8,
-        maxlength: 64,
-        unique: true,
-      },
-      content: {
-        type: String,
+        ref: "Tag",
         required: true,
       },
-      image: {
-        type: String,
-        required: true,
-      },
-      category: {
-        type: String,
-        enum: ["software", "hardware", "miscellaneous"],
-        required: true,
-      },
-      author: {
+    ],
+    comments: [
+      {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
+        ref: "Comment",
+        required: false,
       },
-      tags: [
-        {
-          type: String,
-          ref: "Tag",
-          required: true,
-        },
-      ],
-      comments: [
-        {
-          content: {
-            type: String,
-            required: true,
-          },
-          author: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            required: true,
-          },
-          date: {
-            type: Date,
-            default: Date.now,
-          },
-        },
-      ],
-      likes: {
-        type: Number,
-        default: 0,
-      },
-      views: {
-        type: Number,
-        default: 0,
-      },
-      readTime: {
-        type: Number,
-        required: true
-      }
+    ],
+    likes: {
+      type: Number,
+      default: 0,
     },
-    {
-      timestamps: true,
+    views: {
+      type: Number,
+      default: 0,
     },
+    readTime: {
+      type: Number,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  },
 );
 
 export default mongoose.model("Post", postSchema);
