@@ -30,7 +30,7 @@ const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res.status(400).json({ message: "Incorrect password" });
-    if (user.ban.isBanned) {
+    if (user.ban.status) {
       console.log({ banReason: user.ban, message: "User is banned" });
       return res.status(403).json({
         banReason: user.ban,

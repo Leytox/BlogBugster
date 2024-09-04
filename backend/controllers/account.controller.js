@@ -46,7 +46,7 @@ const deleteImage = async (req, res) => {
     if (user.avatar !== "uploads/users/default.png")
       fs.unlinkSync(`./${user.avatar}`);
     await User.findByIdAndUpdate(
-      req.user.id,
+      req.user.id, // user id
       { avatar: "uploads/users/default.png" },
       null,
     );

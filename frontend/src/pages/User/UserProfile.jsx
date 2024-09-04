@@ -71,7 +71,6 @@ const UserProfile = () => {
     if (window.confirm("Are you sure you want to delete your avatar?")) {
       await deleteImage();
       const user = await refetch();
-      console.log(user.data.user);
       dispatch(setAvatar(user.data.user.avatar));
     }
   };
@@ -180,7 +179,10 @@ const UserProfile = () => {
           )}
           {data.user.ban.status && (
             <p className="text-lg text-red-600 mt-4">
-              <FontAwesomeIcon icon={faBan} /> Banned: {data.user.ban.date}
+              <FontAwesomeIcon icon={faBan} /> Banned in{" "}
+              {new Date(data.user.ban.date).toLocaleDateString()}
+              <br />
+              Reason: {data.user.ban.reason}
             </p>
           )}
         </div>
