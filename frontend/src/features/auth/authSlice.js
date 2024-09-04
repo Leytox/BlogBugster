@@ -14,6 +14,10 @@ const authSlice = createSlice({
       state.user = action.payload;
       localStorage.setItem("user", JSON.stringify(action.payload));
     },
+    setAvatar(state, action) {
+      state.user.avatar = action.payload;
+      localStorage.setItem("user", JSON.stringify(state.user));
+    },
     logout(state) {
       state.user = null;
       localStorage.removeItem("user");
@@ -22,7 +26,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUser, logout } = authSlice.actions;
+export const { setUser, setAvatar, logout } = authSlice.actions;
 
 export const selectUser = (state) => state.auth;
 

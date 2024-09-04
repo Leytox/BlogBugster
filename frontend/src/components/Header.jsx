@@ -84,7 +84,7 @@ const Header = () => {
                 width={40}
                 height={40}
                 className={
-                  "rounded-full aspect-square object-cover border-[1px] border-white"
+                  "rounded-full aspect-square object-cover border-[1px] border-white bg-white"
                 }
               />
               {menuVisible && (

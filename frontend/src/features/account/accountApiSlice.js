@@ -17,6 +17,21 @@ export const accountApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    uploadAvatar: build.mutation({
+      query: (file) => ({
+        url: "/account/avatar",
+        method: "POST",
+        body: file,
+      }),
+    }),
+
+    deleteAvatar: build.mutation({
+      query: () => ({
+        url: "/account/avatar",
+        method: "DELETE",
+      }),
+    }),
+
     deleteAccount: build.mutation({
       query: () => ({
         url: "/account",
@@ -29,5 +44,7 @@ export const accountApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetAccountQuery,
   useUpdateAccountMutation,
+  useUploadAvatarMutation,
+  useDeleteAvatarMutation,
   useDeleteAccountMutation,
 } = accountApiSlice;

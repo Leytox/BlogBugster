@@ -6,6 +6,7 @@ import Loader from "../../components/Loader.jsx";
 import { useGetUserQuery } from "../../features/users/usersApiSlice.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faAdd,
   faAddressCard,
   faBan,
   faBell,
@@ -16,12 +17,18 @@ import {
   faPencil,
   faPeopleGroup,
   faSearch,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import { selectUser } from "../../features/auth/authSlice.js";
+import { selectUser, setAvatar } from "../../features/auth/authSlice.js";
 import UserPosts from "./UserPosts.jsx";
 import AdditionalInfoWindow from "../../components/AdditionalInfoWindow.jsx";
 import { copyToClipboard } from "../../services/index.js";
 import UserAbout from "./UserAbout.jsx";
+import {
+  useDeleteAvatarMutation,
+  useUploadAvatarMutation,
+} from "../../features/account/accountApiSlice.js";
+import { toast } from "react-toastify";
 
 const UserProfile = () => {
   const [tab, setTab] = useState("Posts");
@@ -33,6 +40,8 @@ const UserProfile = () => {
   const { id } = useParams();
   const { data, error, isLoading, refetch } = useGetUserQuery(id);
   const { user } = useSelector(selectUser);
+  const [uploadImage] = useUploadAvatarMutation();
+  const [deleteImage] = useDeleteAvatarMutation();
 
   useEffect(() => {
     dispatch(setLocation("Profile"));
@@ -42,6 +51,30 @@ const UserProfile = () => {
   useEffect(() => {
     refetch();
   }, [id, refetch]);
+
+  const handleImageUpload = async (e) => {
+    try {
+      const file = e.target.files[0];
+      const formData = new FormData();
+      formData.append("avatar", file);
+      await uploadImage(formData);
+      const user = await refetch();
+      dispatch(setAvatar(user.data.user.avatar));
+      toast.success("Image uploaded successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to upload image");
+    }
+  };
+
+  const handleDeleteImage = async () => {
+    if (window.confirm("Are you sure you want to delete your avatar?")) {
+      await deleteImage();
+      const user = await refetch();
+      console.log(user.data.user);
+      dispatch(setAvatar(user.data.user.avatar));
+    }
+  };
 
   if (isLoading)
     return (
@@ -61,11 +94,37 @@ const UserProfile = () => {
       <div className={"flex justify-between pb-4 max-sm:w-full"}>
         <div className="flex flex-col gap-6 max-sm:w-full">
           <div className={"flex gap-6 items-center max-sm:justify-center"}>
-            <img
-              src={import.meta.env.VITE_BACKEND_URI + "/" + data.user.avatar}
-              alt={`${data.user.name}'s avatar`}
-              className="w-48 h-48 max-sm:w-32 max-sm:h-32 rounded-full aspect-square object-cover bg-white"
-            />
+            <div className="relative">
+              {user?.id.toString() === id && (
+                <span
+                  className="absolute rounded-full text-4xl inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
+                  onClick={() => document.getElementById("fileInput").click()}
+                >
+                  <FontAwesomeIcon icon={faAdd} />
+                </span>
+              )}
+              <img
+                src={import.meta.env.VITE_BACKEND_URI + "/" + data.user.avatar}
+                alt={`${data.user.name}'s avatar`}
+                className="w-48 h-48 max-sm:w-32 max-sm:h-32 rounded-full aspect-square object-cover bg-white"
+              />
+              <input
+                type="file"
+                accept={".png, .jpg, .jpeg"}
+                id="fileInput"
+                className="hidden"
+                onChange={handleImageUpload}
+                alt={"image"}
+              />
+              {user?.id.toString() === id &&
+                user.avatar !== "uploads/users/default.png" && (
+                  <FontAwesomeIcon
+                    onClick={() => handleDeleteImage()}
+                    icon={faTrash}
+                    className="text-white bg-red-600 p-2 rounded-full absolute right-2 bottom-2 hover:bg-red-700 cursor-pointer"
+                  />
+                )}
+            </div>
             <div className={"flex flex-col gap-1"}>
               <h1 className="text-4xl font-bold mt-4">{data.user.name}</h1>
               <div
