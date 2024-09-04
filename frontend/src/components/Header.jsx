@@ -83,9 +83,7 @@ const Header = () => {
                 alt={"avatar"}
                 width={40}
                 height={40}
-                className={
-                  "rounded-full aspect-square object-cover border-[1px] border-white bg-white"
-                }
+                className={"rounded-full aspect-square object-cover bg-white"}
               />
               {menuVisible && (
                 <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">

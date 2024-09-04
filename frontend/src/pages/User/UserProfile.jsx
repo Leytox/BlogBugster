@@ -10,9 +10,9 @@ import {
   faAddressCard,
   faBan,
   faBell,
+  faChartLine,
   faCircleInfo,
   faClipboard,
-  faDashboard,
   faGear,
   faPencil,
   faPeopleGroup,
@@ -105,7 +105,7 @@ const UserProfile = () => {
               <img
                 src={import.meta.env.VITE_BACKEND_URI + "/" + data.user.avatar}
                 alt={`${data.user.name}'s avatar`}
-                className="w-48 h-48 max-sm:w-32 max-sm:h-32 rounded-full aspect-square object-cover bg-white"
+                className="w-48 h-48 max-sm:w-32 max-sm:h-32 rounded-full aspect-square object-cover bg-white border-[1px] border-black"
               />
               <input
                 type="file"
@@ -120,18 +120,29 @@ const UserProfile = () => {
                   <FontAwesomeIcon
                     onClick={() => handleDeleteImage()}
                     icon={faTrash}
-                    className="text-white bg-red-600 p-2 rounded-full absolute right-2 bottom-2 hover:bg-red-700 cursor-pointer"
+                    className="text-white bg-red-600 p-3 rounded-full absolute right-3 bottom-3 hover:bg-red-700 cursor-pointer"
                   />
                 )}
             </div>
-            <div className={"flex flex-col gap-1"}>
-              <h1 className="text-4xl font-bold mt-4">{data.user.name}</h1>
+            <div className={"flex flex-col gap-4"}>
+              <div className={"flex gap-2 items-end"}>
+                <h1 className="text-4xl font-bold mt-4">{data.user.name}</h1>
+                <h2
+                  className={
+                    "text-4xl italic text-gray-600 cursor-pointer hover:text-gray-700 hover:scale-110 transition-transform"
+                  }
+                  onClick={() => setAdditionalInfoVisible(true)}
+                >
+                  <FontAwesomeIcon icon={faCircleInfo} title={"More info"} />
+                </h2>
+              </div>
               <div
-                className={"flex gap-1 text-gray-600 text-lg max-sm:text-sm"}
+                className={"flex gap-2 text-gray-600 text-lg max-sm:text-sm"}
               >
                 <p
                   onClick={() => copyToClipboard(id)}
                   className={"cursor-pointer hover:underline"}
+                  title={"Copy id of this user"}
                 >
                   <FontAwesomeIcon icon={faClipboard} /> Copy ID
                 </p>
@@ -144,23 +155,15 @@ const UserProfile = () => {
                     : ""}
                 </p>
               </div>
-              <h2
-                className={
-                  "text-lg italic text-gray-600 hover:cursor-pointer hover:text-gray-700 w-fit hover:underline"
-                }
-                onClick={() => setAdditionalInfoVisible(true)}
-              >
-                <FontAwesomeIcon icon={faCircleInfo} /> More info...
-              </h2>
               {user?.id.toString() !== id ? (
                 <button className="gradient text-white px-4 py-2 rounded-md hover:text-gray-200 transition-colors max-sm:hidden">
                   Subscribe <FontAwesomeIcon icon={faBell} />
                 </button>
               ) : (
                 <div className={"flex gap-4 max-sm:text-sm"}>
-                  <Link to={`/user/dashboard`}>
+                  <Link to={`/user/dashboard`} title={"Details about user"}>
                     <button className={"btn-gradient rounded-xl py-0"}>
-                      <FontAwesomeIcon icon={faDashboard} /> Dashboard
+                      <FontAwesomeIcon icon={faChartLine} /> Dashboard
                     </button>
                   </Link>
                   <Link to={`/user/${id}/settings`} className={"w-fit"}>
@@ -180,7 +183,7 @@ const UserProfile = () => {
           {data.user.ban.status && (
             <p className="text-lg text-red-600 mt-4">
               <FontAwesomeIcon icon={faBan} /> Banned in{" "}
-              {new Date(data.user.ban.date).toLocaleDateString()}
+              {new Date(data.user.ban.date.toString()).toLocaleDateString()}
               <br />
               Reason: {data.user.ban.reason}
             </p>
