@@ -318,6 +318,12 @@ const deleteComment = async (req, res) => {
     if (!comment) return res.status(404).json({ message: "Comment not found" });
     // Delete all replies to the comment
     await Comment.deleteMany({ replyTo: commentId }, null);
+    if (comment.replyTo)
+      await Comment.findByIdAndUpdate(
+        comment.replyTo,
+        { $pull: { replies: commentId } },
+        null,
+      );
     // Delete the top-level comment
     await Post.findByIdAndUpdate(id, { $pull: { comments: commentId } }, null);
     await Comment.findByIdAndDelete(commentId, null);

@@ -11,10 +11,6 @@ const commentSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    date: {
-      type: Date,
-      default: Date.now,
-    },
     replies: [
       {
         type: mongoose.Schema.Types.ObjectId,

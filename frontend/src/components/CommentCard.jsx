@@ -8,10 +8,11 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import {
   useCreateCommentMutation,
+  useDeleteCommentMutation,
   useLikeCommentMutation,
   useLoadCommentRepliesQuery,
   useUnlikeCommentMutation,
@@ -20,16 +21,10 @@ import {
 import { useSelector } from "react-redux";
 import { selectUser } from "../features/auth/authSlice.js";
 import TimeAgo from "javascript-time-ago";
+import PropTypes from "prop-types";
 
 const timeAgo = new TimeAgo("en-US");
-const CommentCard = ({
-  comment,
-  postId,
-  refetch,
-  parentCommentId,
-  creatorId,
-  currentUser,
-}) => {
+const CommentCard = ({ comment, postId, refetch, creatorId, currentUser }) => {
   const [replyBody, setReplyBody] = useState("");
   const [replyActive, setReplyActive] = useState(false);
   const [editActive, setEditActive] = useState(false);
@@ -42,14 +37,13 @@ const CommentCard = ({
   const [likes, setLikes] = useState(comment.likes);
   const [createComment] = useCreateCommentMutation();
   const [editComment] = useUpdateCommentMutation();
+  const [deleteComment] = useDeleteCommentMutation();
   const [likeComment] = useLikeCommentMutation();
   const [unlikeComment] = useUnlikeCommentMutation();
   const { data: replies, refetch: refetchReply } = useLoadCommentRepliesQuery({
     id: postId,
     commentId: comment._id,
   });
-
-  useEffect(() => {}, []);
 
   const { user } = useSelector(selectUser);
 
@@ -138,6 +132,20 @@ const CommentCard = ({
     }
   }, [comment._id, editBody, editComment, postId, refetch, refetchReply]);
 
+  const handleDeleteComment = useCallback(async () => {
+    try {
+      if (!window.confirm("Are you sure you want to delete this comment?"))
+        return;
+      await deleteComment({ id: postId, commentId: comment._id }).unwrap();
+      await refetch();
+      await refetchReply();
+      toast.success("Comment deleted");
+    } catch (error) {
+      console.log(error);
+      toast.error("An error occurred while deleting the comment");
+    }
+  }, [comment._id, deleteComment, postId, refetch, refetchReply]);
+
   return (
     <div
       key={comment._id}
@@ -169,7 +177,7 @@ const CommentCard = ({
             }
           </p>
           <p className="text-gray-500">
-            {timeAgo.format(new Date(comment.date))}
+            {timeAgo.format(new Date(comment.createdAt.toString()))}
           </p>
         </div>
       </div>
@@ -224,36 +232,44 @@ const CommentCard = ({
             </button>
           )}
           {!editActive && (
-            <div className={"flex gap-4"}>
-              <p
-                className={"cursor-pointer"}
-                onClick={isLiked ? handleUnlikeComment : handleLikeComment}
-              >
-                <FontAwesomeIcon icon={isLiked ? faThumbsDown : faThumbsUp} />{" "}
-                {likes}
-              </p>
-              <p
-                className={"cursor-pointer hover:text-blue-500"}
-                onClick={() => setReplyActive(!replyActive)}
-              >
-                <FontAwesomeIcon icon={faReply} /> Reply
-              </p>
-              {comment.author._id === user.id && (
-                <div className={"flex gap-4"}>
-                  <p
-                    className={"cursor-pointer hover:text-yellow-500"}
-                    onClick={() => setEditActive(true)}
-                  >
-                    <FontAwesomeIcon icon={faEdit} /> Edit
-                  </p>
-                  <p
-                    className={"cursor-pointer hover:text-red-500"}
-                    onClick={() => {}}
-                  >
-                    {/*TODO: implement Delete functionality*/}
-                    <FontAwesomeIcon icon={faTrash} /> Delete
-                  </p>
-                </div>
+            <div className={"flex flex-col gap-2"}>
+              <div className={"flex gap-4"}>
+                <p
+                  className={"cursor-pointer"}
+                  onClick={isLiked ? handleUnlikeComment : handleLikeComment}
+                >
+                  <FontAwesomeIcon icon={isLiked ? faThumbsDown : faThumbsUp} />{" "}
+                  {likes}
+                </p>
+                <p
+                  className={"cursor-pointer hover:text-blue-500"}
+                  onClick={() => setReplyActive(!replyActive)}
+                >
+                  <FontAwesomeIcon icon={faReply} /> Reply
+                </p>
+                {comment.author._id === user.id && (
+                  <div className={"flex gap-4"}>
+                    <p
+                      className={"cursor-pointer hover:text-yellow-500"}
+                      onClick={() => setEditActive(true)}
+                    >
+                      <FontAwesomeIcon icon={faEdit} /> Edit
+                    </p>
+                    <p
+                      className={"cursor-pointer hover:text-red-500"}
+                      onClick={() => handleDeleteComment()}
+                    >
+                      <FontAwesomeIcon icon={faTrash} /> Delete
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {comment.createdAt !== comment.updatedAt && (
+                <p className={"text-xs text-gray-500"}>
+                  Edited:{" "}
+                  {new Date(comment.updatedAt.toString()).toLocaleDateString()}
+                </p>
               )}
             </div>
           )}
@@ -303,6 +319,34 @@ const CommentCard = ({
       </div>
     </div>
   );
+};
+
+CommentCard.propTypes = {
+  comment: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    author: PropTypes.shape({
+      avatar: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      _id: PropTypes.string.isRequired,
+      isAdmin: PropTypes.bool.isRequired,
+      ban: PropTypes.shape({
+        status: PropTypes.bool.isRequired,
+        reason: PropTypes.string,
+      }).isRequired,
+    }).isRequired,
+    content: PropTypes.string.isRequired,
+    likes: PropTypes.number.isRequired,
+    replies: PropTypes.array.isRequired,
+    createdAt: PropTypes.string.isRequired,
+    updatedAt: PropTypes.string.isRequired,
+  }).isRequired,
+  postId: PropTypes.string.isRequired,
+  refetch: PropTypes.func.isRequired,
+  parentCommentId: PropTypes.string,
+  creatorId: PropTypes.string.isRequired,
+  currentUser: PropTypes.shape({
+    commentLikes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  }).isRequired,
 };
 
 export default CommentCard;
