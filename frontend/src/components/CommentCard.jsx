@@ -15,6 +15,7 @@ import {
   useLikeCommentMutation,
   useLoadCommentRepliesQuery,
   useUnlikeCommentMutation,
+  useUpdateCommentMutation,
 } from "../features/posts/postsApiSlice.js";
 import { useSelector } from "react-redux";
 import { selectUser } from "../features/auth/authSlice.js";
@@ -31,6 +32,8 @@ const CommentCard = ({
 }) => {
   const [replyBody, setReplyBody] = useState("");
   const [replyActive, setReplyActive] = useState(false);
+  const [editActive, setEditActive] = useState(false);
+  const [editBody, setEditBody] = useState(comment.content.toString());
   const [loadedReplies, setLoadedReplies] = useState([]);
   const [repliesShown, setRepliesShown] = useState(false);
   const [isLiked, setIsLiked] = useState(
@@ -38,6 +41,7 @@ const CommentCard = ({
   );
   const [likes, setLikes] = useState(comment.likes);
   const [createComment] = useCreateCommentMutation();
+  const [editComment] = useUpdateCommentMutation();
   const [likeComment] = useLikeCommentMutation();
   const [unlikeComment] = useUnlikeCommentMutation();
   const { data: replies, refetch: refetchReply } = useLoadCommentRepliesQuery({
@@ -108,6 +112,32 @@ const CommentCard = ({
     }
   }, [replyBody, createComment, postId, comment._id, refetch, refetchReply]);
 
+  const handleEditComment = useCallback(async () => {
+    try {
+      console.log(editBody);
+      if (editBody.length < 10) {
+        toast.error("Comment must be at least 10 characters long");
+        return;
+      }
+      await editComment({
+        id: postId,
+        commentId: comment._id,
+        body: {
+          content: editBody,
+        },
+      }).unwrap();
+      console.log(editBody);
+      await refetch();
+      await refetchReply();
+      setEditActive(false);
+      setRepliesShown(false);
+      toast.success("Comment edited");
+    } catch (error) {
+      console.log(error);
+      toast.error("An error occurred while editing the comment");
+    }
+  }, [comment._id, editBody, editComment, postId, refetch, refetchReply]);
+
   return (
     <div
       key={comment._id}
@@ -144,7 +174,37 @@ const CommentCard = ({
         </div>
       </div>
       <div className={"flex flex-col gap-1"}>
-        <p className="text-lg">{comment.content}</p>
+        {!editActive ? (
+          <p className="text-lg">{editBody}</p>
+        ) : (
+          <div className={"flex flex-col gap-4"}>
+            <textarea
+              onFocus={() => setEditActive(true)}
+              className="border-b-2 border-b-gray-300 w-full outline-none min-h-6 resize-none p-4"
+              placeholder="Reply to this comment..."
+              value={editBody}
+              onChange={(e) => setEditBody(e.target.value)}
+            />
+            <div className="flex flex-row gap-4 mt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setEditActive(false);
+                }}
+                className="btn-transparent gap-2"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-gradient gap-2"
+                onClick={handleEditComment}
+              >
+                <FontAwesomeIcon icon={faEdit} /> Edit
+              </button>
+            </div>
+          </div>
+        )}
         <div className={"flex gap-4 items-center"}>
           {comment.replies.length > 0 && (
             <button
@@ -163,30 +223,38 @@ const CommentCard = ({
               )
             </button>
           )}
-          {/*TODO: implement like functionality*/}
-          <p
-            className={"cursor-pointer"}
-            onClick={isLiked ? handleUnlikeComment : handleLikeComment}
-          >
-            <FontAwesomeIcon icon={isLiked ? faThumbsDown : faThumbsUp} />{" "}
-            {likes}
-          </p>
-          <p
-            className={"text-blue-500 cursor-pointer"}
-            onClick={() => setReplyActive(!replyActive)}
-          >
-            <FontAwesomeIcon icon={faReply} /> Reply
-          </p>
-          {comment.author._id === user.id && (
+          {!editActive && (
             <div className={"flex gap-4"}>
-              <p className={"cursor-pointer"}>
-                {/*TODO: implement Edit functionality*/}
-                <FontAwesomeIcon icon={faEdit} /> Edit
+              <p
+                className={"cursor-pointer"}
+                onClick={isLiked ? handleUnlikeComment : handleLikeComment}
+              >
+                <FontAwesomeIcon icon={isLiked ? faThumbsDown : faThumbsUp} />{" "}
+                {likes}
               </p>
-              <p className={"cursor-pointer"}>
-                {/*TODO: implement Delete functionality*/}
-                <FontAwesomeIcon icon={faTrash} /> Delete
+              <p
+                className={"cursor-pointer hover:text-blue-500"}
+                onClick={() => setReplyActive(!replyActive)}
+              >
+                <FontAwesomeIcon icon={faReply} /> Reply
               </p>
+              {comment.author._id === user.id && (
+                <div className={"flex gap-4"}>
+                  <p
+                    className={"cursor-pointer hover:text-yellow-500"}
+                    onClick={() => setEditActive(true)}
+                  >
+                    <FontAwesomeIcon icon={faEdit} /> Edit
+                  </p>
+                  <p
+                    className={"cursor-pointer hover:text-red-500"}
+                    onClick={() => {}}
+                  >
+                    {/*TODO: implement Delete functionality*/}
+                    <FontAwesomeIcon icon={faTrash} /> Delete
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -215,7 +283,7 @@ const CommentCard = ({
                 className="btn-gradient gap-2"
                 onClick={handleCreateComment}
               >
-                Reply
+                <FontAwesomeIcon icon={faReply} /> Reply
               </button>
             </div>
           </div>

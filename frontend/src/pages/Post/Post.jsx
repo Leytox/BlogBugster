@@ -234,7 +234,9 @@ const Post = () => {
                   alt={data.post.author.name + "'s avatar"}
                   width={48}
                   height={48}
-                  className={"rounded-full aspect-square object-cover"}
+                  className={
+                    "rounded-full aspect-square object-cover border-[1px] border-black"
+                  }
                 />
                 <div>
                   <Link
@@ -363,7 +365,7 @@ const Post = () => {
                   className="btn-gradient gap-2"
                   onClick={handleCreateComment}
                 >
-                  Comment
+                  <FontAwesomeIcon icon={faComment} /> Comment
                 </button>
               </div>
             )}

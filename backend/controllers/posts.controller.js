@@ -300,15 +300,11 @@ const unlikeComment = async (req, res) => {
 };
 
 const updateComment = async (req, res) => {
-  const { id, commentId } = req.params;
+  const { commentId } = req.params;
   const { content } = req.body;
   try {
-    await Post.findOneAndUpdate(
-      { _id: id, "comments._id": commentId },
-      { $set: { "comments.$.content": content } },
-      null,
-    );
-    return res.status(308).json({ message: "Successes" });
+    await Comment.findByIdAndUpdate(commentId, { content }, null);
+    return res.status(200).json({ message: "Successes" });
   } catch (error) {
     console.log(error);
     return res.status(409).json({ message: "Something went wrong" });
