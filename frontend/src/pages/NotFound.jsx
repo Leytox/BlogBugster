@@ -1,16 +1,14 @@
-import Button from "../components/Button.jsx";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useDispatch } from "react-redux";
 import { setLocation } from "../features/location/locationSlice.js";
 import { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faQuestion } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faQuestion } from "@fortawesome/free-solid-svg-icons";
 
 const NotFound = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   useGSAP(() => {
     gsap.fromTo(
       "#question-mark",
@@ -50,16 +48,15 @@ const NotFound = () => {
           "flex flex-col justify-center items-center gap-4 text-center"
         }
       >
-        <h1 className={"text-6xl"}>404 Not Found</h1>
+        <h1 className={"text-6xl"}>404 Not Found :(</h1>
         <p className={"text-xl text-gray-500 italic"}>
           The page you are looking for does not exist.
         </p>
-        <Button
-          title={"Go Home"}
-          handleClick={() => {
-            navigate("/");
-          }}
-        />
+        <Link to={"/"}>
+          <button className={"btn-gradient"}>
+            <FontAwesomeIcon icon={faHome} /> Go Home
+          </button>
+        </Link>
       </div>
       <div
         className={"max-sm:hidden block text-blue-950"}
