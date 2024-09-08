@@ -22,6 +22,7 @@ import { useSelector } from "react-redux";
 import { selectUser } from "../features/auth/authSlice.js";
 import TimeAgo from "javascript-time-ago";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 const timeAgo = new TimeAgo("en-US");
 const CommentCard = ({ comment, postId, refetch, creatorId, currentUser }) => {
@@ -59,7 +60,7 @@ const CommentCard = ({ comment, postId, refetch, creatorId, currentUser }) => {
       setIsLiked(true);
       setLikes((likes) => likes + 1);
       setRepliesShown(false);
-      console.log("liked");
+      toast.success("Comment liked");
     } catch (error) {
       console.log(error);
       toast.error("An error occurred while liking the comment");
@@ -74,7 +75,7 @@ const CommentCard = ({ comment, postId, refetch, creatorId, currentUser }) => {
       setIsLiked(false);
       setLikes((likes) => likes - 1);
       setRepliesShown(false);
-      console.log("unliked");
+      toast.success("Comment unliked");
     } catch (error) {
       console.log(error);
       toast.error("An error occurred while unliking the comment");
@@ -152,30 +153,34 @@ const CommentCard = ({ comment, postId, refetch, creatorId, currentUser }) => {
       className={`flex flex-col gap-4 py-4 px-8 rounded-xl break-all max-sm:px-2 max-sm:text-sm max-sm:gap-2`}
     >
       <div className={`flex flex-row items-center gap-2 max-sm:gap-1`}>
-        <img
-          src={import.meta.env.VITE_BACKEND_URI + "/" + comment.author.avatar}
-          alt={comment.author.name + "'s avatar"}
-          className={"rounded-full aspect-square object-cover"}
-          width={48}
-          height={48}
-        />
+        <Link to={`/user/${comment.author._id}`}>
+          <img
+            src={import.meta.env.VITE_BACKEND_URI + "/" + comment.author.avatar}
+            alt={comment.author.name + "'s avatar"}
+            className={"rounded-full aspect-square object-cover"}
+            width={48}
+            height={48}
+          />
+        </Link>
         <div>
-          <p
-            className={`text-lg font-bold  w-fit ${
-              creatorId === comment.author._id || comment.author.isAdmin
-                ? comment.author.isAdmin
-                  ? "px-2 text-white bg-gradient-to-r from-green-700 to-green-500 rounded-xl"
-                  : "px-2 gradient rounded-xl"
-                : ""
-            }`}
-          >
-            {comment.author.name}
-            {
-              <span className="text-xs font-normal text-red-500">
-                {comment.author.ban.status ? " (banned)" : ""}
-              </span>
-            }
-          </p>
+          <Link to={`/user/${comment.author._id}`}>
+            <p
+              className={`text-lg font-bold  w-fit ${
+                creatorId === comment.author._id || comment.author.isAdmin
+                  ? comment.author.isAdmin
+                    ? "px-2 text-white bg-gradient-to-r from-green-700 to-green-500 rounded-xl"
+                    : "px-2 gradient rounded-xl"
+                  : ""
+              }`}
+            >
+              {comment.author.name}
+              {
+                <span className="text-xs font-normal text-red-500">
+                  {comment.author.ban.status ? " (banned)" : ""}
+                </span>
+              }
+            </p>
+          </Link>
           <p className="text-gray-500">
             {timeAgo.format(new Date(comment.createdAt.toString()))}
           </p>
@@ -183,7 +188,15 @@ const CommentCard = ({ comment, postId, refetch, creatorId, currentUser }) => {
       </div>
       <div className={"flex flex-col gap-1"}>
         {!editActive ? (
-          <p className="text-lg">{editBody}</p>
+          <div className={"flex flex-col gap-1"}>
+            <p className="text-lg">{editBody}</p>
+            {comment.createdAt !== comment.updatedAt && (
+              <p className={"text-xs text-gray-500"}>
+                Edited:{" "}
+                {new Date(comment.updatedAt.toString()).toLocaleDateString()}
+              </p>
+            )}
+          </div>
         ) : (
           <div className={"flex flex-col gap-4"}>
             <textarea
@@ -235,7 +248,7 @@ const CommentCard = ({ comment, postId, refetch, creatorId, currentUser }) => {
             <div className={"flex flex-col gap-2"}>
               <div className={"flex gap-4"}>
                 <p
-                  className={"cursor-pointer"}
+                  className={"cursor-pointer hover:text-green-500"}
                   onClick={isLiked ? handleUnlikeComment : handleLikeComment}
                 >
                   <FontAwesomeIcon icon={isLiked ? faThumbsDown : faThumbsUp} />{" "}
@@ -264,13 +277,6 @@ const CommentCard = ({ comment, postId, refetch, creatorId, currentUser }) => {
                   </div>
                 )}
               </div>
-
-              {comment.createdAt !== comment.updatedAt && (
-                <p className={"text-xs text-gray-500"}>
-                  Edited:{" "}
-                  {new Date(comment.updatedAt.toString()).toLocaleDateString()}
-                </p>
-              )}
             </div>
           )}
         </div>
