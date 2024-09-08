@@ -60,6 +60,10 @@ const userSchema = new mongoose.Schema(
         default: null,
       },
     },
+    country: {
+      type: String,
+      default: null,
+    },
     likes: [
       {
         type: mongoose.Schema.Types.ObjectId,
