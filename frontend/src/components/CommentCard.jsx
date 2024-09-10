@@ -248,14 +248,14 @@ const CommentCard = ({ comment, postId, refetch, creatorId, currentUser }) => {
             <div className={"flex flex-col gap-2"}>
               <div className={"flex gap-4"}>
                 <p
-                  className={"cursor-pointer hover:text-green-500"}
+                  className={"cursor-pointer hover:text-blue-500"}
                   onClick={isLiked ? handleUnlikeComment : handleLikeComment}
                 >
                   <FontAwesomeIcon icon={isLiked ? faThumbsDown : faThumbsUp} />{" "}
                   {likes}
                 </p>
                 <p
-                  className={"cursor-pointer hover:text-blue-500"}
+                  className={"cursor-pointer hover:text-gray-600"}
                   onClick={() => setReplyActive(!replyActive)}
                 >
                   <FontAwesomeIcon icon={faReply} /> Reply

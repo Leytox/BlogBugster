@@ -11,7 +11,6 @@ import {
   faBan,
   faBell,
   faChartLine,
-  faCircleInfo,
   faClipboard,
   faGear,
   faPencil,
@@ -44,9 +43,18 @@ const UserProfile = () => {
   const [deleteImage] = useDeleteAvatarMutation();
 
   useEffect(() => {
-    dispatch(setLocation("Profile"));
     if (error) navigate("/not-found");
-  }, [dispatch, error, navigate]);
+    switch (tab) {
+      case "Posts":
+        dispatch(setLocation("Profile > Posts"));
+        break;
+      case "About":
+        dispatch(setLocation("Profile > About"));
+        break;
+      default:
+        dispatch(setLocation("Profile > Posts"));
+    }
+  }, [dispatch, error, navigate, tab]);
 
   useEffect(() => {
     refetch();
@@ -93,7 +101,7 @@ const UserProfile = () => {
       <div className={"flex justify-between pb-4 max-sm:w-full"}>
         <div className="flex flex-col gap-6 max-sm:w-full">
           <div className={"flex gap-6 items-center max-sm:justify-center"}>
-            <div className="relative">
+            <div className="relative w-fit">
               {user?.id.toString() === id && (
                 <span
                   className="absolute rounded-full text-4xl inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
@@ -133,7 +141,7 @@ const UserProfile = () => {
                   }
                   onClick={() => setAdditionalInfoVisible(true)}
                 >
-                  <FontAwesomeIcon icon={faCircleInfo} title={"More info"} />
+                  ...
                 </h2>
               </div>
               <div
@@ -162,12 +170,12 @@ const UserProfile = () => {
               ) : (
                 <div className={"flex gap-4 max-sm:text-sm"}>
                   <Link to={`/user/dashboard`} title={"Details about user"}>
-                    <button className={"btn-gradient rounded-xl py-0"}>
+                    <button className={"btn rounded-xl py-0"}>
                       <FontAwesomeIcon icon={faChartLine} /> Dashboard
                     </button>
                   </Link>
                   <Link to={`/user/${id}/settings`} className={"w-fit"}>
-                    <button className={"btn-gradient rounded-xl py-0"}>
+                    <button className={"btn rounded-xl py-0"}>
                       <FontAwesomeIcon icon={faGear} /> Settings
                     </button>
                   </Link>
@@ -238,10 +246,11 @@ const UserProfile = () => {
         </div>
       </div>
       <hr className={"border-gray-300"} />
-      <div>{tab === "Posts" && <UserPosts userid={id} />}</div>
-      <div>
-        {tab === "About" && (
-          <UserAbout about={about || data.user.about} setAbout={setAbout} />
+      <div className={"py-4"}>
+        {tab === "Posts" ? (
+          <UserPosts userid={id} />
+        ) : (
+          <UserAbout about={data.user.about || about} setAbout={setAbout} />
         )}
       </div>
     </main>

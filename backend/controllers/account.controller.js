@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import * as fs from "node:fs";
+import bcrypt from "bcrypt";
 
 const getAccount = async (req, res) => {
   try {
@@ -15,6 +16,23 @@ const updateAccount = async (req, res) => {
   try {
     await User.findByIdAndUpdate(req.user.id, req.body, null);
     return res.status(200).json({ message: "Account updated" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const changePassword = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id, null, null).select(
+      "password",
+    );
+    console.log(req.body, user);
+    if (!bcrypt.compareSync(req.body.currentPassword, user.password))
+      return res.status(400).json({ message: "Incorrect password" });
+    const newPassword = bcrypt.hashSync(req.body.newPassword, 12);
+    await User.findByIdAndUpdate(req.user.id, { password: newPassword }, null);
+    return res.status(200).json({ message: "Password updated" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Something went wrong" });
@@ -71,6 +89,7 @@ export default {
   getAccount,
   updateAccount,
   uploadImage,
+  changePassword,
   deleteImage,
   deleteAccount,
 };

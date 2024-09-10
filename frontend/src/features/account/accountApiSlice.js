@@ -17,6 +17,14 @@ export const accountApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    changePassword: build.mutation({
+      query: (body) => ({
+        url: "/account/change-password",
+        method: "POST",
+        body,
+      }),
+    }),
+
     uploadAvatar: build.mutation({
       query: (file) => ({
         url: "/account/avatar",
@@ -45,6 +53,7 @@ export const {
   useGetAccountQuery,
   useUpdateAccountMutation,
   useUploadAvatarMutation,
+  useChangePasswordMutation,
   useDeleteAvatarMutation,
   useDeleteAccountMutation,
 } = accountApiSlice;

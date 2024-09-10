@@ -17,4 +17,5 @@ router
     accountController.uploadImage,
   )
   .delete(userProtect, accountController.deleteImage);
+router.post("/change-password", userProtect, accountController.changePassword);
 export default router;
