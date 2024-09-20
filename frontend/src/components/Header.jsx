@@ -49,7 +49,7 @@ const Header = () => {
       className={`${visible ? "top-0" : "-top-24"} transition-all duration-300 sticky z-50 w-full h-[80px] gradient flex flex-row justify-between gap-12 items-center px-32 max-lg:px-6`}
     >
       <div className={"flex flex-row gap-12 items-center"}>
-        <Link to={user ? "/user/dashboard" : "/"}>
+        <Link to={"/posts/"}>
           <img src={logo} alt="logo" width={48} height={48} />
         </Link>
         <h1 className={"text-xl font-bold max-md:hidden uppercase"}>
