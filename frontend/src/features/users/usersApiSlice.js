@@ -17,6 +17,13 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    getUserSubscriptions: build.query({
+      query: (id) => ({
+        url: `/users/${id}/subscriptions`,
+        methods: "GET",
+      }),
+    }),
+
     subscribe: build.mutation({
       query: (id) => ({
         url: `/users/${id}/subscribe`,
@@ -54,6 +61,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetUsersQuery,
   useGetUserQuery,
+  useGetUserSubscriptionsQuery,
   useSubscribeMutation,
   useUnsubscribeMutation,
   useBanMutation,

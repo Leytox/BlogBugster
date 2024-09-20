@@ -6,13 +6,14 @@ import {
   faHeartCrack,
 } from "@fortawesome/free-solid-svg-icons";
 import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../../features/auth/authSlice.js";
 import { useParams } from "react-router-dom";
 import Editor from "../../components/Editor.jsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useUpdateAccountMutation } from "../../features/account/accountApiSlice.js";
 import { toast } from "react-toastify";
+import { setLocation } from "../../features/location/locationSlice.js";
 
 const UserAbout = ({ about, setAbout }) => {
   const [content, setContent] = useState(about);
@@ -20,6 +21,10 @@ const UserAbout = ({ about, setAbout }) => {
   const { id } = useParams();
   const { user } = useSelector(selectUser);
   const [updateAccount] = useUpdateAccountMutation();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setLocation("Profile > About"));
+  }, [dispatch]);
 
   const handleUpdate = async () => {
     try {

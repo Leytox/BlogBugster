@@ -19,10 +19,25 @@ const getUser = async (req, res) => {
   }
 };
 
+const getUserSubscriptions = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id, null, null)
+      .select("subscriptions")
+      .populate("subscriptions", "avatar name _id");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    return res
+      .status(200)
+      .json({ message: "Success", subscriptions: user.subscriptions });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 const getUsers = async (req, res) => {
   const { page, limit } = req.query;
   const skip = (page - 1) * limit;
-  console.log(req.admin);
   try {
     const users = await User.find(
       null,
@@ -129,4 +144,12 @@ const unsubscribe = async (req, res) => {
   }
 };
 
-export default { getUsers, getUser, subscribe, unsubscribe, ban, unban };
+export default {
+  getUsers,
+  getUser,
+  getUserSubscriptions,
+  subscribe,
+  unsubscribe,
+  ban,
+  unban,
+};

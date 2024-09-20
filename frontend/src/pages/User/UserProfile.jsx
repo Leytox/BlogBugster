@@ -1,22 +1,26 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setLocation } from "../../features/location/locationSlice.js";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Loader from "../../components/Loader.jsx";
-import { useGetUserQuery } from "../../features/users/usersApiSlice.js";
+import {
+  useGetUserQuery,
+  useSubscribeMutation,
+  useUnsubscribeMutation,
+} from "../../features/users/usersApiSlice.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAdd,
   faAddressCard,
   faBan,
   faBell,
-  faChartLine,
+  faBellSlash,
   faClipboard,
   faGear,
   faPencil,
   faPeopleGroup,
   faSearch,
   faTrash,
+  faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
 import { selectUser, setAvatar } from "../../features/auth/authSlice.js";
 import UserPosts from "./UserPosts.jsx";
@@ -25,13 +29,16 @@ import { copyToClipboard } from "../../services/index.js";
 import UserAbout from "./UserAbout.jsx";
 import {
   useDeleteAvatarMutation,
+  useGetAccountQuery,
   useUploadAvatarMutation,
 } from "../../features/account/accountApiSlice.js";
 import { toast } from "react-toastify";
+import UserSubscriptions from "./UserSubscriptions.jsx";
 
 const UserProfile = () => {
   const [tab, setTab] = useState("Posts");
   const [searchActive, setSearchActive] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
   const [additionalInfoVisible, setAdditionalInfoVisible] = useState(false);
   const [about, setAbout] = useState("");
   const navigate = useNavigate();
@@ -39,22 +46,17 @@ const UserProfile = () => {
   const { id } = useParams();
   const { data, error, isLoading, refetch } = useGetUserQuery(id);
   const { user } = useSelector(selectUser);
+  const userData = useGetAccountQuery(undefined, {
+    skip: !user,
+  });
   const [uploadImage] = useUploadAvatarMutation();
   const [deleteImage] = useDeleteAvatarMutation();
+  const [subscribe] = useSubscribeMutation();
+  const [unsubscribe] = useUnsubscribeMutation();
 
   useEffect(() => {
     if (error) navigate("/not-found");
-    switch (tab) {
-      case "Posts":
-        dispatch(setLocation("Profile > Posts"));
-        break;
-      case "About":
-        dispatch(setLocation("Profile > About"));
-        break;
-      default:
-        dispatch(setLocation("Profile > Posts"));
-    }
-  }, [dispatch, error, navigate, tab]);
+  }, [error, navigate]);
 
   useEffect(() => {
     refetch();
@@ -67,7 +69,7 @@ const UserProfile = () => {
       formData.append("avatar", file);
       await uploadImage(formData);
       const user = await refetch();
-      dispatch(setAvatar(user.data.user.avatar));
+      dispatch(setAvatar(user.data?.user.avatar));
       toast.success("Image uploaded successfully");
     } catch (error) {
       console.error(error);
@@ -79,9 +81,44 @@ const UserProfile = () => {
     if (window.confirm("Are you sure you want to delete your avatar?")) {
       await deleteImage();
       const user = await refetch();
-      dispatch(setAvatar(user.data.user.avatar));
+      dispatch(setAvatar(user.data?.user.avatar));
     }
   };
+
+  const handleSubscribe = useCallback(async () => {
+    try {
+      await subscribe(id).unwrap();
+      await refetch();
+      setIsSubscribed(true);
+      toast.success("Subscribed");
+    } catch (error) {
+      console.log(error);
+      toast.error(error.data.message);
+    }
+  }, [id, refetch, subscribe]);
+
+  const handleUnsubscribe = useCallback(async () => {
+    try {
+      await unsubscribe(id).unwrap();
+      await refetch();
+      setIsSubscribed(false);
+      toast.success("Unsubscribed");
+    } catch (error) {
+      console.log(error);
+      toast.error(error.data.message);
+    }
+  }, [id, refetch, unsubscribe]);
+
+  useEffect(() => {
+    if (userData.data) {
+      const isUserSubscribed = userData.data?.user?.subscriptions.includes(id);
+      setIsSubscribed(isUserSubscribed);
+    }
+  }, [id, userData.data]);
+
+  useEffect(() => {
+    refetch();
+  }, [tab, refetch]);
 
   if (isLoading)
     return (
@@ -95,7 +132,7 @@ const UserProfile = () => {
       {additionalInfoVisible && (
         <AdditionalInfoWindow
           setIsAdditionalInfoWindowShown={setAdditionalInfoVisible}
-          user={data.user}
+          user={data?.user}
         />
       )}
       <div className={"flex justify-between pb-4 max-sm:w-full"}>
@@ -111,8 +148,8 @@ const UserProfile = () => {
                 </span>
               )}
               <img
-                src={import.meta.env.VITE_BACKEND_URI + "/" + data.user.avatar}
-                alt={`${data.user.name}'s avatar`}
+                src={import.meta.env.VITE_BACKEND_URI + "/" + data?.user.avatar}
+                alt={`${data?.user.name}'s avatar`}
                 className="w-48 h-48 max-sm:w-32 max-sm:h-32 rounded-full aspect-square object-cover bg-white border-[1px] border-black"
               />
               <input
@@ -134,7 +171,7 @@ const UserProfile = () => {
             </div>
             <div className={"flex flex-col gap-4"}>
               <div className={"flex gap-2 items-end"}>
-                <h1 className="text-4xl font-bold mt-4">{data.user.name}</h1>
+                <h1 className="text-4xl font-bold mt-4">{data?.user.name}</h1>
                 <h2
                   className={
                     "text-4xl italic text-gray-600 cursor-pointer hover:text-gray-700 hover:scale-110 transition-transform"
@@ -157,23 +194,28 @@ const UserProfile = () => {
                 ·
                 <p>
                   <FontAwesomeIcon icon={faPeopleGroup} />{" "}
-                  {data.user.subscribers} Subscriber
-                  {data.user.subscribers > 1 || data.user.subscribers === 0
+                  {data?.user.subscribers} Subscriber
+                  {data?.user.subscribers > 1 || data?.user.subscribers === 0
                     ? "s"
                     : ""}
                 </p>
               </div>
               {user?.id.toString() !== id ? (
-                <button className="gradient text-white px-4 py-2 rounded-md hover:text-gray-200 transition-colors max-sm:hidden">
-                  Subscribe <FontAwesomeIcon icon={faBell} />
+                <button
+                  className="gradient text-white px-4 py-2 rounded-md hover:text-gray-200 transition-colors max-sm:hidden"
+                  onClick={
+                    user
+                      ? isSubscribed
+                        ? () => handleUnsubscribe()
+                        : () => handleSubscribe()
+                      : () => handleSubscribe()
+                  }
+                >
+                  Subscribe{" "}
+                  <FontAwesomeIcon icon={isSubscribed ? faBellSlash : faBell} />
                 </button>
               ) : (
-                <div className={"flex gap-4 max-sm:text-sm"}>
-                  <Link to={`/user/dashboard`} title={"Details about user"}>
-                    <button className={"btn rounded-xl py-0"}>
-                      <FontAwesomeIcon icon={faChartLine} /> Dashboard
-                    </button>
-                  </Link>
+                <div className={"flex max-sm:text-sm"}>
                   <Link to={`/user/${id}/settings`} className={"w-fit"}>
                     <button className={"btn rounded-xl py-0"}>
                       <FontAwesomeIcon icon={faGear} /> Settings
@@ -188,12 +230,12 @@ const UserProfile = () => {
               Subscribe <FontAwesomeIcon icon={faBell} />
             </button>
           )}
-          {data.user.ban.status && (
+          {data?.user.ban.status && (
             <p className="text-lg text-red-600 mt-4">
               <FontAwesomeIcon icon={faBan} /> Banned in{" "}
-              {new Date(data.user.ban.date.toString()).toLocaleDateString()}
+              {new Date(data?.user.ban.date.toString()).toLocaleDateString()}
               <br />
-              Reason: {data.user.ban.reason}
+              Reason: {data?.user.ban.reason}
             </p>
           )}
         </div>
@@ -223,6 +265,16 @@ const UserProfile = () => {
         >
           <FontAwesomeIcon icon={faAddressCard} /> About
         </h2>
+        <h2
+          className={`text-lg font-semibold text-center border-b-4 transition-all duration-100 hover:border-b-gray-500 hover:cursor-pointer
+           ${tab === "Subscriptions" ? "border-b-gray-700 hover:border-b-gray-900 text-black" : "border-b-transparent text-gray-500"}`}
+          onClick={() => {
+            setTab("Subscriptions");
+            setSearchActive(false);
+          }}
+        >
+          <FontAwesomeIcon icon={faUserGroup} /> Subscriptions
+        </h2>
         <div className={"flex gap-2"}>
           <h2
             className={`text-xl font-bold text-center border-b-4 transition-all duration-100 hover:border-b-gray-500 hover:cursor-pointer
@@ -249,8 +301,10 @@ const UserProfile = () => {
       <div className={"py-4"}>
         {tab === "Posts" ? (
           <UserPosts userid={id} />
+        ) : tab === "About" ? (
+          <UserAbout about={data?.user.about || about} setAbout={setAbout} />
         ) : (
-          <UserAbout about={data.user.about || about} setAbout={setAbout} />
+          <UserSubscriptions />
         )}
       </div>
     </main>

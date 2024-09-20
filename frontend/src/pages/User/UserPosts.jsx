@@ -2,7 +2,7 @@ import PostCard from "../../components/PostCard.jsx";
 import { useGetUserPostsQuery } from "../../features/posts/postsApiSlice.js";
 import Loader from "../../components/Loader.jsx";
 import PropTypes from "prop-types";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFire,
@@ -10,14 +10,19 @@ import {
   faScroll,
   faSeedling,
 } from "@fortawesome/free-solid-svg-icons";
+import { setLocation } from "../../features/location/locationSlice.js";
+import { useDispatch } from "react-redux";
 
 const UserPosts = ({ userid }) => {
   const [sortOrder, setSortOrder] = useState("New");
   const { data, isLoading } = useGetUserPostsQuery(userid);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setLocation("Profile > Posts"));
+  }, [dispatch]);
 
   const sortedPosts = useMemo(() => {
     if (!data || !data.posts) return [];
-
     return [...data.posts].sort((a, b) => {
       switch (sortOrder) {
         case "New":

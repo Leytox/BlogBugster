@@ -5,6 +5,7 @@ import usersController from "../controllers/users.controller.js";
 const router = Router();
 
 router.get("/:id", usersController.getUser);
+router.get("/:id/subscriptions", usersController.getUserSubscriptions);
 router.post("/:id/subscribe", userProtect, usersController.subscribe);
 router.post("/:id/unsubscribe", userProtect, usersController.unsubscribe);
 
