@@ -46,11 +46,18 @@ const getPost = async (req, res) => {
 };
 
 const getPosts = async (req, res) => {
-  const { page, limit } = req.query;
+  const { page, limit, category, sortOrder } = req.query;
+  console.log(req.query);
   const skip = (page - 1) * limit;
   try {
-    const posts = await Post.find({}, null, null).skip(skip).limit(limit);
-    return res.status(200).json({ posts, message: "Successes" });
+    const posts = await Post.find({}, null, null)
+      .select("-content -comments")
+      .populate("author", "avatar _id name")
+      .skip(skip)
+      .sort({ createdAt: sortOrder === "new" ? -1 : 1 })
+      .limit(limit);
+    const total = await Post.countDocuments();
+    return res.status(200).json({ posts, total, message: "Successes" });
   } catch (error) {
     console.log(error);
     return res.status(404).json({ message: "Something went wrong" });
