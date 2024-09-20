@@ -14,8 +14,6 @@ router
     postController.createPost,
   );
 
-// router.get("/feed", userProtect, postController.getFeed);
-
 router.get("/user/:userid", postController.getUserPosts);
 
 router

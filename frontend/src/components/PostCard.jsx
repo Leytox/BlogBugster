@@ -56,7 +56,20 @@ const PostCard = ({ post }) => {
         </div>
       </Link>
 
-      <div className={"flex justify-between"}>
+      <div className={"flex justify-between mt-2 gap-4"}>
+        {post.author && (
+          <Link to={`/user/${post.author._id}`}>
+            <img
+              src={import.meta.env.VITE_BACKEND_URI + "/" + post.author.avatar}
+              alt={"avatar"}
+              width={64}
+              height={64}
+              className={
+                "rounded-full border-[1px] border-black aspect-square object-cover bg-white"
+              }
+            />
+          </Link>
+        )}
         <Link
           to={`/posts/${post._id}`}
           onMouseEnter={() => {
@@ -67,13 +80,16 @@ const PostCard = ({ post }) => {
           }}
           className={"w-full"}
         >
-          <div className={"flex justify-between"}>
-            <div className="mt-2">
-              <h3 className="text-lg font-semibold">
+          <div className={"flex gap-3 items-center"}>
+            <div>
+              <h3 className="font-semibold">
                 {post.title.length > 28
                   ? post.title.substring(0, 28) + "..."
                   : post.title}
               </h3>
+              {post.author && (
+                <p className={"text-gray-500 text-sm"}>{post.author.name}</p>
+              )}
               <div className={"text-sm flex justify-start gap-2 text-gray-500"}>
                 <p>
                   {post.views === 1
@@ -85,12 +101,14 @@ const PostCard = ({ post }) => {
             </div>
           </div>
         </Link>
-        <button
-          onClick={() => copyToClipboard()}
-          className={"hover:scale-110 transition-transform"}
-        >
-          <FontAwesomeIcon icon={faShare} />
-        </button>
+        <div className={"flex items-start"}>
+          <button
+            onClick={() => copyToClipboard()}
+            className={"hover:scale-110 transition-transform"}
+          >
+            <FontAwesomeIcon icon={faShare} />
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -104,6 +122,11 @@ PostCard.propTypes = {
     views: PropTypes.number.isRequired,
     createdAt: PropTypes.string.isRequired,
     readTime: PropTypes.number.isRequired,
+    author: PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      avatar: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+    }),
   }).isRequired,
 };
 

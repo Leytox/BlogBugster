@@ -69,23 +69,25 @@ const Post = () => {
     try {
       await likePost(id).unwrap();
       await userData.refetch();
+      await refetch();
       toast.success("Post liked");
     } catch (error) {
       console.log(error);
       toast.error(error.data.message);
     }
-  }, [id, likePost, user, userData]);
+  }, [id, likePost, refetch, user, userData]);
 
   const handleUnlike = useCallback(async () => {
     try {
       await unlikePost(id).unwrap();
       await userData.refetch();
+      await refetch();
       toast.success("Post unliked");
     } catch (error) {
       console.log(error);
       toast.error(error.data.message);
     }
-  }, [id, unlikePost, userData]);
+  }, [id, refetch, unlikePost, userData]);
 
   const handleSubscribe = useCallback(async () => {
     if (!user) {
@@ -95,23 +97,25 @@ const Post = () => {
     try {
       await subscribe(data.post.author._id).unwrap();
       await userData.refetch();
+      await refetch();
       toast.success("Subscribed");
     } catch (error) {
       console.log(error);
       toast.error(error.data.message);
     }
-  }, [data?.post.author._id, subscribe, user, userData]);
+  }, [data?.post.author._id, refetch, subscribe, user, userData]);
 
   const handleUnsubscribe = useCallback(async () => {
     try {
       await unsubscribe(data.post.author._id).unwrap();
       await userData.refetch();
+      await refetch();
       toast.success("Unsubscribed");
     } catch (error) {
       console.log(error);
       toast.error(error.data.message);
     }
-  }, [data?.post.author._id, unsubscribe, userData]);
+  }, [data?.post.author._id, refetch, unsubscribe, userData]);
 
   const handleCreateComment = useCallback(async () => {
     try {
