@@ -5,6 +5,7 @@ import Comment from "../models/comment.model.js";
 import { isValidObjectId } from "mongoose";
 import * as fs from "node:fs";
 import jwt from "jsonwebtoken";
+import jsdom from "jsdom";
 
 const getPost = async (req, res) => {
   const { access_token } = req.cookies;
@@ -47,16 +48,15 @@ const getPost = async (req, res) => {
 
 const getPosts = async (req, res) => {
   const { page, limit, category, sortOrder } = req.query;
-  console.log(req.query);
   const skip = (page - 1) * limit;
   try {
-    const posts = await Post.find({}, null, null)
+    const posts = await Post.find({ category }, null, null)
       .select("-content -comments")
       .populate("author", "avatar _id name")
       .skip(skip)
       .sort({ createdAt: sortOrder === "new" ? -1 : 1 })
       .limit(limit);
-    const total = await Post.countDocuments();
+    const total = await Post.where(category).countDocuments();
     return res.status(200).json({ posts, total, message: "Successes" });
   } catch (error) {
     console.log(error);
@@ -97,6 +97,15 @@ const createPost = async (req, res) => {
         return tag.name;
       }),
     );
+    const { JSDOM } = jsdom;
+    const dom = new JSDOM(content);
+    const doc = dom.window.document;
+
+    let figures = doc.querySelectorAll("figure");
+    figures.forEach((figure) => figure.remove());
+
+    let modifiedContent = doc.documentElement.outerHTML;
+
     const newPost = new Post({
       title,
       content,
@@ -104,7 +113,7 @@ const createPost = async (req, res) => {
       tags: tagIds,
       image: image.path,
       author,
-      readTime: Math.ceil(content.length / 7 / 200),
+      readTime: Math.ceil(modifiedContent.length / 7 / 200),
     });
     await newPost.save();
     return res.status(201).json({ id: newPost._id, message: "Successes" });
@@ -119,7 +128,7 @@ const updatePost = async (req, res) => {
   let { title, content, category, tags } = req.body;
   const image = req.file;
   tags = tags.split(",");
-  console.log(req.body, req.params, req.file);
+  console.log(req.body);
   try {
     const candidate = await Post.findById(id, null, null);
     if (candidate.author.toString() !== req.user.id)
@@ -134,6 +143,16 @@ const updatePost = async (req, res) => {
         return tag.name;
       }),
     );
+
+    const { JSDOM } = jsdom;
+    const dom = new JSDOM(content);
+    const doc = dom.window.document;
+
+    let figures = doc.querySelectorAll("figure");
+    figures.forEach((figure) => figure.remove());
+
+    let modifiedContent = doc.documentElement.outerHTML;
+
     await Post.findByIdAndUpdate(
       id,
       {
@@ -142,7 +161,7 @@ const updatePost = async (req, res) => {
         category,
         tags: tagIds,
         image: image ? image.path : candidate.image,
-        readTime: Math.ceil(content.length / 7 / 200),
+        readTime: Math.ceil(modifiedContent.length / 7 / 200),
       },
       null,
     );
