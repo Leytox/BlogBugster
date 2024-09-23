@@ -26,6 +26,7 @@ import {
   faComment,
   faEye,
   faList,
+  faPen,
   faShare,
   faSignIn,
   faTags,
@@ -148,13 +149,7 @@ const Post = () => {
       setIsSubscribed(isUserSubscribed);
     }
     if (error) navigate("/not-found");
-  }, [id, data, dispatch, error, navigate, userData.data]);
-
-  useEffect(() => {
-    refetch().then(() => {
-      userData.refetch();
-    });
-  }, [id, refetch, userData.refetch]);
+  }, [id, data, dispatch, error, navigate, userData?.data]);
 
   if (isLoading)
     return (
@@ -257,6 +252,17 @@ const Post = () => {
                   </p>
                 </div>
               </div>
+
+              {data.post.author._id === user?.id && (
+                <Link
+                  to={`/posts/${id}/edit`}
+                  className={
+                    "w-fit text-xl text-gray-500 duration-200 hover:text-gray-600"
+                  }
+                >
+                  <FontAwesomeIcon icon={faPen} /> Edit
+                </Link>
+              )}
               <div className="max-lg:flex flex-row hidden items-center gap-2">
                 <button
                   className="btn-gradient w-40 text-md max-sm:w-28"
@@ -391,7 +397,7 @@ const Post = () => {
               postId={id}
               creatorId={data.post.author._id}
               refetch={refetch}
-              currentUser={userData.data.user}
+              currentUser={userData?.data?.user}
             />
           ))}
       </div>

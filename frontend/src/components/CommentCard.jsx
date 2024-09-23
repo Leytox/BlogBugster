@@ -260,7 +260,7 @@ const CommentCard = ({ comment, postId, refetch, creatorId, currentUser }) => {
                 >
                   <FontAwesomeIcon icon={faReply} /> Reply
                 </p>
-                {comment.author._id === user.id && (
+                {comment?.author._id === user?.id && (
                   <div className={"flex gap-4"}>
                     <p
                       className={"cursor-pointer hover:text-yellow-500"}
@@ -319,7 +319,7 @@ const CommentCard = ({ comment, postId, refetch, creatorId, currentUser }) => {
               refetch={refetchReply}
               parentCommentId={comment._id}
               creatorId={creatorId}
-              currentUser={currentUser}
+              currentUser={currentUser ? currentUser : null}
             />
           ))}
       </div>
@@ -352,7 +352,7 @@ CommentCard.propTypes = {
   creatorId: PropTypes.string.isRequired,
   currentUser: PropTypes.shape({
     commentLikes: PropTypes.arrayOf(PropTypes.string).isRequired,
-  }).isRequired,
+  }),
 };
 
 export default CommentCard;
