@@ -7,7 +7,7 @@ const postsApiSlice = apiSlice.injectEndpoints({
     }),
     getPosts: build.query({
       query: ({ page, limit, category, sortOrder }) =>
-        `/posts?page=${page}&limit=${limit}&category=${category}&`,
+        `/posts?page=${page}&limit=${limit}&category=${category}&sortOrder=${sortOrder}`,
     }),
     getPost: build.query({
       query: (id) => `/posts/${id}`,
