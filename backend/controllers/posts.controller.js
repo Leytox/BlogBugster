@@ -47,11 +47,13 @@ const getPost = async (req, res) => {
 };
 
 const getPosts = async (req, res) => {
-  const { page, limit, category, sortOrder } = req.query;
+  const { page, limit, category, sortOrder, searchTerm } = req.query;
   const skip = (page - 1) * limit;
 
   try {
-    const query = category !== "all" ? { category } : {};
+    let query = {};
+    if (searchTerm) query.title = { $regex: searchTerm, $options: "i" };
+    if (category && category !== "all") query.category = category;
     const posts = await Post.find(query, null, null)
       .select("-content -comments")
       .populate("author", "avatar _id name")

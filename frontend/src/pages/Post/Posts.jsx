@@ -9,12 +9,14 @@ import {
   faAnglesLeft,
   faAnglesRight,
   faArrowDownShortWide,
+  faArrowsRotate,
   faArrowUpShortWide,
   faChevronLeft,
   faChevronRight,
   faCode,
-  faEllipsis,
+  faGears,
   faHeartCrack,
+  faList,
   faMicrochip,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -22,36 +24,42 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const Posts = () => {
   const limit = 15;
   const [searchParams, setSearchParams] = useSearchParams();
-  const [category, setCategory] = useState(
-    searchParams.get("category") || "software",
-  );
-  const [sortOrder, setSortOrder] = useState(
-    searchParams.get("sortOrder") || "new",
-  );
-  const [page, setPage] = useState(parseInt(searchParams.get("page")) || 1);
+  const [searchTerm, setSearchTerm] = useState(searchParams.get("searchTerm"));
+  const [category, setCategory] = useState(searchParams.get("category"));
+  const [sortOrder, setSortOrder] = useState(searchParams.get("sortOrder"));
+  const [page, setPage] = useState(parseInt(searchParams.get("page")));
   const dispatch = useDispatch();
   const { data, isLoading, refetch } = useGetPostsQuery({
     page,
     limit,
     category,
     sortOrder,
+    searchTerm: searchParams.get("searchTerm"),
   });
-
   useEffect(() => {
     dispatch(setLocation("Posts"));
   }, [dispatch]);
-
   useEffect(() => {
+    setSearchParams({
+      page: page.toString(),
+      category,
+      sortOrder,
+      searchTerm: searchParams.get("searchTerm"),
+    });
     refetch();
-  }, [category, sortOrder, refetch, page]);
+  }, [
+    category,
+    page,
+    refetch,
+    searchParams,
+    searchTerm,
+    setSearchParams,
+    sortOrder,
+  ]);
 
   useEffect(() => {
-    if (data) {
-      const totalPages = Math.ceil(data.total / limit);
-      if (page < 1 || page > totalPages) setPage(1);
-      else setSearchParams({ page: page.toString(), category, sortOrder });
-    }
-  }, [page, setSearchParams, data, limit, category, sortOrder]);
+    if ((data && page < 1) || page > Math.ceil(data?.total / limit)) setPage(1);
+  }, [page, data]);
 
   if (isLoading)
     return (
@@ -89,7 +97,7 @@ const Posts = () => {
             onClick={() => setCategory("all")}
           >
             {" "}
-            All
+            <FontAwesomeIcon icon={faList} /> All
           </div>
           <div
             className={`rounded py-2 bg-gray-300 px-4 border-[1px] cursor-pointer transition-all duration-200 hover:bg-gray-200 ${category === "software" ? "border-black bg-white" : ""}`}
@@ -107,7 +115,7 @@ const Posts = () => {
             className={`rounded py-2 bg-gray-300 px-4 border-[1px] cursor-pointer transition-all duration-200 hover:bg-gray-200 ${category === "miscellaneous" ? "border-black bg-white" : ""}`}
             onClick={() => setCategory("miscellaneous")}
           >
-            <FontAwesomeIcon icon={faEllipsis} /> Misc
+            <FontAwesomeIcon icon={faGears} /> Misc
           </div>
           {data.total > 1 && (
             <div
@@ -124,6 +132,25 @@ const Posts = () => {
                 }
               />{" "}
               Sort
+            </div>
+          )}
+          {(category !== "all" || sortOrder !== "new" || searchTerm !== "") && (
+            <div
+              className={"cursor-pointer"}
+              onClick={() => {
+                setCategory("all");
+                setSortOrder("new");
+                setSearchTerm("");
+                setPage(1);
+                setSearchParams({
+                  page: 1,
+                  category: "all",
+                  sortOrder: "new",
+                  searchTerm: "",
+                });
+              }}
+            >
+              <FontAwesomeIcon icon={faArrowsRotate} /> Reset
             </div>
           )}
         </div>

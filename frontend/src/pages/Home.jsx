@@ -78,7 +78,7 @@ const Home = () => {
             </p>
           </div>
           <div className={"flex flex-row gap-8 max-sm:flex-col"}>
-            <Link to={"/posts"}>
+            <Link to={"/posts?page=1&category=all&sortOrder=new&searchTerm="}>
               <Button title={"Latest Posts"} />
             </Link>
             <Link to={"/auth/register"}>

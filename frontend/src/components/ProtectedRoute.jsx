@@ -10,7 +10,12 @@ const ProtectedRoute = ({ children, RouteType }) => {
       if (!user) return <Navigate to="/auth/login" />;
       break;
     case "public":
-      if (user) return <Navigate to={`/posts`} />;
+      if (user)
+        return (
+          <Navigate
+            to={`/posts?page=1&category=all&sortOrder=new&searchTerm=`}
+          />
+        );
       break;
     case "admin":
       if (!user) return <Navigate to="/" />;
