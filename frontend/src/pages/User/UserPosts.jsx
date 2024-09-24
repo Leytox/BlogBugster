@@ -46,7 +46,7 @@ const UserPosts = ({ userid }) => {
   return (
     <section className="max-sm:p-4 gap-4 flex flex-col max-md:items-center">
       {data.posts.length === 0 ? (
-        <h1 className="text-5xl text-center m-auto italic text-gray-400 ">
+        <h1 className="text-5xl m-auto itaelic text-gray-400 ">
           <FontAwesomeIcon icon={faHeartCrack} /> No posts yet...
         </h1>
       ) : (

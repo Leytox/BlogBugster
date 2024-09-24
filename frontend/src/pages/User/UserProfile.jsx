@@ -62,6 +62,10 @@ const UserProfile = () => {
     refetch();
   }, [id, refetch]);
 
+  useEffect(() => {
+    setTab("Posts");
+  }, [id]);
+
   const handleImageUpload = async (e) => {
     try {
       const file = e.target.files[0];
