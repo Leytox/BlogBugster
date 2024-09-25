@@ -41,6 +41,7 @@ const UserProfile = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [additionalInfoVisible, setAdditionalInfoVisible] = useState(false);
   const [about, setAbout] = useState("");
+  const [isSubscribeLoading, setIsSubscribeLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -91,6 +92,7 @@ const UserProfile = () => {
 
   const handleSubscribe = useCallback(async () => {
     try {
+      setIsSubscribeLoading(true);
       await subscribe(id).unwrap();
       await refetch();
       setIsSubscribed(true);
@@ -98,11 +100,14 @@ const UserProfile = () => {
     } catch (error) {
       console.log(error);
       toast.error(error.data.message);
+    } finally {
+      setIsSubscribeLoading(false);
     }
   }, [id, refetch, subscribe]);
 
   const handleUnsubscribe = useCallback(async () => {
     try {
+      setIsSubscribeLoading(true);
       await unsubscribe(id).unwrap();
       await refetch();
       setIsSubscribed(false);
@@ -110,6 +115,8 @@ const UserProfile = () => {
     } catch (error) {
       console.log(error);
       toast.error(error.data.message);
+    } finally {
+      setIsSubscribeLoading(false);
     }
   }, [id, refetch, unsubscribe]);
 
@@ -206,6 +213,7 @@ const UserProfile = () => {
               </div>
               {user?.id.toString() !== id ? (
                 <button
+                  disabled={isSubscribeLoading}
                   className="gradient text-white px-4 py-2 rounded-md hover:text-gray-200 transition-colors max-sm:hidden"
                   onClick={
                     user

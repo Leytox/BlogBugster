@@ -48,6 +48,8 @@ const Post = () => {
   const [isShareWindowShown, setIsShareWindowShown] = useState(false);
   const [isAuthWindowShown, setIsAuthWindowShown] = useState(false);
   const [commentBody, setCommentBody] = useState("");
+  const [isLikeLoading, setIsLikeLoading] = useState(false);
+  const [isSubscribeLoading, setIsSubscribeLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector(selectUser);
@@ -68,6 +70,7 @@ const Post = () => {
       return;
     }
     try {
+      setIsLikeLoading(true);
       await likePost(id).unwrap();
       await userData.refetch();
       await refetch();
@@ -75,11 +78,14 @@ const Post = () => {
     } catch (error) {
       console.log(error);
       toast.error(error.data.message);
+    } finally {
+      setIsLikeLoading(false);
     }
   }, [id, likePost, refetch, user, userData]);
 
   const handleUnlike = useCallback(async () => {
     try {
+      setIsLikeLoading(true);
       await unlikePost(id).unwrap();
       await userData.refetch();
       await refetch();
@@ -87,6 +93,8 @@ const Post = () => {
     } catch (error) {
       console.log(error);
       toast.error(error.data.message);
+    } finally {
+      setIsLikeLoading(false);
     }
   }, [id, refetch, unlikePost, userData]);
 
@@ -96,6 +104,7 @@ const Post = () => {
       return;
     }
     try {
+      setIsSubscribeLoading(true);
       await subscribe(data.post.author._id).unwrap();
       await userData.refetch();
       await refetch();
@@ -103,11 +112,14 @@ const Post = () => {
     } catch (error) {
       console.log(error);
       toast.error(error.data.message);
+    } finally {
+      setIsSubscribeLoading(false);
     }
   }, [data?.post.author._id, refetch, subscribe, user, userData]);
 
   const handleUnsubscribe = useCallback(async () => {
     try {
+      setIsSubscribeLoading(true);
       await unsubscribe(data.post.author._id).unwrap();
       await userData.refetch();
       await refetch();
@@ -115,6 +127,8 @@ const Post = () => {
     } catch (error) {
       console.log(error);
       toast.error(error.data.message);
+    } finally {
+      setIsSubscribeLoading(false);
     }
   }, [data?.post.author._id, refetch, unsubscribe, userData]);
 
@@ -162,6 +176,7 @@ const Post = () => {
     <div className="min-h-screen flex flex-col px-24 mt-16 gap-12 max-lg:px-8 max-md:px-6 max-sm:px-0">
       <div className="max-lg:hidden z-0 fixed left-10 top-56 flex flex-col justify-center items-center gap-10">
         <button
+          disabled={isLikeLoading}
           className={`text-2xl flex flex-col ${isLiked ? "border-b-blue-500 border-b-2" : ""}`}
           onClick={
             user
@@ -187,6 +202,7 @@ const Post = () => {
           />
         </button>
         <button
+          disabled={isSubscribeLoading}
           className={`text-2xl ${isSubscribed ? "border-b-blue-500 border-b-2" : ""}`}
           onClick={
             user
@@ -265,6 +281,7 @@ const Post = () => {
               )}
               <div className="max-lg:flex flex-row hidden items-center gap-2">
                 <button
+                  disabled={isLikeLoading}
                   className="btn-gradient w-40 text-md max-sm:w-28"
                   onClick={
                     user
@@ -284,6 +301,7 @@ const Post = () => {
                   <FontAwesomeIcon icon={faShare} />
                 </button>
                 <button
+                  disabled={isSubscribeLoading}
                   className="btn-gradient w-40 text-sm max-sm:w-32"
                   onClick={
                     user
