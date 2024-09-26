@@ -197,7 +197,7 @@ const UserSettings = () => {
   return (
     <section
       className={
-        "min-h-screen flex px-48 max-xl:px-20 max-lg:px-2 max-lg:flex-col"
+        "min-h-screen flex px-40 max-xl:px-20 max-lg:px-2 max-lg:flex-col"
       }
     >
       <div className={"flex flex-col border-r-2 w-1/5 max-lg:w-full"}>
