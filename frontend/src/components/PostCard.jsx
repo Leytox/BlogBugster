@@ -103,7 +103,9 @@ const PostCard = ({ post }) => {
         </Link>
         <div className={"flex items-start"}>
           <button
-            onClick={() => copyToClipboard()}
+            onClick={() =>
+              copyToClipboard(window.location.host + `/posts/${post._id}`)
+            }
             className={"hover:scale-110 transition-transform"}
           >
             <FontAwesomeIcon icon={faShare} />
