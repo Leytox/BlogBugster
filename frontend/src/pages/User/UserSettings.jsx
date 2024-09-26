@@ -2,9 +2,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { setLocation } from "../../features/location/locationSlice.js";
 import {
-  logout,
   selectUser,
   setAvatar,
+  setUser,
 } from "../../features/auth/authSlice.js";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -37,6 +37,7 @@ import {
   faLinkedin,
   faTwitter,
 } from "@fortawesome/free-brands-svg-icons";
+import { useLogoutMutation } from "../../features/auth/authApiSlice.js";
 
 const UserSettings = () => {
   const [settingsGroup, setSettingsGroup] = useState("Profile");
@@ -56,6 +57,7 @@ const UserSettings = () => {
   const [updateProfile] = useUpdateAccountMutation();
   const [deleteAccount] = useDeleteAccountMutation();
   const [changePassword] = useChangePasswordMutation();
+  const [logout] = useLogoutMutation();
   useEffect(() => {
     setAbout(data?.user.about || "");
     setCountry(data?.user.country || "");
@@ -90,6 +92,14 @@ const UserSettings = () => {
     user,
     user.id,
   ]);
+
+  const handleLogout = async () => {
+    if (!window.confirm("Are you sure you want to logout?")) return;
+    const res = await logout();
+    dispatch(setUser(null));
+    toast.success(res.data.message);
+    return navigate("/");
+  };
 
   const handleDeleteAccount = async () => {
     if (
@@ -185,16 +195,20 @@ const UserSettings = () => {
       </div>
     );
   return (
-    <section className={"min-h-screen flex px-48"}>
-      <div className={"flex flex-col border-r-2 w-1/5"}>
+    <section
+      className={
+        "min-h-screen flex px-48 max-xl:px-20 max-lg:px-2 max-lg:flex-col"
+      }
+    >
+      <div className={"flex flex-col border-r-2 w-1/5 max-lg:w-full"}>
         <div className={"py-16"}>
-          <div className={"flex gap-4 i items-center"}>
+          <div className={"flex gap-4 items-center max-lg:flex-col"}>
             <img
               src={import.meta.env.VITE_BACKEND_URI + "/" + data.user.avatar}
               alt={"test"}
-              className="w-24 h-24 max-sm:w-24 max-sm:h-24 rounded-full aspect-square object-cover bg-white border-[1px] border-black"
+              className="w-24 h-24 max-sm:w-24 max-sm:h-24 rounded-full aspect-square object-cover bg-white border-[1px] border-black max-lg:w-36 max-lg:h-36"
             />
-            <div>
+            <div className={"max-lg:text-center"}>
               <h1 className={"text-lg font-semibold"}>{data.user.name}</h1>
               <Link
                 className={"text-sm text-gray-600 font-normal hover:underline"}
@@ -204,10 +218,10 @@ const UserSettings = () => {
               </Link>
             </div>
           </div>
-          <ul className="flex flex-col gap-6 mt-4">
+          <ul className="flex flex-col gap-6 mt-4 max-lg:items-center">
             <li
               onClick={() => setSettingsGroup("Profile")}
-              className={`text-xl font-normal flex gap-4 items-center transition-colors duration-100 cursor-pointer 
+              className={`text-xl font-normal flex gap-4 items-center transition-colors duration-100 cursor-pointer max-lg:text-3xl
               ${settingsGroup === "Profile" ? "text-[#002b99] " : " text-gray-700"}`}
             >
               <FontAwesomeIcon className={"w-6"} icon={faUser} />
@@ -215,7 +229,7 @@ const UserSettings = () => {
             </li>
             <li
               onClick={() => setSettingsGroup("Account")}
-              className={`text-xl font-normal flex gap-4 items-center transition-colors duration-100 cursor-pointer 
+              className={`text-xl font-normal flex gap-4 items-center transition-colors duration-100 cursor-pointer max-lg:text-3xl
               ${settingsGroup === "Account" ? "text-[#002b99]" : " text-gray-700"}`}
             >
               <FontAwesomeIcon className={"w-6"} icon={faIdCard} />
@@ -223,7 +237,7 @@ const UserSettings = () => {
             </li>
             <li
               onClick={() => setSettingsGroup("Security")}
-              className={`text-xl font-normal flex gap-4 items-center transition-colors duration-100 cursor-pointer 
+              className={`text-xl font-normal flex gap-4 items-center transition-colors duration-100 cursor-pointer max-lg:text-3xl
               ${settingsGroup === "Security" ? "text-[#002b99]" : " text-gray-700"}`}
             >
               <FontAwesomeIcon className={"w-6"} icon={faLock} />
@@ -232,9 +246,13 @@ const UserSettings = () => {
           </ul>
         </div>
       </div>
-      <div className={"py-12 pl-12 w-3/4"}>
+      <div
+        className={
+          "py-12 pl-12 w-3/4 max-lg:items-center max-lg:flex max-lg:w-full max-lg:justify-center max-lg:px-2 max-lg:py-6"
+        }
+      >
         {settingsGroup === "Profile" ? (
-          <div className={"flex flex-col gap-4"}>
+          <div className={"flex flex-col gap-4 max-lg:w-full"}>
             <div>
               <h1 className={"text-lg font-semibold"}>Common information</h1>
               <p className={"text-sm text-gray-500"}>
@@ -378,7 +396,7 @@ const UserSettings = () => {
             </button>
           </div>
         ) : settingsGroup === "Account" ? (
-          <div className={"flex flex-col gap-4"}>
+          <div className={"flex flex-col gap-4 max-lg:w-full"}>
             <div>
               <h1 className={"text-lg font-semibold"}>Account options</h1>
               <p className={"text-sm text-gray-500"}>
@@ -392,16 +410,7 @@ const UserSettings = () => {
                 Logout from current account, warning you need to login again!
               </p>
             </div>
-            <button
-              type={"button"}
-              className={"btn"}
-              onClick={() => {
-                if (window.confirm("Are you sure you want to logout?")) {
-                  dispatch(logout());
-                  navigate("/");
-                }
-              }}
-            >
+            <button type={"button"} className={"btn"} onClick={handleLogout}>
               <FontAwesomeIcon icon={faSignOut} /> Logout
             </button>
             <hr />
@@ -420,7 +429,7 @@ const UserSettings = () => {
             </button>
           </div>
         ) : (
-          <div className={"flex flex-col gap-4"}>
+          <div className={"flex flex-col gap-4 max-lg:w-full"}>
             <div>
               <h1 className={"text-lg font-semibold"}>Security Options</h1>
               <p className={"text-sm text-gray-500"}>
