@@ -18,7 +18,6 @@ import {
   faGear,
   faPencil,
   faPeopleGroup,
-  faSearch,
   faTrash,
   faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
@@ -37,7 +36,6 @@ import UserSubscriptions from "./UserSubscriptions.jsx";
 
 const UserProfile = () => {
   const [tab, setTab] = useState("Posts");
-  const [searchActive, setSearchActive] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [additionalInfoVisible, setAdditionalInfoVisible] = useState(false);
   const [about, setAbout] = useState("");
@@ -260,54 +258,24 @@ const UserProfile = () => {
         <h2
           className={`text-lg font-semibold text-center border-b-4 transition-all duration-100 hover:border-b-gray-500 hover:cursor-pointer
            ${tab === "Posts" ? "border-b-gray-700 text-black hover:border-b-gray-900" : "border-b-transparent text-gray-500"}`}
-          onClick={() => {
-            setTab("Posts");
-            setSearchActive(false);
-          }}
+          onClick={() => setTab("Posts")}
         >
           <FontAwesomeIcon icon={faPencil} /> Posts
         </h2>
         <h2
           className={`text-lg font-semibold text-center border-b-4 transition-all duration-100 hover:border-b-gray-500 hover:cursor-pointer
            ${tab === "About" ? "border-b-gray-700 hover:border-b-gray-900 text-black" : "border-b-transparent text-gray-500"}`}
-          onClick={() => {
-            setTab("About");
-            setSearchActive(false);
-          }}
+          onClick={() => setTab("About")}
         >
           <FontAwesomeIcon icon={faAddressCard} /> About
         </h2>
         <h2
           className={`text-lg font-semibold text-center border-b-4 transition-all duration-100 hover:border-b-gray-500 hover:cursor-pointer
            ${tab === "Subscriptions" ? "border-b-gray-700 hover:border-b-gray-900 text-black" : "border-b-transparent text-gray-500"}`}
-          onClick={() => {
-            setTab("Subscriptions");
-            setSearchActive(false);
-          }}
+          onClick={() => setTab("Subscriptions")}
         >
           <FontAwesomeIcon icon={faUserGroup} /> Subscriptions
         </h2>
-        <div className={"flex gap-2"}>
-          <h2
-            className={`text-xl font-bold text-center border-b-4 transition-all duration-100 hover:border-b-gray-500 hover:cursor-pointer
-             ${searchActive ? "border-b-gray-700 hover:border-b-gray-900 text-black" : "border-b-transparent text-gray-500"}`}
-            onClick={() => {
-              setSearchActive(true);
-            }}
-          >
-            <FontAwesomeIcon icon={faSearch} />
-          </h2>
-          {searchActive && (
-            <input
-              type="text"
-              className={
-                "mt-1 outline outline-0 bg-transparent text-black border-b-2 border-b-gray-700 w-64 px-2 max-sm:w-32 max-sm:px-1"
-              }
-              placeholder={"Search posts..."}
-              autoFocus={true}
-            />
-          )}
-        </div>
       </div>
       <hr className={"border-gray-300"} />
       <div className={"py-4"}>
