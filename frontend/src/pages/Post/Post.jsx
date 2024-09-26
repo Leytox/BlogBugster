@@ -172,48 +172,65 @@ const Post = () => {
       </div>
     );
 
+  console.log(user?.id !== data.post.author._id);
+
   return (
     <div className="min-h-screen flex flex-col px-24 mt-16 gap-12 max-lg:px-8 max-md:px-6 max-sm:px-0">
       <div className="max-lg:hidden z-0 fixed left-10 top-56 flex flex-col justify-center items-center gap-10">
-        <button
-          disabled={isLikeLoading}
-          className={`text-2xl flex flex-col ${isLiked ? "border-b-blue-500 border-b-2" : ""}`}
-          onClick={
-            user
-              ? isLiked
-                ? () => handleUnlike()
-                : () => handleLike()
-              : () => handleLike()
-          }
-        >
-          <FontAwesomeIcon
-            icon={isLiked ? faThumbsDown : faThumbsUp}
-            className={"transition-all hover:scale-125 cursor-pointer"}
-          />{" "}
-          <span>{data.post.likes}</span>
-        </button>
+        {data.post.author._id === user?.id && (
+          <Link
+            to={`/posts/${id}/edit`}
+            className={
+              "w-fit text-2xl transition-all hover:scale-125 cursor-pointer"
+            }
+          >
+            <FontAwesomeIcon icon={faPen} />
+          </Link>
+        )}
+        {data.post.author._id !== user?.id && (
+          <div className={"flex flex-col gap-10"}>
+            <button
+              disabled={isLikeLoading}
+              className={`text-2xl flex flex-col ${isLiked ? "border-b-blue-500 border-b-2" : ""}`}
+              onClick={
+                user
+                  ? isLiked
+                    ? () => handleUnlike()
+                    : () => handleLike()
+                  : () => handleLike()
+              }
+            >
+              <FontAwesomeIcon
+                icon={isLiked ? faThumbsDown : faThumbsUp}
+                className={"transition-all hover:scale-125 cursor-pointer"}
+              />{" "}
+              <span>{data.post.likes === 0 ? "" : data.post.likes}</span>
+            </button>
+            <button
+              disabled={isSubscribeLoading}
+              className={`text-2xl ${isSubscribed ? "border-b-blue-500 border-b-2" : ""}`}
+              onClick={
+                user
+                  ? isSubscribed
+                    ? () => handleUnsubscribe()
+                    : () => handleSubscribe()
+                  : () => handleSubscribe()
+              }
+            >
+              <FontAwesomeIcon
+                icon={isSubscribed ? faBellSlash : faBell}
+                className={"transition-all hover:scale-125 cursor-pointer"}
+              />
+            </button>
+          </div>
+        )}
+
         <button
           className="text-2xl"
           onClick={() => setIsShareWindowShown(true)}
         >
           <FontAwesomeIcon
             icon={faShare}
-            className={"transition-all hover:scale-125 cursor-pointer"}
-          />
-        </button>
-        <button
-          disabled={isSubscribeLoading}
-          className={`text-2xl ${isSubscribed ? "border-b-blue-500 border-b-2" : ""}`}
-          onClick={
-            user
-              ? isSubscribed
-                ? () => handleUnsubscribe()
-                : () => handleSubscribe()
-              : () => handleSubscribe()
-          }
-        >
-          <FontAwesomeIcon
-            icon={isSubscribed ? faBellSlash : faBell}
             className={"transition-all hover:scale-125 cursor-pointer"}
           />
         </button>
@@ -268,51 +285,56 @@ const Post = () => {
                   </p>
                 </div>
               </div>
-
-              {data.post.author._id === user?.id && (
-                <Link
-                  to={`/posts/${id}/edit`}
-                  className={
-                    "w-fit text-xl text-gray-500 duration-200 hover:text-gray-600"
-                  }
-                >
-                  <FontAwesomeIcon icon={faPen} /> Edit
-                </Link>
-              )}
               <div className="max-lg:flex flex-row hidden items-center gap-2">
-                <button
-                  disabled={isLikeLoading}
-                  className="btn-gradient w-40 text-md max-sm:w-28"
-                  onClick={
-                    user
-                      ? isLiked
-                        ? () => handleUnlike()
-                        : () => handleLike()
-                      : () => handleLike()
-                  }
-                >
-                  <FontAwesomeIcon icon={isLiked ? faThumbsDown : faThumbsUp} />{" "}
-                  {data.post.likes}
-                </button>
+                {user?.id !== data.post.author._id && (
+                  <div className={"flex gap-2"}>
+                    <button
+                      disabled={isLikeLoading}
+                      className="btn-gradient w-40 text-md max-sm:w-28"
+                      onClick={
+                        user
+                          ? isLiked
+                            ? () => handleUnlike()
+                            : () => handleLike()
+                          : () => handleLike()
+                      }
+                    >
+                      <FontAwesomeIcon
+                        icon={isLiked ? faThumbsDown : faThumbsUp}
+                      />{" "}
+                      {data.post.likes}
+                    </button>
+                    <button
+                      disabled={isSubscribeLoading}
+                      className="btn-gradient w-40 text-sm max-sm:w-32"
+                      onClick={
+                        user
+                          ? isSubscribed
+                            ? () => handleUnsubscribe()
+                            : () => handleSubscribe()
+                          : () => handleSubscribe()
+                      }
+                    >
+                      Subscribe{" "}
+                      <FontAwesomeIcon
+                        icon={isSubscribed ? faBellSlash : faBell}
+                      />
+                    </button>
+                  </div>
+                )}
+                {data.post.author._id === user?.id && (
+                  <Link
+                    to={`/posts/${id}/edit`}
+                    className="btn-gradient w-40 max-sm:w-32 text-center"
+                  >
+                    Edit <FontAwesomeIcon icon={faPen} />
+                  </Link>
+                )}
                 <button
                   className="btn-gradient w-40 text-md max-sm:w-28"
                   onClick={() => setIsShareWindowShown(true)}
                 >
-                  <FontAwesomeIcon icon={faShare} />
-                </button>
-                <button
-                  disabled={isSubscribeLoading}
-                  className="btn-gradient w-40 text-sm max-sm:w-32"
-                  onClick={
-                    user
-                      ? isSubscribed
-                        ? () => handleUnsubscribe()
-                        : () => handleSubscribe()
-                      : () => handleSubscribe()
-                  }
-                >
-                  Subscribe{" "}
-                  <FontAwesomeIcon icon={isSubscribed ? faBellSlash : faBell} />
+                  <FontAwesomeIcon icon={faShare} /> Share
                 </button>
               </div>
             </div>
