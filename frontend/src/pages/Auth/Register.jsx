@@ -6,6 +6,9 @@ import { useRegisterMutation } from "../../features/auth/authApiSlice.js";
 import { selectUser, setUser } from "../../features/auth/authSlice.js";
 import { toast } from "react-toastify";
 import { setLocation } from "../../features/location/locationSlice.js";
+import GoogleOAuth from "../../components/GoogleOAuth.jsx";
+import AppleOAuth from "../../components/AppleOAuth.jsx";
+import FacebookOAuth from "../../components/FacebookOAuth.jsx";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -41,7 +44,7 @@ const Register = () => {
   return (
     <form
       onSubmit={handleRegister}
-      className="font-oswald h-screen justify-center items-center flex flex-col gap-6"
+      className="font-oswald h-screen justify-center items-center flex flex-col gap-4"
     >
       <h1 className={"text-4xl"}>Welcome</h1>
       <div className={"flex flex-col"}>
@@ -96,6 +99,16 @@ const Register = () => {
         disabled={!name || !email || !password || !confirmPassword}
         styles={"w-72"}
       />
+      <div className={"flex items-center gap-2"}>
+        <hr className={"border-[1px] w-32"} />
+        <p>or</p>
+        <hr className={"border-[1px] w-32"} />
+      </div>
+      <div className={"flex flex-col gap-2"}>
+        <GoogleOAuth />
+        <AppleOAuth />
+        <FacebookOAuth />
+      </div>
       <p>
         Have an account already?{" "}
         <Link to={"/auth/login"} className={"text-blue-500 hover:underline"}>
