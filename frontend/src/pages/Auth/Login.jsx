@@ -7,8 +7,6 @@ import { useLoginMutation } from "../../features/auth/authApiSlice.js";
 import { selectUser, setUser } from "../../features/auth/authSlice.js";
 import { setLocation } from "../../features/location/locationSlice.js";
 import GoogleOAuth from "../../components/GoogleOAuth.jsx";
-import AppleOAuth from "../../components/AppleOAuth.jsx";
-import FacebookOAuth from "../../components/FacebookOAuth.jsx";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -76,8 +74,6 @@ const Login = () => {
       </div>
       <div className={"flex flex-col gap-2"}>
         <GoogleOAuth />
-        <AppleOAuth />
-        <FacebookOAuth />
       </div>
       <p>
         Don&lsquo;t have an account?{" "}

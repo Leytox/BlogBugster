@@ -7,8 +7,6 @@ import { selectUser, setUser } from "../../features/auth/authSlice.js";
 import { toast } from "react-toastify";
 import { setLocation } from "../../features/location/locationSlice.js";
 import GoogleOAuth from "../../components/GoogleOAuth.jsx";
-import AppleOAuth from "../../components/AppleOAuth.jsx";
-import FacebookOAuth from "../../components/FacebookOAuth.jsx";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -106,8 +104,6 @@ const Register = () => {
       </div>
       <div className={"flex flex-col gap-2"}>
         <GoogleOAuth />
-        <AppleOAuth />
-        <FacebookOAuth />
       </div>
       <p>
         Have an account already?{" "}
