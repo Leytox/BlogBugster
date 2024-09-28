@@ -15,7 +15,10 @@ import {
   faBell,
   faBellSlash,
   faClipboard,
+  faEnvelope,
   faGear,
+  faGlobe,
+  faInfoCircle,
   faPencil,
   faPeopleGroup,
   faTrash,
@@ -23,7 +26,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { selectUser, setAvatar } from "../../features/auth/authSlice.js";
 import UserPosts from "./UserPosts.jsx";
-import AdditionalInfoWindow from "../../components/AdditionalInfoWindow.jsx";
 import { copyToClipboard } from "../../services/index.js";
 import UserAbout from "./UserAbout.jsx";
 import {
@@ -33,6 +35,13 @@ import {
 } from "../../features/account/accountApiSlice.js";
 import { toast } from "react-toastify";
 import UserSubscriptions from "./UserSubscriptions.jsx";
+import {
+  faFacebook,
+  faGithub,
+  faLinkedin,
+  faXTwitter,
+} from "@fortawesome/free-brands-svg-icons";
+import OverlayWindow from "../../components/OverlayWindow.jsx";
 
 const UserProfile = () => {
   const [tab, setTab] = useState("Posts");
@@ -139,10 +148,87 @@ const UserProfile = () => {
   return (
     <main className="min-h-screen py-8 px-32 max-sm:px-2 max-sm:py-2 max-md:px-20 max-lg:px-24 max-xl:px-28">
       {additionalInfoVisible && (
-        <AdditionalInfoWindow
-          setIsAdditionalInfoWindowShown={setAdditionalInfoVisible}
-          user={data?.user}
-        />
+        <OverlayWindow setIsOverlayWindowShown={setAdditionalInfoVisible}>
+          <h2 className="text-3xl font-bold text-center">Details</h2>
+          <div className={"flex flex-col gap-2"}>
+            <Link to={window.location.href}>
+              <p className="text-md text-gray-600">
+                <FontAwesomeIcon icon={faGlobe} />{" "}
+                {window.location.href.replace("http://", "")}
+              </p>
+            </Link>
+            <p className="text-md text-gray-600">
+              <FontAwesomeIcon icon={faEnvelope} />{" "}
+              <a href={`mailto:${userData.data.user.email}`}>
+                {userData.data.user.email}
+              </a>
+            </p>
+            <p className={"text-md text-gray-600"}>
+              <FontAwesomeIcon icon={faPeopleGroup} />{" "}
+              {userData.data.user.subscribers} Subscriber
+              {userData.data.user.subscribers > 1 ||
+              userData.data.user.subscribers === 0
+                ? "s"
+                : ""}
+            </p>
+            <p className={"text-md text-gray-600"}>
+              <FontAwesomeIcon icon={faInfoCircle} /> Registration:{" "}
+              {new Date(userData.data.user.createdAt).toLocaleDateString()}
+            </p>
+          </div>
+          <div className="flex flex-col justify-center gap-2">
+            {userData.data.user.social.facebook ||
+            userData.data.user.social.twitter ||
+            userData.data.user.social.linkedin ||
+            userData.data.user.social.github ? (
+              <h2 className={"text-xl mt-2 font-bold text-center"}>Social</h2>
+            ) : (
+              ""
+            )}
+            <div
+              className={
+                "flex flex-row gap-2 justify-center items-center text-center"
+              }
+            >
+              {userData.data.user.social.facebook && (
+                <a
+                  href={userData.data.user.social.facebook}
+                  target="_blank"
+                  className="text-5xl text-blue-700 hover:text-blue-900"
+                >
+                  <FontAwesomeIcon icon={faFacebook} />{" "}
+                </a>
+              )}
+              {userData.data.user.social.twitter && (
+                <a
+                  href={userData.data.user.social.twitter}
+                  target="_blank"
+                  className="text-5xl text-black"
+                >
+                  <FontAwesomeIcon icon={faXTwitter} />{" "}
+                </a>
+              )}
+              {userData.data.user.social.linkedin && (
+                <a
+                  href={userData.data.user.social.linkedin}
+                  target="_blank"
+                  className="text-5xl text-blue-800 hover:text-blue-900"
+                >
+                  <FontAwesomeIcon icon={faLinkedin} />{" "}
+                </a>
+              )}
+              {userData.data.user.social.github && (
+                <a
+                  href={userData.data.user.social.github}
+                  target="_blank"
+                  className="text-5xl text-gray-700 hover:text-gray-900"
+                >
+                  <FontAwesomeIcon icon={faGithub} />{" "}
+                </a>
+              )}
+            </div>
+          </div>
+        </OverlayWindow>
       )}
       <div className={"flex justify-between pb-4 max-sm:w-full"}>
         <div className="flex flex-col gap-6 max-sm:w-full">
