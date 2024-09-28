@@ -25,6 +25,7 @@ import {
   faClock,
   faComment,
   faEye,
+  faLink,
   faList,
   faPen,
   faShare,
@@ -35,9 +36,14 @@ import {
   faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
 import CommentCard from "../../components/CommentCard.jsx";
-import ShareWindow from "../../components/ShareWindow.jsx";
-import AuthWindow from "../../components/AuthWindow.jsx";
 import TimeAgo from "javascript-time-ago";
+import OverlayWindow from "../../components/OverlayWindow.jsx";
+import {
+  faFacebook,
+  faMastodon,
+  faXTwitter,
+} from "@fortawesome/free-brands-svg-icons";
+import { copyToClipboard } from "../../services/index.js";
 
 const timeAgo = new TimeAgo("en-US");
 
@@ -236,10 +242,62 @@ const Post = () => {
         </button>
       </div>
       {isAuthWindowShown && (
-        <AuthWindow setIsAuthWindowShown={setIsAuthWindowShown} />
+        <OverlayWindow setIsOverlayWindowShown={setIsAuthWindowShown}>
+          <h2 className="text-3xl font-bold text-center">Login to account</h2>
+          <p className="text-center">
+            {" "}
+            Please login to your account to continue
+          </p>
+          <div className={"w-full flex flex-col items-center gap-2"}>
+            <Link to={"/auth/login"} className={"w-full"}>
+              <button className={"btn w-full"}>Login</button>
+            </Link>
+            <p className="text-center"> Don&apos;t have an account?</p>
+            <Link to={"/auth/register"} className={"w-full"}>
+              <button className={"btn  w-full"}>Register</button>
+            </Link>
+          </div>
+        </OverlayWindow>
       )}
       {isShareWindowShown && (
-        <ShareWindow setIsShareWindowShown={setIsShareWindowShown} />
+        <OverlayWindow setIsOverlayWindowShown={setIsShareWindowShown}>
+          <h2 className="text-3xl font-bold text-center">Share</h2>
+          <div className="flex justify-center items-center gap-12">
+            <a
+              href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.href}`}
+              target="_blank"
+              className="text-4xl transition-all hover:scale-125"
+            >
+              <FontAwesomeIcon icon={faFacebook} />
+            </a>
+            <a
+              href={`https://twitter.com/intent/tweet?url=${window.location.href}`}
+              target="_blank"
+              className="text-4xl transition-all hover:scale-125"
+            >
+              <FontAwesomeIcon icon={faXTwitter} />
+            </a>
+            <a
+              href={`https://mastodon.social/share?text=${window.location.href}`}
+              target="_blank"
+              className="text-4xl transition-all hover:scale-125"
+            >
+              <FontAwesomeIcon icon={faMastodon} />
+            </a>
+          </div>
+          <div className="bg-gray-300 p-1 italic rounded-md flex justify-between border-2 border-gray-400 items-center">
+            <p className={"text-gray-500 text-xl"}>
+              {window.location.href.substring(0, 35) + "..."}
+            </p>
+            <FontAwesomeIcon
+              icon={faLink}
+              className="text-3xl text-white transition-all duration-300 hover:text-gray-300 cursor-pointer rounded-full gradient p-2"
+              onClick={() => {
+                copyToClipboard(window.location.href);
+              }}
+            />
+          </div>
+        </OverlayWindow>
       )}
       <div className="flex flex-col gap-4 p-8 max-sm:px-4">
         <div
