@@ -15,6 +15,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    isActivated: {
+      type: Boolean,
+      default: false,
+    },
+    activationCode: {},
     about: {
       type: String,
       default: null,
@@ -92,6 +97,19 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    twoFactorSecret: {
+      type: String,
+      default: null,
+    },
+    isTwoFactorEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    twoFactorBackupCodes: [
+      {
+        type: String,
+      },
+    ],
   },
   {
     timestamps: true,
