@@ -159,28 +159,25 @@ const UserProfile = () => {
             </Link>
             <p className="text-md text-gray-600">
               <FontAwesomeIcon icon={faEnvelope} />{" "}
-              <a href={`mailto:${userData.data.user.email}`}>
-                {userData.data.user.email}
-              </a>
+              <a href={`mailto:${data.user.email}`}>{data.user.email}</a>
             </p>
             <p className={"text-md text-gray-600"}>
-              <FontAwesomeIcon icon={faPeopleGroup} />{" "}
-              {userData.data.user.subscribers} Subscriber
-              {userData.data.user.subscribers > 1 ||
-              userData.data.user.subscribers === 0
+              <FontAwesomeIcon icon={faPeopleGroup} /> {data.user.subscribers}{" "}
+              Subscriber
+              {data.user.subscribers > 1 || data.user.subscribers === 0
                 ? "s"
                 : ""}
             </p>
             <p className={"text-md text-gray-600"}>
               <FontAwesomeIcon icon={faInfoCircle} /> Registration:{" "}
-              {new Date(userData.data.user.createdAt).toLocaleDateString()}
+              {new Date(data.user.createdAt).toLocaleDateString()}
             </p>
           </div>
           <div className="flex flex-col justify-center gap-2">
-            {userData.data.user.social.facebook ||
-            userData.data.user.social.twitter ||
-            userData.data.user.social.linkedin ||
-            userData.data.user.social.github ? (
+            {data.user.social.facebook ||
+            data.user.social.twitter ||
+            data.user.social.linkedin ||
+            data.user.social.github ? (
               <h2 className={"text-xl mt-2 font-bold text-center"}>Social</h2>
             ) : (
               ""
@@ -190,36 +187,36 @@ const UserProfile = () => {
                 "flex flex-row gap-2 justify-center items-center text-center"
               }
             >
-              {userData.data.user.social.facebook && (
+              {data.user.social.facebook && (
                 <a
-                  href={userData.data.user.social.facebook}
+                  href={data.user.social.facebook}
                   target="_blank"
                   className="text-5xl text-blue-700 hover:text-blue-900"
                 >
                   <FontAwesomeIcon icon={faFacebook} />{" "}
                 </a>
               )}
-              {userData.data.user.social.twitter && (
+              {data.user.social.twitter && (
                 <a
-                  href={userData.data.user.social.twitter}
+                  href={data.user.social.twitter}
                   target="_blank"
                   className="text-5xl text-black"
                 >
                   <FontAwesomeIcon icon={faXTwitter} />{" "}
                 </a>
               )}
-              {userData.data.user.social.linkedin && (
+              {data.user.social.linkedin && (
                 <a
-                  href={userData.data.user.social.linkedin}
+                  href={data.user.social.linkedin}
                   target="_blank"
                   className="text-5xl text-blue-800 hover:text-blue-900"
                 >
                   <FontAwesomeIcon icon={faLinkedin} />{" "}
                 </a>
               )}
-              {userData.data.user.social.github && (
+              {data.user.social.github && (
                 <a
-                  href={userData.data.user.social.github}
+                  href={data.user.social.github}
                   target="_blank"
                   className="text-5xl text-gray-700 hover:text-gray-900"
                 >
