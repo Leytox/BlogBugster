@@ -55,6 +55,50 @@ const login = async (req, res) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+const googleOAuth = async (req, res) => {
+  const { name, email } = req.body;
+  try {
+    let user = await User.findOne({ email }, null, null);
+    if (!user) {
+      const hashedPassword = bcrypt.hashSync(
+        Math.random().toString(36).slice(-8),
+        12,
+      );
+      user = new User({
+        name,
+        email,
+        password: hashedPassword,
+        isActivated: true,
+      });
+      await user.save();
+    }
+    if (user.ban.status) {
+      console.log({ banReason: user.ban, message: "User is banned" });
+      return res.status(403).json({
+        banReason: user.ban,
+        message: "User is banned",
+      });
+    }
+    const access_token = genAccessToken(user);
+    const refresh_token = genRefreshToken(user);
+    setAccessTokenCookie(res, access_token);
+    setRefreshTokenCookie(res, refresh_token);
+    return res.status(200).json({
+      user: {
+        id: user._id,
+        name: user.name,
+        isAdmin: user.isAdmin,
+        avatar: user.avatar,
+      },
+      message: "Successes",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 const logout = async (req, res) => {
   return res
     .cookie("access_token", "", {
@@ -102,4 +146,4 @@ const refresh = async (req, res) => {
   }
 };
 
-export default { register, login, logout, refresh };
+export default { register, login, logout, refresh, googleOAuth };
