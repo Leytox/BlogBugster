@@ -19,6 +19,7 @@
     "@reduxjs/toolkit": "^2.2.6",
     "async-mutex": "^0.5.0",
     "ckeditor5": "^42.0.2",
+    "firebase": "^10.13.2",
     "gsap": "^3.12.5",
     "javascript-time-ago": "^2.5.10",
     "prop-types": "^15.8.1",
