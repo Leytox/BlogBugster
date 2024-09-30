@@ -6,6 +6,8 @@ import { config } from "dotenv";
 import apiRoutes from "./routes/index.route.js";
 import { notFound } from "./middleware/error.middleware.js";
 import morgan from "morgan";
+// noinspection ES6UnusedImports
+import bot from "./utils/bot.js";
 
 config();
 

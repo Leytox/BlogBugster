@@ -7,12 +7,19 @@ export const userProtect = async (req, res, next) => {
   else {
     try {
       const decoded = jwt.verify(access_token, process.env.JWT_ACCESS_SECRET);
-      const user = await User.findById(decoded.id, null, null).select("ban");
+      const user = await User.findById(decoded.id, null, null).select(
+        "ban isActivated",
+      );
       if (!user) return res.status(401).json({ message: "Unauthorized" });
       if (user.ban.status)
         return res
           .status(403)
           .json({ message: "User is banned", reason: user.ban.reason });
+      if (!user.isActivated) {
+        return res
+          .status(403)
+          .json({ message: "Please, activate your account" });
+      }
       req.user = user;
       next();
     } catch (error) {

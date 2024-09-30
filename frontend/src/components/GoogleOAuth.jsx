@@ -23,7 +23,6 @@ const GoogleOAuth = () => {
       toast.success("Logged in with Google");
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
     }
   };
   return (

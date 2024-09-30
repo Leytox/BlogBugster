@@ -10,11 +10,12 @@ import NewPost from "./pages/Post/NewPost.jsx";
 import GoTop from "./components/GoTop.jsx";
 import Post from "./pages/Post/Post.jsx";
 import NotFound from "./pages/NotFound.jsx";
-import "react-toastify/dist/ReactToastify.css";
 import Posts from "./pages/Post/Posts.jsx";
 import EditPost from "./pages/Post/EditPost.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import UserSettings from "./pages/User/UserSettings.jsx";
+import ResetPassword from "./pages/Auth/ResetPassword.jsx";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function App() {
   return (
@@ -51,6 +52,14 @@ export default function App() {
           element={
             <ProtectedRoute RouteType={"public"}>
               <Login />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="auth/reset-password/:token"
+          element={
+            <ProtectedRoute RouteType={"public"}>
+              <ResetPassword />
             </ProtectedRoute>
           }
         />

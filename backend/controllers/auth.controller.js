@@ -6,6 +6,8 @@ import {
   setAccessTokenCookie,
   setRefreshTokenCookie,
 } from "../utils/setCookies.js";
+import transporter from "../utils/email.js";
+import { randomUUID } from "crypto";
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -13,7 +15,12 @@ const register = async (req, res) => {
     const user = await User.findOne({ email }, null, null);
     if (user) return res.status(400).json({ message: "User already exists" });
     const hashedPassword = await bcrypt.hash(password, 12);
-    const newUser = new User({ name, email, password: hashedPassword });
+    const newUser = new User({
+      name,
+      email,
+      activationCode: Math.floor(1000 + Math.random() * 9000),
+      password: hashedPassword,
+    });
     await newUser.save();
     return res.status(201).json({ message: "Successes" });
   } catch (error) {
@@ -31,12 +38,16 @@ const login = async (req, res) => {
     if (!isMatch)
       return res.status(400).json({ message: "Incorrect password" });
     if (user.ban.status) {
-      console.log({ banReason: user.ban, message: "User is banned" });
       return res.status(403).json({
         banReason: user.ban,
         message: "User is banned",
       });
     }
+    if (!user.isActivated)
+      return res.status(403).json({
+        message: "Please, activate your account",
+        reason: "activation",
+      });
     const access_token = genAccessToken(user);
     const refresh_token = genRefreshToken(user);
     setAccessTokenCookie(res, access_token);
@@ -74,7 +85,6 @@ const googleOAuth = async (req, res) => {
       await user.save();
     }
     if (user.ban.status) {
-      console.log({ banReason: user.ban, message: "User is banned" });
       return res.status(403).json({
         banReason: user.ban,
         message: "User is banned",
@@ -98,6 +108,312 @@ const googleOAuth = async (req, res) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+const verifyViaEmail = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email }, null, null);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const htmlContent = `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Account Activation</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .container {
+                background-color: #f9f9f9;
+                border-radius: 5px;
+                padding: 30px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+            h1 {
+                text-align: center;
+                color: #001B60;
+                margin-bottom: 20px;
+            }
+            .activation-code {
+                font-size: 32px;
+                font-weight: bold;
+                color: #001B60;
+                letter-spacing: 5px;
+                text-align: center;
+                margin: 30px 0;
+                padding: 10px;
+                background-color: #eef8ff;
+                border-radius: 5px;
+            }
+            .footer {
+                margin-top: 30px;
+                font-size: 12px;
+                color: white;
+                padding: 8px;
+                border-radius: 5px;
+                background: #001B60;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Account Activation</h1>
+            <p>Thank you for signing up! To activate your account, use the following activation code:</p>
+            <div class="activation-code">${user.activationCode}</div>
+            <p>If you didn't request this activation, ignore this email or contact our support team if you have any concerns.</p>
+            <div class="footer">
+                <p>This is an automated message, do not reply to this email.</p>
+                <p>&copy; 2024 BlogBugster. All rights reserved.</p>
+            </div>
+        </div>
+    </body>
+    </html>`;
+
+    const mailOptions = {
+      from: process.env.OUTLOOK_EMAIL,
+      to: email,
+      subject: "Account Activation Code",
+      html: htmlContent,
+    };
+
+    await transporter.sendMail(mailOptions);
+    return res.status(200).json({ message: "Activation code sent" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const verifyAccount = async (req, res) => {
+  const { activationCode, email } = req.body;
+  console.log(activationCode, email);
+  try {
+    const user = await User.findOne({ email }, null, null);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    if (user.activationCode !== Number(activationCode))
+      return res.status(400).json({ message: "Invalid activation code" });
+    await User.findByIdAndUpdate(user._id, { isActivated: true }, null);
+    return res.status(200).json({ message: "Account successfully activated" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email }, null, null);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    const resetToken = randomUUID();
+    await User.findByIdAndUpdate(
+      user._id,
+      {
+        resetPasswordToken: resetToken,
+        resetPasswordExpires: Date.now() + 3600000,
+      },
+      null,
+    );
+    const resetURL = `${process.env.CLIENT_URL}/auth/reset-password/${resetToken}`;
+
+    const htmlContent = `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Password Reset Request</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .container {
+                background-color: #f9f9f9;
+                border-radius: 5px;
+                padding: 30px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+            h1 {
+                color: #001B60;
+                margin-bottom: 20px;
+            }
+            .reset-button a {
+                color: white;
+            }
+            .reset-button {
+                display: inline-block;
+                font-size: 16px;
+                font-weight: bold;
+                color: #ffffff;
+                background-color: #001B60;
+                text-decoration: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                margin: 20px 0;
+            }
+            .footer {
+                margin-top: 30px;
+                font-size: 12px;
+                padding: 8px;
+                border-radius: 5px;
+                color: white;
+                background: #001B60;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Password Reset Request</h1>
+            <p>You are receiving this email because a password reset was requested for your account.</p>
+            <p>To reset your password, click the button below:</p>
+            <a href="${resetURL}" class="reset-button">Reset Password</a>
+            <p>If the button above doesn't work, you can copy and paste the following link into your browser:</p>
+            <p>${resetURL}</p>
+            <p>If you did not request this password reset, ignore this email and your password will remain unchanged.</p>
+            <div class="footer">
+                <p>This is an automated message, do not reply to this email.</p>
+                <p>&copy; 2024 Your Company Name. All rights reserved.</p>
+            </div>
+        </div>
+    </body>
+    </html>`;
+
+    const mailOptions = {
+      from: process.env.OUTLOOK_EMAIL,
+      to: email,
+      subject: "Password Reset Request",
+      html: htmlContent,
+    };
+    await transporter.sendMail(mailOptions);
+    return res.status(200).json({ msg: "Password reset email sent" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const isValidToken = async (req, res) => {
+  const { token } = req.params;
+  try {
+    const user = await User.findOne({ resetPasswordToken: token }, null, null);
+    if (!user) return res.status(404).json({ message: "Token not found" });
+    return res.status(200).json({ message: "Success" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { newPassword, token } = req.body;
+  try {
+    const user = await User.findOne(
+      {
+        resetPasswordToken: token,
+        resetPasswordExpires: { $gt: Date.now() },
+      },
+      null,
+      null,
+    );
+    if (!user)
+      return res.status(400).json({ message: "Invalid or expired token" });
+    await User.findByIdAndUpdate(
+      user._id,
+      {
+        password: bcrypt.hashSync(newPassword, 12),
+        resetPasswordToken: undefined,
+        resetPasswordExpires: undefined,
+      },
+      null,
+    );
+
+    const htmlContent = `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Password Changed Confirmation</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .container {
+                background-color: #f9f9f9;
+                border-radius: 5px;
+                padding: 30px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+            h1 {
+                color: #001B60;
+                margin-bottom: 20px;
+            }
+            .highlight {
+                font-weight: bold;
+                color: #001B60;
+            }
+            .footer {
+                margin-top: 30px;
+                font-size: 12px;
+                padding: 8px;
+                border-radius: 5px;
+                color: white;
+                background: #001B60;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Password Changed Successfully</h1>
+            <p>This is a confirmation that the password for your account <span class="highlight">${user.email}</span> has just been changed.</p>
+            <p>If you did not make this change, contact our support team immediately.</p>
+            <p>For security reasons, we recommend that you:</p>
+            <ul>
+                <li>Use unique passwords for all your online accounts</li>
+                <li>Enable two-factor authentication where possible</li>
+                <li>Regularly update your passwords</li>
+            </ul>
+            <div class="footer">
+                <p>This is an automated message, do not reply to this email.</p>
+                <p>&copy; 2024 Your Company Name. All rights reserved.</p>
+            </div>
+        </div>
+    </body>
+    </html>`;
+
+    const mailOptions = {
+      from: process.env.OUTLOOK_EMAIL,
+      to: user.email,
+      subject: "Your password has been changed",
+      html: htmlContent,
+    };
+    await transporter.sendMail(mailOptions);
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const verify2FA = async (req, res) => {};
 
 const logout = async (req, res) => {
   return res
@@ -146,4 +462,16 @@ const refresh = async (req, res) => {
   }
 };
 
-export default { register, login, logout, refresh, googleOAuth };
+export default {
+  register,
+  login,
+  logout,
+  refresh,
+  googleOAuth,
+  verifyViaEmail,
+  verifyAccount,
+  verify2FA,
+  forgotPassword,
+  isValidToken,
+  resetPassword,
+};

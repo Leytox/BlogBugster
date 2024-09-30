@@ -22,6 +22,10 @@ const updateAccount = async (req, res) => {
   }
 };
 
+const enable2FA = async (req, res) => {};
+
+const disable2FA = async (req, res) => {};
+
 const changePassword = async (req, res) => {
   try {
     const user = await User.findById(req.user.id, null, null).select(
