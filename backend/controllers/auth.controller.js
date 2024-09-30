@@ -330,15 +330,10 @@ const resetPassword = async (req, res) => {
     );
     if (!user)
       return res.status(400).json({ message: "Invalid or expired token" });
-    await User.findByIdAndUpdate(
-      user._id,
-      {
-        password: bcrypt.hashSync(newPassword, 12),
-        resetPasswordToken: undefined,
-        resetPasswordExpires: undefined,
-      },
-      null,
-    );
+    user.password = bcrypt.hashSync(newPassword, 12);
+    user.resetPasswordToken = null;
+    user.resetPasswordExpires = null;
+    await user.save();
 
     const htmlContent = `<!DOCTYPE html>
     <html lang="en">
