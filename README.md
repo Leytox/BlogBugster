@@ -1,6 +1,6 @@
-# Your Project Name
+# BlogBugster
 
-Brief description of your project goes here.
+Blog application created using MERN STACK. 
 
 ## Table of Contents
 - [Prerequisites](#prerequisites)
@@ -12,8 +12,7 @@ Brief description of your project goes here.
 
 ## Prerequisites
 
-List any prerequisites here, such as:
-- Node.js (version X.X or higher)
+- Node.js (version 22 or higher)
 - MongoDB
 - Google Account (for email functionality)
 - Telegram Bot API key
@@ -23,14 +22,14 @@ List any prerequisites here, such as:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/your-project-name.git
-   cd your-project-name
+   git clone https://github.com/Leytox/BlogBugster.git
+   cd blogbugster
    ```
 
 2. Install dependencies for both backend and frontend:
    ```
    cd backend && npm install
-   cd ../frontend && npm install
+   cd frontend && npm install
    ```
 
 ## Configuration
@@ -63,8 +62,6 @@ Create a `.env` file in the `frontend` directory with the following variables:
 VITE_BACKEND_URI=http://localhost:3000
 VITE_FIREBASE_API_KEY=your_firebase_api_key
 ```
-
-Make sure to replace the placeholder values with your actual configuration details.
 
 ## Usage
 
