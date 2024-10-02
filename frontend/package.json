@@ -23,6 +23,7 @@
     "gsap": "^3.12.5",
     "javascript-time-ago": "^2.5.10",
     "prop-types": "^15.8.1",
+    "qrcode": "^1.5.4",
     "react": "^18.3.1",
     "react-country-region-selector": "^3.6.1",
     "react-dom": "^18.3.1",

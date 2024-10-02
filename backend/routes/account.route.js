@@ -14,8 +14,17 @@ router
   .post(
     userProtect,
     upload("uploads/users").single("avatar"),
-    accountController.uploadImage,
+    accountController.uploadAvatar,
   )
-  .delete(userProtect, accountController.deleteImage);
+  .delete(userProtect, accountController.deleteAvatar);
+router.post("/verify-password", userProtect, accountController.verifyPassword);
 router.post("/change-password", userProtect, accountController.changePassword);
+router.post(
+  "/generate-2fa-token",
+  userProtect,
+  accountController.generate2FAToken,
+);
+router.post("/enable-2fa", userProtect, accountController.enable2FA);
+router.post("/disable-2fa", userProtect, accountController.disable2FA);
+
 export default router;

@@ -408,7 +408,14 @@ const resetPassword = async (req, res) => {
   }
 };
 
-const verify2FA = async (req, res) => {};
+const verify2FA = async (req, res) => {
+  const { token, email } = req.body;
+  try {
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
 
 const logout = async (req, res) => {
   return res

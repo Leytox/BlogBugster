@@ -40,6 +40,36 @@ export const accountApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    verifyPassword: build.mutation({
+      query: (body) => ({
+        url: "/account/verify-password",
+        method: "POST",
+        body,
+      }),
+    }),
+
+    generate2FAToken: build.mutation({
+      query: () => ({
+        url: "/account/generate-2fa-token",
+        method: "POST",
+      }),
+    }),
+
+    enable2FA: build.mutation({
+      query: (body) => ({
+        url: "/account/enable-2fa",
+        method: "POST",
+        body,
+      }),
+    }),
+
+    disable2FA: build.mutation({
+      query: () => ({
+        url: "/account/disable-2fa",
+        method: "POST",
+      }),
+    }),
+
     deleteAccount: build.mutation({
       query: () => ({
         url: "/account",
@@ -54,6 +84,10 @@ export const {
   useUpdateAccountMutation,
   useUploadAvatarMutation,
   useChangePasswordMutation,
+  useVerifyPasswordMutation,
+  useGenerate2FATokenMutation,
+  useEnable2FAMutation,
+  useDisable2FAMutation,
   useDeleteAvatarMutation,
   useDeleteAccountMutation,
 } = accountApiSlice;

@@ -150,7 +150,7 @@ const UserProfile = () => {
       {additionalInfoVisible && (
         <OverlayWindow setIsOverlayWindowShown={setAdditionalInfoVisible}>
           <h2 className="text-3xl font-bold text-center">Details</h2>
-          <div className={"flex flex-col gap-2"}>
+          <div className={"flex h-full flex-col gap-2"}>
             <Link to={window.location.href}>
               <p className="text-md text-gray-600">
                 <FontAwesomeIcon icon={faGlobe} />{" "}

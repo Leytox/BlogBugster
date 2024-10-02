@@ -10,6 +10,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAdd,
+  faCheck,
   faFloppyDisk,
   faIdCard,
   faKey,
@@ -23,9 +24,13 @@ import {
   useChangePasswordMutation,
   useDeleteAccountMutation,
   useDeleteAvatarMutation,
+  useDisable2FAMutation,
+  useEnable2FAMutation,
+  useGenerate2FATokenMutation,
   useGetAccountQuery,
   useUpdateAccountMutation,
   useUploadAvatarMutation,
+  useVerifyPasswordMutation,
 } from "../../features/account/accountApiSlice.js";
 import Loader from "../../components/Loader.jsx";
 import { toast } from "react-toastify";
@@ -38,6 +43,8 @@ import {
   faTwitter,
 } from "@fortawesome/free-brands-svg-icons";
 import { useLogoutMutation } from "../../features/auth/authApiSlice.js";
+import OverlayWindow from "../../components/OverlayWindow.jsx";
+import VerificationInput from "react-verification-input";
 
 const UserSettings = () => {
   const [settingsGroup, setSettingsGroup] = useState("Profile");
@@ -47,6 +54,10 @@ const UserSettings = () => {
   const [github, setGithub] = useState("");
   const [linkedin, setLinkedin] = useState("");
   const [twitter, setTwitter] = useState("");
+  const [password, setPassword] = useState("");
+  const [qrCode, setQrCode] = useState("");
+  const [secret, setSecret] = useState("");
+  const [token, setToken] = useState("");
   const { id } = useParams();
   const { user } = useSelector(selectUser);
   const navigate = useNavigate();
@@ -57,7 +68,16 @@ const UserSettings = () => {
   const [updateProfile] = useUpdateAccountMutation();
   const [deleteAccount] = useDeleteAccountMutation();
   const [changePassword] = useChangePasswordMutation();
+  const [verifyPassword] = useVerifyPasswordMutation();
+  const [generate2FA] = useGenerate2FATokenMutation();
+  const [enable2FA] = useEnable2FAMutation();
+  const [disable2FA] = useDisable2FAMutation();
   const [logout] = useLogoutMutation();
+  const [is2FAWindowShown, setIs2FAWindowShown] = useState(false);
+  const [
+    isPasswordVerificationWindowShown,
+    setIsPasswordVerificationWindowShown,
+  ] = useState(false);
   useEffect(() => {
     setAbout(data?.user.about || "");
     setCountry(data?.user.country || "");
@@ -92,6 +112,47 @@ const UserSettings = () => {
     user,
     user.id,
   ]);
+
+  const handleVerifyPassword = async () => {
+    try {
+      await verifyPassword({ password }).unwrap();
+      if (data.user.isTwoFactorEnabled) {
+        await disable2FA().unwrap();
+        await refetch();
+      } else {
+        await handleGenerate2FAToken();
+        setPassword("");
+      }
+      setIsPasswordVerificationWindowShown(false);
+    } catch (error) {
+      console.error(error);
+      toast.error(error.data.message);
+    }
+  };
+
+  const handleGenerate2FAToken = async () => {
+    try {
+      const res = await generate2FA().unwrap();
+      setQrCode(res.qrCode);
+      setSecret(res.secret);
+      setIs2FAWindowShown(true);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.data.message);
+    }
+  };
+
+  const handleEnable2FA = async () => {
+    try {
+      await enable2FA({ secret, token }).unwrap();
+      await refetch();
+      setIs2FAWindowShown(false);
+      toast.success("2FA Enabled");
+    } catch (error) {
+      console.log(error);
+      toast.error(error.data.message);
+    }
+  };
 
   const handleLogout = async () => {
     if (!window.confirm("Are you sure you want to logout?")) return;
@@ -194,12 +255,73 @@ const UserSettings = () => {
         <Loader />
       </div>
     );
+
   return (
     <section
       className={
         "min-h-screen flex px-40 max-xl:px-20 max-lg:px-2 max-lg:flex-col"
       }
     >
+      {isPasswordVerificationWindowShown && (
+        <OverlayWindow
+          setIsOverlayWindowShown={setIsPasswordVerificationWindowShown}
+        >
+          <h2 className="text-3xl font-bold text-center">2FA Setup</h2>
+          <div
+            className={
+              "flex flex-col w-full h-full items-center justify-center gap-8"
+            }
+          >
+            <input
+              placeholder={"Your current password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              type="password"
+              className={"input-default"}
+            />
+            <button
+              className={"btn-gradient w-2/3"}
+              type={"button"}
+              onClick={handleVerifyPassword}
+            >
+              Verify <FontAwesomeIcon icon={faCheck} />
+            </button>
+          </div>
+        </OverlayWindow>
+      )}
+      {is2FAWindowShown && (
+        <OverlayWindow setIsOverlayWindowShown={setIs2FAWindowShown}>
+          <div
+            className={
+              "flex flex-col w-full h-full items-center justify-center"
+            }
+          >
+            <h1 className={"text-2xl"}>Set up an authenticator</h1>
+            <img src={qrCode} alt={secret} />
+            <h2 className={"text-sm text-gray-600"}>
+              Input generated code from your auth app
+            </h2>
+            <div className={"flex gap-2 flex-col"}>
+              <VerificationInput
+                placeholder={"X"}
+                length={6}
+                validChars={"1234567890"}
+                id="tokenCode"
+                name="tokenCode"
+                required={true}
+                onChange={(event) => setToken(event)}
+              />
+              <button
+                className={"btn"}
+                onClick={handleEnable2FA}
+                type={"button"}
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </OverlayWindow>
+      )}
       <div className={"flex flex-col border-r-2 w-1/5 max-lg:w-full"}>
         <div className={"py-16"}>
           <div className={"flex gap-4 items-center max-lg:flex-col"}>
@@ -504,9 +626,21 @@ const UserSettings = () => {
               </p>
             </div>
             <hr />
-            <button className={"btn bg-green-500 hover:bg-green-600"}>
-              <FontAwesomeIcon icon={faKey} /> Set up 2FA
-            </button>
+            {data?.user?.isTwoFactorEnabled ? (
+              <button
+                onClick={() => setIsPasswordVerificationWindowShown(true)}
+                className={"btn bg-yellow-500 hover:bg-yellow-600"}
+              >
+                <FontAwesomeIcon icon={faKey} /> Disable 2FA
+              </button>
+            ) : (
+              <button
+                onClick={() => setIsPasswordVerificationWindowShown(true)}
+                className={"btn bg-green-500 hover:bg-green-600"}
+              >
+                <FontAwesomeIcon icon={faKey} /> Setup 2FA
+              </button>
+            )}
           </div>
         )}
       </div>

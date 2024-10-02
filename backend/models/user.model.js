@@ -116,11 +116,6 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    twoFactorBackupCodes: [
-      {
-        type: String,
-      },
-    ],
   },
   {
     timestamps: true,
