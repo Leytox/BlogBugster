@@ -8,6 +8,15 @@ import {
 } from "../utils/setCookies.js";
 import transporter from "../utils/email.js";
 import { randomUUID } from "crypto";
+import speakeasy from "speakeasy";
+
+const verify2FA = (token, secret) => {
+  return speakeasy.totp.verify({
+    secret,
+    encoding: "base32",
+    token,
+  });
+};
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -30,7 +39,7 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, token } = req.body;
   try {
     const user = await User.findOne({ email }, null, null);
     if (!user) return res.status(400).json({ message: "User does not exist" });
@@ -48,6 +57,20 @@ const login = async (req, res) => {
         message: "Please, activate your account",
         reason: "activation",
       });
+    if (user.isTwoFactorEnabled) {
+      if (token) {
+        const isVerified = speakeasy.totp.verify({
+          secret: user.twoFactorSecret,
+          encoding: "base32",
+          token,
+        });
+        if (!isVerified)
+          return res.status(403).json({ message: "Incorrect token" });
+      } else
+        return res
+          .status(403)
+          .json({ message: "You need to verify your identity", reason: "2FA" });
+    }
     const access_token = genAccessToken(user);
     const refresh_token = genRefreshToken(user);
     setAccessTokenCookie(res, access_token);
@@ -114,7 +137,6 @@ const verifyViaEmail = async (req, res) => {
   try {
     const user = await User.findOne({ email }, null, null);
     if (!user) return res.status(404).json({ message: "User not found" });
-
     const htmlContent = `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -194,7 +216,6 @@ const verifyViaEmail = async (req, res) => {
 
 const verifyAccount = async (req, res) => {
   const { activationCode, email } = req.body;
-  console.log(activationCode, email);
   try {
     const user = await User.findOne({ email }, null, null);
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -402,15 +423,6 @@ const resetPassword = async (req, res) => {
     };
     await transporter.sendMail(mailOptions);
     return res.status(200).json({ message: "Password updated successfully" });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Something went wrong" });
-  }
-};
-
-const verify2FA = async (req, res) => {
-  const { token, email } = req.body;
-  try {
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Something went wrong" });

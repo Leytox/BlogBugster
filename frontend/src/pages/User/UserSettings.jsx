@@ -17,6 +17,7 @@ import {
   faLock,
   faRecycle,
   faSignOut,
+  faSquareArrowUpRight,
   faTrash,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
@@ -316,7 +317,7 @@ const UserSettings = () => {
                 onClick={handleEnable2FA}
                 type={"button"}
               >
-                Submit
+                Submit <FontAwesomeIcon icon={faSquareArrowUpRight} />
               </button>
             </div>
           </div>

@@ -82,7 +82,7 @@ const enable2FA = async (req, res) => {
       return res.status(403).json({ message: "2FA Already Enabled" });
     await User.findByIdAndUpdate(
       req.user.id,
-      { twoFactorSecret: secret.base32, isTwoFactorEnabled: true },
+      { twoFactorSecret: secret, isTwoFactorEnabled: true },
       null,
     );
     return res.json({ message: "2FA enabled" });
@@ -114,7 +114,6 @@ const changePassword = async (req, res) => {
     const user = await User.findById(req.user.id, null, null).select(
       "password",
     );
-    console.log(req.body, user);
     if (!bcrypt.compareSync(req.body.currentPassword, user.password))
       return res.status(400).json({ message: "Incorrect password" });
     const newPassword = bcrypt.hashSync(req.body.newPassword, 12);

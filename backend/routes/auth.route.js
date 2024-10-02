@@ -8,10 +8,10 @@ router.post("/login", authController.login);
 router.post("/verify-via-email", authController.verifyViaEmail);
 router.post("/verify-account", authController.verifyAccount);
 router.post("/forgot-password", authController.forgotPassword);
-router.get("/token-validation/:token", authController.isValidToken);
 router.post("/reset-password", authController.resetPassword);
 router.post("/google", authController.googleOAuth);
 router.post("/logout", authController.logout);
 router.post("/refresh", authController.refresh);
+router.get("/token-validation/:token", authController.isValidToken);
 
 export default router;

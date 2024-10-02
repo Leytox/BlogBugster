@@ -27,6 +27,7 @@ const Login = () => {
   const [recoverEmail, setRecoverEmail] = useState("");
   const [password, setPassword] = useState("");
   const [activationCode, setActivationCode] = useState("");
+  const [token, setToken] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [login] = useLoginMutation();
@@ -37,6 +38,7 @@ const Login = () => {
   const [activationWindowShown, setActivationWindowShown] = useState(false);
   const [forgotPasswordWindowShown, setForgotPasswordWindowShown] =
     useState(false);
+  const [is2FAWindowShown, setIs2FAWindowShown] = useState(false);
   useEffect(() => {
     dispatch(setLocation("Login"));
   }, [dispatch, user]);
@@ -44,7 +46,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await login({ email, password }).unwrap();
+      const res = await login({ email, password, token }).unwrap();
       dispatch(setUser(res.user));
       navigate("/");
       toast.success("Successfully logged in");
@@ -52,6 +54,9 @@ const Login = () => {
       console.log(error);
       if (error.data?.reason === "activation") {
         setActivationWindowShown(true);
+        toast.info(error.data?.message || error.error);
+      } else if (error.data?.reason === "2FA") {
+        setIs2FAWindowShown(true);
         toast.info(error.data?.message || error.error);
       } else toast.error(error.data?.message || error.error);
     }
@@ -167,6 +172,34 @@ const Login = () => {
             >
               Reset <FontAwesomeIcon icon={faRepeat} />
             </button>
+          </div>
+        </OverlayWindow>
+      )}
+      {is2FAWindowShown && (
+        <OverlayWindow setIsOverlayWindowShown={setIs2FAWindowShown}>
+          <div
+            className={
+              "flex flex-col w-full h-full items-center justify-center gap-8"
+            }
+          >
+            <h1 className={"text-2xl"}>Verify your identity</h1>
+            <div className={"flex gap-2 flex-col"}>
+              <VerificationInput
+                placeholder={"X"}
+                length={6}
+                validChars={"1234567890"}
+                id="tokenCode"
+                name="tokenCode"
+                required={true}
+                onChange={(event) => setToken(event)}
+              />
+              <h2 className={"text-sm text-gray-600"}>
+                Input generated code from your auth app
+              </h2>
+              <button className={"btn"} onClick={handleLogin} type={"button"}>
+                Submit <FontAwesomeIcon icon={faSquareArrowUpRight} />
+              </button>
+            </div>
           </div>
         </OverlayWindow>
       )}
