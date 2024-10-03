@@ -9,8 +9,10 @@ const getUser = async (req, res) => {
       null,
     );
     if (!user) return res.status(404).json({ message: "User not found" });
-    const posts = await Post.find({ author: req.params.id }, null, null).select(
+    const posts = await Post.find(
+      { author: req.params.id },
       "-content -__v -updatedAt -comments",
+      null,
     );
     return res.status(200).json({ user, posts, message: "Successes" });
   } catch (error) {
@@ -22,7 +24,7 @@ const getUser = async (req, res) => {
 const getUserSubscriptions = async (req, res) => {
   const { id } = req.params;
   try {
-    const user = await User.findById(id, null, null)
+    const user = await User.findById(id, "_id subscriptions", null)
       .select("subscriptions")
       .populate("subscriptions", "avatar name _id");
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -39,11 +41,7 @@ const getUsers = async (req, res) => {
   const { page, limit } = req.query;
   const skip = (page - 1) * limit;
   try {
-    const users = await User.find(
-      null,
-      "-password -subscriptions -likes -social -__v -updatedAt -createdAt",
-      null,
-    )
+    const users = await User.find(null, " _id avatar name subscribers", null)
       .skip(skip)
       .limit(limit);
     if (!users) return res.status(404).json({ message: "Users not found" });
@@ -57,13 +55,16 @@ const getUsers = async (req, res) => {
 const ban = async (req, res) => {
   const { reason } = req.body;
   try {
-    const user = await User.findById(req.params.id, null, null);
+    const user = await User.findById(req.params.id, "isAdmin ban", null);
     if (!user) return res.status(404).json({ message: "User not found" });
     if (user.isAdmin) return res.status(403).json({ message: "Forbidden" });
-    user.ban.status = true;
-    user.ban.reason = reason;
-    user.ban.date = new Date.now();
-    await user.save();
+    if (user.ban.status)
+      return res.status(403).json({ message: "User is already banned" });
+    await User.findByIdAndUpdate(
+      req.params.id,
+      { ban: { status: true, reason, date: new Date.now() } },
+      null,
+    );
     return res.status(200).json({ message: "Successes" });
   } catch (error) {
     console.log(error);
@@ -73,14 +74,15 @@ const ban = async (req, res) => {
 
 const unban = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id, null, null);
+    const user = await User.findById(req.params.id, "isAdmin ban", null);
     if (!user) return res.status(404).json({ message: "User not found" });
-    if (user.ban.status === false)
+    if (!user.ban.status)
       return res.status(403).json({ message: "User is not banned" });
-    user.ban.status = false;
-    user.ban.reason = null;
-    user.ban.date = null;
-    await user.save();
+    await User.findByIdAndUpdate(
+      req.params.id,
+      { ban: { status: false, reason: null, date: null } },
+      null,
+    );
     return res.status(200).json({ message: "Successes" });
   } catch (error) {
     console.log(error);
@@ -90,13 +92,17 @@ const unban = async (req, res) => {
 
 const subscribe = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id, null, null);
+    const user = await User.findById(req.params.id, "_id subscribers", null);
     if (!user) return res.status(404).json({ message: "User not found" });
     if (req.params.id === req.user._id.toString())
       return res
         .status(403)
         .json({ message: "Forbidden. Cannot subscribe to yourself" });
-    const currentUser = await User.findById(req.user._id, null, null);
+    const currentUser = await User.findById(
+      req.user._id,
+      "_id subscribers",
+      null,
+    );
     if (currentUser.subscriptions.includes(user._id))
       return res.status(403).json({ message: "Forbidden. Already subscribed" });
     await User.findByIdAndUpdate(
@@ -118,13 +124,17 @@ const subscribe = async (req, res) => {
 
 const unsubscribe = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id, null, null);
+    const user = await User.findById(req.params.id, "_id subscribers", null);
     if (!user) return res.status(404).json({ message: "User not found" });
     if (req.params.id === req.user._id.toString())
       return res
         .status(403)
         .json({ message: "Forbidden. Cannot unsubscribe from yourself" });
-    const currentUser = await User.findById(req.user._id, null, null);
+    const currentUser = await User.findById(
+      req.user._id,
+      "_id subscriptions",
+      null,
+    );
     if (!currentUser.subscriptions.includes(user._id))
       return res.status(403).json({ message: "Forbidden. Not subscribed yet" });
     await User.findByIdAndUpdate(

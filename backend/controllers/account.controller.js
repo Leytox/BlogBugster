@@ -8,7 +8,7 @@ const getAccount = async (req, res) => {
   try {
     const user = await User.findById(
       req.user.id,
-      "-password -_id -__v -twoFactorSecret -resetPasswordExpires -resetPasswordToken",
+      "about country social isTwoFactorEnabled avatar name likes subscriptions commentLikes",
       null,
     );
     return res.status(200).json({ user, message: "Successes" });
@@ -31,9 +31,7 @@ const updateAccount = async (req, res) => {
 const verifyPassword = async (req, res) => {
   const { password } = req.body;
   try {
-    const user = await User.findById(req.user.id, null, null).select(
-      "password",
-    );
+    const user = await User.findById(req.user.id, "password", null);
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res.status(400).json({ message: "Incorrect password" });
@@ -46,7 +44,7 @@ const verifyPassword = async (req, res) => {
 
 const generate2FAToken = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id, null, null);
+    const user = await User.findById(req.user.id, "isTwoFactorEnabled", null);
     if (user.isTwoFactorEnabled)
       return res.status(403).json({ message: "2FA Already Enabled" });
     const secret = speakeasy.generateSecret({ name: "BlogBugster" });
@@ -77,7 +75,7 @@ const enable2FA = async (req, res) => {
       return res
         .status(400)
         .json({ message: "Invalid token, please try again" });
-    const user = await User.findById(req.user.id, null, null);
+    const user = await User.findById(req.user.id, "isTwoFactorEnabled", null);
     if (user.isTwoFactorEnabled)
       return res.status(403).json({ message: "2FA Already Enabled" });
     await User.findByIdAndUpdate(
@@ -94,7 +92,7 @@ const enable2FA = async (req, res) => {
 
 const disable2FA = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id, null, null);
+    const user = await User.findById(req.user.id, "isTwoFactorEnabled", null);
     if (!user.isTwoFactorEnabled)
       return res.status(403).json({ message: "2FA is not enabled" });
     await User.findByIdAndUpdate(
@@ -111,9 +109,7 @@ const disable2FA = async (req, res) => {
 
 const changePassword = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id, null, null).select(
-      "password",
-    );
+    const user = await User.findById(req.user.id, "password", null);
     if (!bcrypt.compareSync(req.body.currentPassword, user.password))
       return res.status(400).json({ message: "Incorrect password" });
     const newPassword = bcrypt.hashSync(req.body.newPassword, 12);
@@ -127,7 +123,7 @@ const changePassword = async (req, res) => {
 
 const uploadAvatar = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id, null, null);
+    const user = await User.findById(req.user.id, "avatar", null);
     if (user.avatar !== "uploads/users/default.png")
       fs.unlinkSync(`./${user.avatar}`);
     await User.findByIdAndUpdate(
@@ -144,13 +140,13 @@ const uploadAvatar = async (req, res) => {
 
 const deleteAvatar = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id, null, null);
+    const user = await User.findById(req.user.id, "avatar", null);
     if (user.avatar === "uploads/users/default.png")
       return res.status(400).json({ message: "No image to delete found" });
     if (user.avatar !== "uploads/users/default.png")
       fs.unlinkSync(`./${user.avatar}`);
     await User.findByIdAndUpdate(
-      req.user.id, // user id
+      req.user.id,
       { avatar: "uploads/users/default.png" },
       null,
     );
@@ -161,6 +157,7 @@ const deleteAvatar = async (req, res) => {
   }
 };
 
+//#TODO
 const deleteAccount = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.user.id, null);

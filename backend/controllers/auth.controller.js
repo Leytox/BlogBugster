@@ -21,16 +21,15 @@ const verify2FA = (token, secret) => {
 const register = async (req, res) => {
   const { name, email, password } = req.body;
   try {
-    const user = await User.findOne({ email }, null, null);
+    const user = await User.findOne({ email }, "_id", null);
     if (user) return res.status(400).json({ message: "User already exists" });
     const hashedPassword = await bcrypt.hash(password, 12);
-    const newUser = new User({
+    await User.create({
       name,
       email,
       activationCode: Math.floor(1000 + Math.random() * 9000),
       password: hashedPassword,
     });
-    await newUser.save();
     return res.status(201).json({ message: "Successes" });
   } catch (error) {
     console.error(error);
@@ -41,7 +40,11 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { email, password, token } = req.body;
   try {
-    const user = await User.findOne({ email }, null, null);
+    const user = await User.findOne(
+      { email },
+      "_id password ban isActivated isTwoFactorEnabled twoFactorSecret name isAdmin avatar",
+      null,
+    );
     if (!user) return res.status(400).json({ message: "User does not exist" });
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
@@ -93,19 +96,22 @@ const login = async (req, res) => {
 const googleOAuth = async (req, res) => {
   const { name, email } = req.body;
   try {
-    let user = await User.findOne({ email }, null, null);
+    let user = await User.findOne(
+      { email },
+      "_id ban name isAdmin avatar",
+      null,
+    );
     if (!user) {
       const hashedPassword = bcrypt.hashSync(
         Math.random().toString(36).slice(-8),
         12,
       );
-      user = new User({
+      await User.create({
         name,
         email,
         password: hashedPassword,
         isActivated: true,
       });
-      await user.save();
     }
     if (user.ban.status) {
       return res.status(403).json({
@@ -135,7 +141,7 @@ const googleOAuth = async (req, res) => {
 const verifyViaEmail = async (req, res) => {
   const { email } = req.body;
   try {
-    const user = await User.findOne({ email }, null, null);
+    const user = await User.findOne({ email }, "_id activationCode", null);
     if (!user) return res.status(404).json({ message: "User not found" });
     const htmlContent = `<!DOCTYPE html>
     <html lang="en">
@@ -200,7 +206,7 @@ const verifyViaEmail = async (req, res) => {
     </html>`;
 
     const mailOptions = {
-      from: process.env.OUTLOOK_EMAIL,
+      from: process.env.GOOGLE_EMAIL,
       to: email,
       subject: "Account Activation Code",
       html: htmlContent,
@@ -217,7 +223,7 @@ const verifyViaEmail = async (req, res) => {
 const verifyAccount = async (req, res) => {
   const { activationCode, email } = req.body;
   try {
-    const user = await User.findOne({ email }, null, null);
+    const user = await User.findOne({ email }, "_id activationCode", null);
     if (!user) return res.status(404).json({ message: "User not found" });
     if (user.activationCode !== Number(activationCode))
       return res.status(400).json({ message: "Invalid activation code" });
@@ -232,7 +238,7 @@ const verifyAccount = async (req, res) => {
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
   try {
-    const user = await User.findOne({ email }, null, null);
+    const user = await User.findOne({ email }, "_id", null);
     if (!user) return res.status(404).json({ message: "User not found" });
     const resetToken = randomUUID();
     await User.findByIdAndUpdate(
@@ -244,7 +250,6 @@ const forgotPassword = async (req, res) => {
       null,
     );
     const resetURL = `${process.env.CLIENT_URL}/auth/reset-password/${resetToken}`;
-
     const htmlContent = `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -313,7 +318,7 @@ const forgotPassword = async (req, res) => {
     </html>`;
 
     const mailOptions = {
-      from: process.env.OUTLOOK_EMAIL,
+      from: process.env.GOOGLE_EMAIL,
       to: email,
       subject: "Password Reset Request",
       html: htmlContent,
@@ -329,7 +334,7 @@ const forgotPassword = async (req, res) => {
 const isValidToken = async (req, res) => {
   const { token } = req.params;
   try {
-    const user = await User.findOne({ resetPasswordToken: token }, null, null);
+    const user = await User.findOne({ resetPasswordToken: token }, "_id", null);
     if (!user) return res.status(404).json({ message: "Token not found" });
     return res.status(200).json({ message: "Success" });
   } catch (error) {
@@ -346,16 +351,21 @@ const resetPassword = async (req, res) => {
         resetPasswordToken: token,
         resetPasswordExpires: { $gt: Date.now() },
       },
-      null,
+      "_id email",
       null,
     );
     if (!user)
       return res.status(400).json({ message: "Invalid or expired token" });
-    user.password = bcrypt.hashSync(newPassword, 12);
-    user.resetPasswordToken = null;
-    user.resetPasswordExpires = null;
-    await user.save();
-
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    await User.findByIdAndUpdate(
+      user._id,
+      {
+        password: hashedPassword,
+        resetPasswordToken: null,
+        resetPasswordExpires: null,
+      },
+      null,
+    );
     const htmlContent = `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -414,9 +424,8 @@ const resetPassword = async (req, res) => {
         </div>
     </body>
     </html>`;
-
     const mailOptions = {
-      from: process.env.OUTLOOK_EMAIL,
+      from: process.env.GOOGLE_EMAIL,
       to: user.email,
       subject: "Your password has been changed",
       html: htmlContent,
@@ -452,15 +461,15 @@ const refresh = async (req, res) => {
   try {
     if (!refresh_token)
       return res.status(401).json({ message: "No token, please login" });
-    jwt.verify(
+    await jwt.verify(
       refresh_token,
       process.env.JWT_REFRESH_SECRET,
-      async (err, user) => {
-        if (err)
+      async (error, user) => {
+        if (error)
           return res
             .status(401)
             .json({ message: "Token is not valid, please login" });
-        const isExist = await User.findById(user.id, null, null);
+        const isExist = await User.findById(user.id, "_id", null);
         if (!isExist)
           return res
             .status(400)

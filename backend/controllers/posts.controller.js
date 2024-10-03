@@ -7,17 +7,39 @@ import * as fs from "node:fs";
 import jwt from "jsonwebtoken";
 import jsdom from "jsdom";
 
+const generateTagId = async (tags, category) => {
+  tags = tags.split(",");
+  return await Promise.all(
+    tags.map(async (tagName) => {
+      let tag = await Tag.findOne({ name: tagName }, null, null);
+      if (!tag) {
+        tag = new Tag({ name: tagName.toLowerCase(), category });
+        await tag.save();
+      }
+      return tag.name;
+    }),
+  );
+};
+
+const formatPostData = (content) => {
+  const { JSDOM } = jsdom;
+  const dom = new JSDOM(content);
+  const doc = dom.window.document;
+
+  let figures = doc.querySelectorAll("figure");
+  figures.forEach((figure) => figure.remove());
+
+  return doc.documentElement.outerHTML;
+};
+
 const getPost = async (req, res) => {
   const { access_token } = req.cookies;
   try {
     if (!req.params.id) return res.status(404).json({ message: "Not found" });
     if (!isValidObjectId(req.params.id))
       return res.status(404).json({ message: "Not found" });
-    const post = await Post.findById(req.params.id, null, null)
-      .populate(
-        "author",
-        "-password -__v -_about -email -createdAt -updatedAt -likes -subscriptions -social -about",
-      )
+    const post = await Post.findById(req.params.id, "-id -__v -updatedAt", null)
+      .populate("author", "_id avatar name subscribers")
       .populate({
         path: "comments",
         populate: [
@@ -29,8 +51,11 @@ const getPost = async (req, res) => {
       });
     if (!post) return res.status(404).json({ message: "Not found" });
     if (access_token) {
-      const decoded = jwt.verify(access_token, process.env.JWT_ACCESS_SECRET);
-      const user = await User.findById(decoded.id, null, null);
+      const decoded = await jwt.verify(
+        access_token,
+        process.env.JWT_ACCESS_SECRET,
+      );
+      const user = await User.findById(decoded.id, "_id views", null);
       if (user && post.author._id.toString() !== user._id.toString())
         if (!user.views.includes(post._id)) {
           post.views += 1;
@@ -49,7 +74,6 @@ const getPost = async (req, res) => {
 const getPosts = async (req, res) => {
   const { page, limit, category, sortOrder, searchTerm } = req.query;
   const skip = (page - 1) * limit;
-
   try {
     let query = {};
     if (searchTerm) query.title = { $regex: searchTerm, $options: "i" };
@@ -60,9 +84,7 @@ const getPosts = async (req, res) => {
       .skip(skip)
       .sort({ createdAt: sortOrder === "new" ? -1 : 1 })
       .limit(limit);
-
     const total = await Post.countDocuments(query);
-
     return res.status(200).json({ posts, total, message: "Success" });
   } catch (error) {
     console.log(error);
@@ -75,10 +97,13 @@ const getUserPosts = async (req, res) => {
   const { page, limit } = req.query;
   const skip = (page - 1) * limit;
   try {
-    const posts = await Post.find({ author: userid }, null, null)
+    const posts = await Post.find(
+      { author: userid },
+      "title views createdAt image readTime",
+      null,
+    )
       .skip(skip)
-      .limit(limit)
-      .select("title views createdAt image readTime");
+      .limit(limit);
     return res.status(200).json({ posts, message: "Successes" });
   } catch (error) {
     console.log(error);
@@ -89,29 +114,11 @@ const getUserPosts = async (req, res) => {
 const createPost = async (req, res) => {
   let { title, content, category, tags, author } = req.body;
   const image = req.file;
-  tags = tags.split(",");
   try {
     if (author !== req.user.id)
       return res.status(403).json({ message: "Forbidden" });
-    const tagIds = await Promise.all(
-      tags.map(async (tagName) => {
-        let tag = await Tag.findOne({ name: tagName }, null, null);
-        if (!tag) {
-          tag = new Tag({ name: tagName.toLowerCase(), category });
-          await tag.save();
-        }
-        return tag.name;
-      }),
-    );
-    const { JSDOM } = jsdom;
-    const dom = new JSDOM(content);
-    const doc = dom.window.document;
-
-    let figures = doc.querySelectorAll("figure");
-    figures.forEach((figure) => figure.remove());
-
-    let modifiedContent = doc.documentElement.outerHTML;
-
+    const tagIds = await generateTagId(tags, category);
+    let modifiedContent = formatPostData(content);
     const newPost = new Post({
       title,
       content,
@@ -133,32 +140,13 @@ const updatePost = async (req, res) => {
   const { id } = req.params;
   let { title, content, category, tags } = req.body;
   const image = req.file;
-  tags = tags.split(",");
-  console.log(req.body);
   try {
-    const candidate = await Post.findById(id, null, null);
+    const candidate = await Post.findById(id, "author image", null);
+    if (!candidate) return res.status(404).json({ message: "Post not found" });
     if (candidate.author.toString() !== req.user.id)
       return res.status(403).json({ message: "Forbidden" });
-    const tagIds = await Promise.all(
-      tags.map(async (tagName) => {
-        let tag = await Tag.findOne({ name: tagName }, null, null);
-        if (!tag) {
-          tag = new Tag({ name: tagName.toLowerCase(), category });
-          await tag.save();
-        }
-        return tag.name;
-      }),
-    );
-
-    const { JSDOM } = jsdom;
-    const dom = new JSDOM(content);
-    const doc = dom.window.document;
-
-    let figures = doc.querySelectorAll("figure");
-    figures.forEach((figure) => figure.remove());
-
-    let modifiedContent = doc.documentElement.outerHTML;
-
+    const tagIds = await generateTagId(tags, category);
+    let modifiedContent = formatPostData(content);
     await Post.findByIdAndUpdate(
       id,
       {
@@ -182,7 +170,7 @@ const updatePost = async (req, res) => {
 const deletePost = async (req, res) => {
   const { id } = req.params;
   try {
-    const post = await Post.find(id, null, null);
+    const post = await Post.findById(id, "author image", null);
     if (post.author.toString() !== req.user.id)
       return res.status(403).json({ message: "Forbidden" });
     fs.unlinkSync(post.image);
@@ -197,13 +185,13 @@ const deletePost = async (req, res) => {
 const likePost = async (req, res) => {
   const { id } = req.params;
   try {
-    const post = await Post.findById(id, null, null);
+    const post = await Post.findById(id, "author likes", null);
     if (!post) return res.status(404).json({ message: "Not found" });
     if (post.author._id.toString() === req.user.id)
       return res
         .status(403)
         .json({ message: "Forbidden. Cannot like own post" });
-    const user = await User.findById(req.user.id, null, null);
+    const user = await User.findById(req.user.id, "likes", null);
     if (user.likes.includes(id))
       return res.status(403).json({ message: "Already liked" });
     await Post.findByIdAndUpdate(id, { likes: post.likes + 1 }, null);
@@ -218,9 +206,9 @@ const likePost = async (req, res) => {
 const unlikePost = async (req, res) => {
   const { id } = req.params;
   try {
-    const post = await Post.findById(id, null, null);
+    const post = await Post.findById(id, "likes", null);
     if (!post) return res.status(404).json({ message: "Not found" });
-    const user = await User.findById(req.user.id, null, null);
+    const user = await User.findById(req.user.id, "likes", null);
     if (!user.likes.includes(id))
       return res.status(403).json({ message: "Not liked" });
     await Post.findByIdAndUpdate(id, { likes: post.likes - 1 }, null);
@@ -280,13 +268,13 @@ const createComment = async (req, res) => {
 const likeComment = async (req, res) => {
   const { commentId } = req.params;
   try {
-    const comment = await Comment.findById(commentId, null, null);
+    const comment = await Comment.findById(commentId, "author likes", null);
     if (!comment) return res.status(404).json({ message: "Not found" });
     if (comment.author._id.toString() === req.user.id)
       return res
         .status(403)
         .json({ message: "Forbidden. Cannot like own comment" });
-    const user = await User.findById(req.user.id, null, null);
+    const user = await User.findById(req.user.id, "commentLikes", null);
     if (user.commentLikes.includes(commentId))
       return res.status(403).json({ message: "Already liked" });
     await Comment.findByIdAndUpdate(
@@ -309,9 +297,9 @@ const likeComment = async (req, res) => {
 const unlikeComment = async (req, res) => {
   const { commentId } = req.params;
   try {
-    const comment = await Comment.findById(commentId, null, null);
+    const comment = await Comment.findById(commentId, "likes", null);
     if (!comment) return res.status(404).json({ message: "Not found" });
-    const user = await User.findById(req.user.id, null, null);
+    const user = await User.findById(req.user.id, "commentLikes", null);
     if (!user.commentLikes.includes(commentId))
       return res.status(403).json({ message: "Not liked" });
     await Comment.findByIdAndUpdate(
@@ -335,6 +323,8 @@ const updateComment = async (req, res) => {
   const { commentId } = req.params;
   const { content } = req.body;
   try {
+    const comment = Comment.findById(commentId, "_id", null);
+    if (!comment) return res.status(404).json({ message: "Not found" });
     await Comment.findByIdAndUpdate(commentId, { content }, null);
     return res.status(200).json({ message: "Successes" });
   } catch (error) {
@@ -346,7 +336,7 @@ const updateComment = async (req, res) => {
 const deleteComment = async (req, res) => {
   const { id, commentId } = req.params;
   try {
-    const comment = await Comment.findById(commentId, null, null);
+    const comment = await Comment.findById(commentId, "_id replyTo", null);
     if (!comment) return res.status(404).json({ message: "Comment not found" });
     // Delete all replies to the comment
     await Comment.deleteMany({ replyTo: commentId }, null);
