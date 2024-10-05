@@ -178,12 +178,10 @@ const Post = () => {
       </div>
     );
 
-  console.log(user?.id !== data.post.author._id);
-
   return (
     <div className="min-h-screen flex flex-col px-24 mt-16 gap-12 max-lg:px-8 max-md:px-6 max-sm:px-0">
       <div className="max-lg:hidden z-0 fixed left-10 top-56 flex flex-col justify-center items-center gap-10">
-        {data.post.author._id === user?.id && (
+        {data?.post.author._id === user?.id && (
           <Link
             to={`/posts/${id}/edit`}
             className={
@@ -193,7 +191,7 @@ const Post = () => {
             <FontAwesomeIcon icon={faPen} />
           </Link>
         )}
-        {data.post.author._id !== user?.id && (
+        {data?.post.author._id !== user?.id && (
           <div className={"flex flex-col gap-10"}>
             <button
               disabled={isLikeLoading}
@@ -210,7 +208,7 @@ const Post = () => {
                 icon={isLiked ? faThumbsDown : faThumbsUp}
                 className={"transition-all hover:scale-125 cursor-pointer"}
               />{" "}
-              <span>{data.post.likes === 0 ? "" : data.post.likes}</span>
+              <span>{data?.post.likes === 0 ? "" : data?.post.likes}</span>
             </button>
             <button
               disabled={isSubscribeLoading}
@@ -312,16 +310,16 @@ const Post = () => {
           >
             <div className={"flex flex-col gap-2 max-sm:items-center"}>
               <h1 className="text-6xl font-bold mb-4 text-center w-full break-all max-sm:text-4xl">
-                {data.post.title}
+                {data?.post.title}
               </h1>
               <div className={"flex flex-row items-center mb-4 gap-2"}>
                 <img
                   src={
                     import.meta.env.VITE_BACKEND_URI +
                     "/" +
-                    data.post.author.avatar
+                    data?.post.author.avatar
                   }
-                  alt={data.post.author.name + "'s avatar"}
+                  alt={data?.post.author.name + "'s avatar"}
                   width={48}
                   height={48}
                   className={
@@ -330,21 +328,21 @@ const Post = () => {
                 />
                 <div>
                   <Link
-                    to={`/user/${data.post.author._id}`}
+                    to={`/user/${data?.post.author._id}`}
                     className={"w-fit"}
                   >
                     <p className={"text-gray-700 w-fit hover:text-blue-500"}>
-                      {data.post.author.name}
+                      {data?.post.author.name}
                     </p>
                   </Link>
                   <p className={"text-gray-600 gap-2 flex items-center"}>
                     <FontAwesomeIcon icon={faUserGroup} />
-                    {`${data.post.author.subscribers} Subscriber${data.post.author.subscribers === 1 ? "" : "s"}`}
+                    {`${data?.post.author.subscribers} Subscriber${data?.post.author.subscribers === 1 ? "" : "s"}`}
                   </p>
                 </div>
               </div>
               <div className="max-lg:flex flex-row hidden items-center gap-2">
-                {user?.id !== data.post.author._id && (
+                {user?.id !== data?.post.author._id && (
                   <div className={"flex gap-2"}>
                     <button
                       disabled={isLikeLoading}
@@ -360,7 +358,7 @@ const Post = () => {
                       <FontAwesomeIcon
                         icon={isLiked ? faThumbsDown : faThumbsUp}
                       />{" "}
-                      {data.post.likes}
+                      {data?.post.likes}
                     </button>
                     <button
                       disabled={isSubscribeLoading}
@@ -380,7 +378,7 @@ const Post = () => {
                     </button>
                   </div>
                 )}
-                {data.post.author._id === user?.id && (
+                {data?.post.author._id === user?.id && (
                   <Link
                     to={`/posts/${id}/edit`}
                     className="btn-gradient w-40 max-sm:w-32 text-center"
@@ -422,7 +420,8 @@ const Post = () => {
               </p>
               <p className="text-gray-500 mb-4">
                 <FontAwesomeIcon icon={faCalendar} />{" "}
-                {timeAgo.format(new Date(data?.post?.createdAt))}
+                {data?.post.createdAt &&
+                  timeAgo.format(new Date(data?.post.createdAt))}
               </p>
               <p className="text-gray-500 mb-4">
                 <FontAwesomeIcon icon={faClock} /> {data?.post?.readTime} min
@@ -431,7 +430,7 @@ const Post = () => {
             </div>
           </div>
           <img
-            src={import.meta.env.VITE_BACKEND_URI + "/" + data?.post?.image}
+            src={import.meta.env.VITE_BACKEND_URI + "/" + data?.post.image}
             alt={data?.post?.title}
             className="max-w-[500px] max-sm:max-w-full rounded-md shadow-2xl"
           />
@@ -439,7 +438,7 @@ const Post = () => {
         <div
           className="ck-content break-words mb-4 my-10"
           dangerouslySetInnerHTML={{
-            __html: data?.post?.content,
+            __html: data?.post.content,
           }}
         />
       </div>
@@ -485,7 +484,7 @@ const Post = () => {
             </button>
           </Link>
         )}
-        {data?.post?.comments
+        {data?.post.comments
           .slice()
           .sort((a, b) => new Date(b.date) - new Date(a.date))
           .map((comment) => (
@@ -493,7 +492,7 @@ const Post = () => {
               key={comment._id}
               comment={comment}
               postId={id}
-              creatorId={data.post.author._id}
+              creatorId={data?.post.author._id}
               refetch={refetch}
               currentUser={userData?.data?.user}
             />

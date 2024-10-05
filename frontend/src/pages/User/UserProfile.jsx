@@ -257,7 +257,7 @@ const UserProfile = () => {
                   <FontAwesomeIcon
                     onClick={() => handleDeleteImage()}
                     icon={faTrash}
-                    className="text-white bg-red-600 p-3 rounded-full absolute right-3 bottom-3 hover:bg-red-700 cursor-pointer"
+                    className="text-white bg-gray-600 p-3 rounded-full absolute right-3 bottom-3 hover:bg-gray-700 cursor-pointer"
                   />
                 )}
             </div>

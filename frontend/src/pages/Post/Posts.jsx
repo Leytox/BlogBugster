@@ -117,7 +117,7 @@ const Posts = () => {
           >
             <FontAwesomeIcon icon={faGears} /> Misc
           </div>
-          {data.total > 1 && (
+          {data?.total > 1 && (
             <div
               className={`cursor-pointer`}
               onClick={() =>
@@ -170,7 +170,7 @@ const Posts = () => {
           )}
         </div>
       </div>
-      {Math.ceil(data.total / limit) > 1 && (
+      {Math.ceil(data?.total / limit) > 1 && (
         <div className="flex justify-center">
           <div className={"flex gap-4 items-center max-md:gap-2"}>
             <button

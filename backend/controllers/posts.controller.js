@@ -25,10 +25,8 @@ const formatPostData = (content) => {
   const { JSDOM } = jsdom;
   const dom = new JSDOM(content);
   const doc = dom.window.document;
-
   let figures = doc.querySelectorAll("figure");
   figures.forEach((figure) => figure.remove());
-
   return doc.documentElement.outerHTML;
 };
 
@@ -112,11 +110,9 @@ const getUserPosts = async (req, res) => {
 };
 
 const createPost = async (req, res) => {
-  let { title, content, category, tags, author } = req.body;
+  let { title, content, category, tags } = req.body;
   const image = req.file;
   try {
-    if (author !== req.user.id)
-      return res.status(403).json({ message: "Forbidden" });
     const tagIds = await generateTagId(tags, category);
     let modifiedContent = formatPostData(content);
     const newPost = new Post({
@@ -125,7 +121,7 @@ const createPost = async (req, res) => {
       category,
       tags: tagIds,
       image: image.path,
-      author,
+      author: req.user.id,
       readTime: Math.ceil(modifiedContent.length / 7 / 200),
     });
     await newPost.save();
@@ -141,9 +137,9 @@ const updatePost = async (req, res) => {
   let { title, content, category, tags } = req.body;
   const image = req.file;
   try {
-    const candidate = await Post.findById(id, "author image", null);
-    if (!candidate) return res.status(404).json({ message: "Post not found" });
-    if (candidate.author.toString() !== req.user.id)
+    const post = await Post.findById(id, "author image", null);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+    if (post.author.toString() !== req.user.id)
       return res.status(403).json({ message: "Forbidden" });
     const tagIds = await generateTagId(tags, category);
     let modifiedContent = formatPostData(content);
@@ -154,12 +150,12 @@ const updatePost = async (req, res) => {
         content,
         category,
         tags: tagIds,
-        image: image ? image.path : candidate.image,
+        image: image ? image.path : post.image,
         readTime: Math.ceil(modifiedContent.length / 7 / 200),
       },
       null,
     );
-    image ? fs.unlinkSync(candidate.image) : null;
+    image ? fs.unlinkSync(post.image) : null;
     return res.status(200).json({ message: "Successes" });
   } catch (error) {
     console.log(error);

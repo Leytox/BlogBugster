@@ -111,9 +111,10 @@ const googleOAuth = async (req, res) => {
         email,
         password: hashedPassword,
         isActivated: true,
+	activationCode: "0000",
       });
     }
-    if (user.ban.status) {
+    if (user?.ban?.status) {
       return res.status(403).json({
         banReason: user.ban,
         message: "User is banned",

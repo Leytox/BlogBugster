@@ -67,7 +67,6 @@ const EditPost = () => {
       form.append("content", content);
       form.append("category", category);
       form.append("tags", tags);
-      form.append("author", user.id);
       if (file) form.append("image", file);
       await updatePost({ id, body: form }).unwrap();
       toast.success("Post updated successfully");

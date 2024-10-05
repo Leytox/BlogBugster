@@ -55,7 +55,6 @@ const NewPost = () => {
       form.append("category", category);
       form.append("tags", tags);
       form.append("image", file);
-      form.append("author", user.id);
       const res = await post(form).unwrap();
       toast.success("Post created successfully");
       navigate(`/posts/${res.id}`);

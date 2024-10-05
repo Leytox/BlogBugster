@@ -100,7 +100,7 @@ const subscribe = async (req, res) => {
         .json({ message: "Forbidden. Cannot subscribe to yourself" });
     const currentUser = await User.findById(
       req.user._id,
-      "_id subscribers",
+      "_id subscriptions",
       null,
     );
     if (currentUser.subscriptions.includes(user._id))
