@@ -41,7 +41,7 @@ Create a `.env` file in the `backend` directory with the following variables:
 ```
 NODE_ENV=development
 MONGODB_URI=your_mongodb_connection_string
-PORT=3000
+PORT=5000
 JWT_ACCESS_SECRET=your_jwt_access_secret
 JWT_ACCESS_EXPIRES_IN=15m
 JWT_REFRESH_SECRET=your_jwt_refresh_secret
@@ -59,7 +59,7 @@ CLIENT_URL=http://localhost:5173
 Create a `.env` file in the `frontend` directory with the following variables:
 
 ```
-VITE_BACKEND_URI=http://localhost:3000
+VITE_BACKEND_URI=http://localhost:5000/api
 VITE_FIREBASE_API_KEY=your_firebase_api_key
 ```
 
