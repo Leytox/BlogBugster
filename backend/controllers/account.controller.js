@@ -44,10 +44,16 @@ const verifyPassword = async (req, res) => {
 
 const generate2FAToken = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id, "isTwoFactorEnabled", null);
+    const user = await User.findById(
+      req.user.id,
+      "name isTwoFactorEnabled",
+      null,
+    );
     if (user.isTwoFactorEnabled)
       return res.status(403).json({ message: "2FA Already Enabled" });
-    const secret = speakeasy.generateSecret({ name: "BlogBugster" });
+    const secret = speakeasy.generateSecret({
+      name: `BlogBugster: ${user.name}`,
+    });
     QRCode.toDataURL(secret.otpauth_url, async (error, dataUrl) => {
       if (error)
         return res.status(500).json({ message: "Something went wrong" });
