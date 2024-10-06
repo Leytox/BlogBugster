@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema(
     activationCode: {
       type: Number,
       required: true,
+      default: Math.floor(1000 + Math.random() * 9000),
     },
     resetPasswordToken: {
       type: String,

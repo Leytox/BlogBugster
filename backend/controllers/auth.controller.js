@@ -27,7 +27,6 @@ const register = async (req, res) => {
     await User.create({
       name,
       email,
-      activationCode: Math.floor(1000 + Math.random() * 9000),
       password: hashedPassword,
     });
     return res.status(201).json({ message: "Successes" });
@@ -111,10 +110,9 @@ const googleOAuth = async (req, res) => {
         email,
         password: hashedPassword,
         isActivated: true,
-	activationCode: "0000",
       });
     }
-    if (user?.ban?.status) {
+    if (user?.ban.status) {
       return res.status(403).json({
         banReason: user.ban,
         message: "User is banned",
