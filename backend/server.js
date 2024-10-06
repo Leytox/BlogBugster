@@ -2,14 +2,14 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import db from "./config/db.js";
-import { config } from "dotenv";
+import dotenv from "dotenv";
 import apiRoutes from "./routes/index.route.js";
 import { notFound } from "./middleware/error.middleware.js";
 import morgan from "morgan";
 // noinspection ES6UnusedImports
 import bot from "./utils/bot.js";
 
-config();
+dotenv.config();
 
 const app = express();
 
@@ -24,9 +24,7 @@ app.use(
   }),
 );
 app.use(cookieParser());
-app.use(
-  morgan(":method :url :status :res[content-length] - :response-time ms"),
-);
+if (process.env.NODE_ENV === "development") app.use(morgan("dev"));
 
 db()
   .then(() => {
@@ -37,8 +35,6 @@ db()
   .catch((error) => {
     console.error(error);
   });
-
-app.use("/api", apiRoutes);
-app.use("/api/uploads", express.static("uploads"));
-
+app.use("/", apiRoutes);
+app.use("/uploads", express.static("uploads"));
 app.use(notFound);
