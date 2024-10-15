@@ -7,12 +7,14 @@ import { selectUser, setUser } from "../../features/auth/authSlice.js";
 import { toast } from "react-toastify";
 import { setLocation } from "../../features/location/locationSlice.js";
 import GoogleOAuth from "../../components/GoogleOAuth.jsx";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [captcha, setCaptcha] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [register] = useRegisterMutation();
@@ -22,6 +24,10 @@ const Register = () => {
     dispatch(setLocation("Register"));
   }, [dispatch, user]);
 
+  const handleCaptcha = () => {
+    setCaptcha(true);
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
@@ -29,6 +35,7 @@ const Register = () => {
         document.getElementById("confirmPassword").focus();
         return toast.error("Passwords do not match");
       }
+      if (!captcha) return toast.error("Please verify captcha");
       const res = await register({ name, email, password }).unwrap();
       dispatch(setUser(res.user));
       navigate("/auth/login");
@@ -96,6 +103,10 @@ const Register = () => {
         title={"Register"}
         disabled={!name || !email || !password || !confirmPassword}
         styles={"w-72"}
+      />
+      <ReCAPTCHA
+        sitekey={import.meta.env.VITE_SITE_API_KEY}
+        onChange={handleCaptcha}
       />
       <div className={"flex items-center gap-2"}>
         <hr className={"border-[1px] w-32"} />

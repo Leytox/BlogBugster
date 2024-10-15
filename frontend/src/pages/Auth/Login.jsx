@@ -21,6 +21,7 @@ import {
   faSquareArrowUpRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { faTelegram } from "@fortawesome/free-brands-svg-icons";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -42,6 +43,10 @@ const Login = () => {
   useEffect(() => {
     dispatch(setLocation("Login"));
   }, [dispatch, user]);
+
+  const handleCaptcha = () => {
+    setCaptcha(true);
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -231,6 +236,10 @@ const Login = () => {
         disabled={email.length < 6 || password.length < 8}
         title={"Login"}
         styles={"w-72"}
+      />
+      <ReCAPTCHA
+        sitekey={import.meta.env.VITE_SITE_API_KEY}
+        onChange={handleCaptcha}
       />
       <div className={"flex items-center gap-2"}>
         <hr className={"border-[1px] w-32"} />

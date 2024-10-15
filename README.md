@@ -1,13 +1,14 @@
 # BlogBugster
 
-Blog application created using MERN STACK. 
+Blog application created using MERN STACK.
 
 ## Table of Contents
+
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Configuration](#configuration)
-  - [Backend Configuration](#backend-configuration)
-  - [Frontend Configuration](#frontend-configuration)
+    - [Backend Configuration](#backend-configuration)
+    - [Frontend Configuration](#frontend-configuration)
 - [Usage](#usage)
 
 ## Prerequisites
@@ -61,6 +62,7 @@ Create a `.env` file in the `frontend` directory with the following variables:
 ```
 VITE_BACKEND_URI=http://localhost:5000/api
 VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_SITE_API_KEY=your_site_api_key_from_recaptcha
 ```
 
 ## Usage
