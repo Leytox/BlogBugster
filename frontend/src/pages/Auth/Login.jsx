@@ -29,6 +29,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [activationCode, setActivationCode] = useState("");
   const [token, setToken] = useState("");
+  const [captcha, setCaptcha] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [login] = useLoginMutation();
@@ -51,6 +52,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
+      if (!captcha) return toast.error("Please complete the captcha");
       const res = await login({ email, password, token }).unwrap();
       dispatch(setUser(res.user));
       navigate("/");
