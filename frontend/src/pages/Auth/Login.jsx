@@ -138,7 +138,7 @@ const Login = () => {
           <div className={"flex flex-col items-center gap-4"}>
             <h1 className={"text-xl"}>Get code from</h1>
             <div className={"flex gap-8"}>
-              <a href="#" target={"_blank"}>
+              <a href="https://t.me/BlogBugsterOfficialBot" target={"_blank"}>
                 <FontAwesomeIcon
                   icon={faTelegram}
                   className={
@@ -234,14 +234,14 @@ const Login = () => {
           placeholder={"W:#$OICJW#P*"}
         />
       </div>
-      <Button
-        disabled={email.length < 6 || password.length < 8}
-        title={"Login"}
-        styles={"w-72"}
-      />
       <ReCAPTCHA
         sitekey={import.meta.env.VITE_SITE_API_KEY}
         onChange={handleCaptcha}
+      />
+      <Button
+        disabled={email.length < 6 || password.length < 8 || !captcha}
+        title={"Login"}
+        styles={"w-72"}
       />
       <div className={"flex items-center gap-2"}>
         <hr className={"border-[1px] w-32"} />

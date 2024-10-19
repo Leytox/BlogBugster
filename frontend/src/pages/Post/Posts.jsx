@@ -163,8 +163,8 @@ const Posts = () => {
               className={"h-screen w-screen flex items-center justify-center"}
             >
               <h1 className="text-5xl text-center m-auto italic text-gray-400">
-                <FontAwesomeIcon icon={faHeartCrack} /> No {category} posts
-                yet...
+                <FontAwesomeIcon icon={faHeartCrack} /> No{" "}
+                {category === "all" ? "" : category} posts yet...
               </h1>
             </div>
           )}

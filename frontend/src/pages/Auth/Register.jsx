@@ -99,14 +99,14 @@ const Register = () => {
           placeholder={"Same as password"}
         />
       </div>
-      <Button
-        title={"Register"}
-        disabled={!name || !email || !password || !confirmPassword}
-        styles={"w-72"}
-      />
       <ReCAPTCHA
         sitekey={import.meta.env.VITE_SITE_API_KEY}
         onChange={handleCaptcha}
+      />
+      <Button
+        title={"Register"}
+        disabled={!name || !email || !password || !confirmPassword || !captcha}
+        styles={"w-72"}
       />
       <div className={"flex items-center gap-2"}>
         <hr className={"border-[1px] w-32"} />

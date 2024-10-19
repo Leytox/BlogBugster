@@ -22,6 +22,7 @@ import {
   faPencil,
   faPeopleGroup,
   faTrash,
+  faUserGear,
   faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
 import { selectUser, setAvatar } from "../../features/auth/authSlice.js";
@@ -264,6 +265,11 @@ const UserProfile = () => {
             <div className={"flex flex-col gap-4"}>
               <div className={"flex gap-2 items-end"}>
                 <h1 className="text-4xl font-bold mt-4">{data?.user.name}</h1>
+                {data?.user.isAdmin && (
+                  <p className="text-xl text-green-600 mt-4 p-1 border-2 border-green-600 rounded-xl">
+                    <FontAwesomeIcon icon={faUserGear} /> Admin
+                  </p>
+                )}
                 <h2
                   className={
                     "text-4xl italic text-gray-600 cursor-pointer hover:text-gray-700 hover:scale-110 transition-transform"
