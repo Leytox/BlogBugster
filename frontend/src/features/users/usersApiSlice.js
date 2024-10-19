@@ -41,9 +41,10 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     }),
 
     ban: build.mutation({
-      query: (id) => ({
+      query: ({ id, body }) => ({
         url: `/users/${id}/ban`,
         method: "POST",
+        body,
       }),
       invalidatesTags: ["User"],
     }),

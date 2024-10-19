@@ -62,7 +62,7 @@ const ban = async (req, res) => {
       return res.status(403).json({ message: "User is already banned" });
     await User.findByIdAndUpdate(
       req.params.id,
-      { ban: { status: true, reason, date: new Date.now() } },
+      { ban: { status: true, reason, date: Date.now() } },
       null,
     );
     return res.status(200).json({ message: "Successes" });
