@@ -46,6 +46,7 @@ import {
 import { useLogoutMutation } from "../../features/auth/authApiSlice.js";
 import OverlayWindow from "../../components/OverlayWindow.jsx";
 import VerificationInput from "react-verification-input";
+import { copyToClipboard } from "../../services/index.js";
 
 const UserSettings = () => {
   const [settingsGroup, setSettingsGroup] = useState("Profile");
@@ -120,10 +121,8 @@ const UserSettings = () => {
       if (data.user.isTwoFactorEnabled) {
         await disable2FA().unwrap();
         await refetch();
-      } else {
-        await handleGenerate2FAToken();
-        setPassword("");
-      }
+      } else await handleGenerate2FAToken();
+      setPassword("");
       setIsPasswordVerificationWindowShown(false);
     } catch (error) {
       console.error(error);
@@ -137,6 +136,9 @@ const UserSettings = () => {
       setQrCode(res.qrCode);
       setSecret(res.secret);
       setIs2FAWindowShown(true);
+      toast.info("You can click on QR Code to copy the secret", {
+        autoClose: 5000,
+      });
     } catch (error) {
       console.log(error);
       toast.error(error.data.message);
@@ -298,7 +300,13 @@ const UserSettings = () => {
             }
           >
             <h1 className={"text-2xl"}>Set up an authenticator</h1>
-            <img src={qrCode} alt={secret} />
+            <img
+              src={qrCode}
+              alt={secret}
+              width={160}
+              className={"cursor-pointer"}
+              onClick={() => copyToClipboard(secret)}
+            />
             <h2 className={"text-sm text-gray-600"}>
               Input generated code from your auth app
             </h2>
