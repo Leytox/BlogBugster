@@ -12,6 +12,7 @@ import {
   faPlus,
   faSignOut,
   faUser,
+  faUserGear,
 } from "@fortawesome/free-solid-svg-icons";
 import SearchContainer from "./SearchContainer.jsx";
 
@@ -72,6 +73,16 @@ const Header = () => {
             >
               New post <FontAwesomeIcon icon={faPlus} />
             </Link>
+            {user.isAdmin && (
+              <Link
+                className={
+                  "gap-2 uppercase hover:text-gray-300 hover:border-gray-300 flex text-center justify-center items-center transition ease-in-out rounded-md border-[1px] border-white px-2 py-2"
+                }
+                to={"/admin"}
+              >
+                Dashboard <FontAwesomeIcon icon={faUserGear} />
+              </Link>
+            )}
             <div
               className={
                 "cursor-pointer uppercase hover:text-gray-300 hover:border-gray-300 transition ease-in-out"

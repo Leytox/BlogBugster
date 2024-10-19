@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 
 const ProtectedRoute = ({ children, RouteType }) => {
   const { user } = useSelector(selectUser);
+  console.log(user);
   switch (RouteType) {
     case "private":
       if (!user) return <Navigate to="/auth/login" />;
@@ -19,7 +20,10 @@ const ProtectedRoute = ({ children, RouteType }) => {
       break;
     case "admin":
       if (!user) return <Navigate to="/" />;
-      else if (user.role !== "admin") return <Navigate to="/posts" />;
+      else if (!user.isAdmin)
+        return (
+          <Navigate to="/posts?page=1&category=all&sortOrder=new&searchTerm=" />
+        );
       break;
     default:
       break;
