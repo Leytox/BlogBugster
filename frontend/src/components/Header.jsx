@@ -78,7 +78,7 @@ const Header = () => {
                 className={
                   "gap-2 uppercase hover:text-gray-300 hover:border-gray-300 flex text-center justify-center items-center transition ease-in-out rounded-md border-[1px] border-white px-2 py-2"
                 }
-                to={"/admin"}
+                to={"/admin/overview"}
               >
                 Dashboard <FontAwesomeIcon icon={faUserGear} />
               </Link>

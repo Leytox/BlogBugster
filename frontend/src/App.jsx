@@ -17,6 +17,7 @@ import UserSettings from "./pages/User/UserSettings.jsx";
 import ResetPassword from "./pages/Auth/ResetPassword.jsx";
 import "react-toastify/dist/ReactToastify.css";
 import AdminDashboard from "./pages/Admin/AdminDashboard.jsx";
+import AdminOverview from "./pages/Admin/AdminOverview.jsx";
 
 export default function App() {
   return (
@@ -83,13 +84,19 @@ export default function App() {
         />
         <Route path="posts/:id" element={<Post />} />
         <Route
-          path={"/admin"}
+          path="/admin"
           element={
             <ProtectedRoute RouteType={"admin"}>
               <AdminDashboard />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route path="overview" element={<AdminOverview />} />
+          <Route path="users" element={<div />} />
+          <Route path="posts" element={<div />} />
+          <Route path="bans" element={<div />} />
+          <Route path="settings" element={<div />} />
+        </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
       <GoTop />

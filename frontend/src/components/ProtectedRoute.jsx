@@ -5,7 +5,6 @@ import PropTypes from "prop-types";
 
 const ProtectedRoute = ({ children, RouteType }) => {
   const { user } = useSelector(selectUser);
-  console.log(user);
   switch (RouteType) {
     case "private":
       if (!user) return <Navigate to="/auth/login" />;
