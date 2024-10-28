@@ -28,7 +28,7 @@ const SearchContainerMobile = () => {
         >
           <div className={"flex items-center"}>
             <input
-              type="text"
+              type="search"
               placeholder="Search for anything..."
               className={`rounded-md p-4 text-black outline-0 outline w-72`}
               value={searchTerm}

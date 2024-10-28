@@ -19,7 +19,7 @@ const SearchContainer = () => {
     <div className={"flex items-center max-md:hidden"}>
       <form className={`flex relative`} onSubmit={handleSubmit}>
         <input
-          type="text"
+          type="search"
           placeholder="Search for anything..."
           className={`rounded-md p-2 text-black outline-0 outline w-72`}
           value={searchTerm}
