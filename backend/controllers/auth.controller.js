@@ -118,6 +118,7 @@ const googleOAuth = async (req, res) => {
         message: "User is banned",
       });
     }
+    console.log(user);
     const access_token = genAccessToken(user);
     const refresh_token = genRefreshToken(user);
     setAccessTokenCookie(res, access_token);

@@ -24,6 +24,7 @@ app.use(
   }),
 );
 app.use(cookieParser());
+
 if (process.env.NODE_ENV === "development") app.use(morgan("dev"));
 
 db()
@@ -36,5 +37,8 @@ db()
     console.error(error);
   });
 app.use("/", apiRoutes);
+app.use("/server", (req, res) => {
+  return res.status(200).send({});
+});
 app.use("/uploads", express.static("uploads"));
 app.use(notFound);

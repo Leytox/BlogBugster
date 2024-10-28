@@ -8,11 +8,13 @@ import {
   faChartLine,
   faChevronLeft,
   faChevronRight,
+  faCircleInfo,
   faGears,
   faScroll,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { selectUser } from "../../features/auth/authSlice.js";
+import { useGetServerInfoQuery } from "../../features/server/serverApiSlice.js";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -20,13 +22,15 @@ const Sidebar = () => {
   const location = useLocation();
   const currentPath = location.pathname.split("/").pop();
 
+  const { isLoading, isError, fulfilledTimeStamp, startedTimeStamp } =
+    useGetServerInfoQuery();
   return (
     <div
-      className={`${isOpen ? "w-64" : "w-20"} bg-gray-800 text-white flex flex-col transition-all duration-300 relative`}
+      className={`${isOpen ? "w-64" : "w-20"} bg-gray-800 text-white flex flex-col justify-between transition-all duration-300 relative`}
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="absolute -right-2 top-1/3 bg-gray-900 rounded-full px-1 py-24 hover:bg-gray-700"
+        className="absolute -right-2 top-24 bg-gray-900 rounded-full px-1 py-24 hover:bg-gray-700"
       >
         <FontAwesomeIcon
           icon={isOpen ? faChevronLeft : faChevronRight}
@@ -78,6 +82,34 @@ const Sidebar = () => {
           </ul>
         </div>
       </nav>
+      <div>
+        {!isError && (
+          <div>
+            <div className="absolute bottom-0 w-full">
+              <div className="flex flex-col justify-center items-center gap-2 p-2 bg-gray-900 text-center">
+                <div>
+                  <span className="text-sm">Status: </span>
+                  <span className="text-sm">
+                    {isLoading
+                      ? "Loading..."
+                      : fulfilledTimeStamp > startedTimeStamp
+                        ? "Online"
+                        : "Offline"}
+                  </span>
+                </div>
+                <span className="text-sm">
+                  Response: {fulfilledTimeStamp - startedTimeStamp}ms{" "}
+                  <FontAwesomeIcon
+                    icon={faCircleInfo}
+                    title={import.meta.env.VITE_BACKEND_URI}
+                    className={"cursor-help hover:text-gray-400"}
+                  />
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

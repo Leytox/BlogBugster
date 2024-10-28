@@ -12,6 +12,9 @@ import {
   Tooltip,
 } from "chart.js";
 import Loader from "../../components/Loader.jsx";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
 
 ChartJS.register(
   CategoryScale,
@@ -25,9 +28,17 @@ ChartJS.register(
 );
 
 const AdminOverview = () => {
-  const { data, isLoading, error } = useGetMetricsQuery();
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    isFetching,
+    startedTimeStamp,
+    fulfilledTimeStamp,
+  } = useGetMetricsQuery();
 
-  if (isLoading)
+  if (isLoading || isFetching)
     return (
       <div className={"h-screen flex justify-center items-center"}>
         <Loader />
@@ -112,6 +123,16 @@ const AdminOverview = () => {
     ],
   };
 
+  const handleRefetch = async () => {
+    try {
+      await refetch();
+      toast.info(`Updated in ${fulfilledTimeStamp - startedTimeStamp}ms`);
+    } catch (error) {
+      console.log(error);
+      toast.error("Error fetching metrics");
+    }
+  };
+
   return (
     <div className={"flex flex-wrap flex-col gap-16"}>
       <div className={"flex flex-col"}>
@@ -129,6 +150,9 @@ const AdminOverview = () => {
         <h1 className={"text-2xl text-center mb-6"}>Bans</h1>
         <Line data={bansData} className={"flex-1 max-w-fit max-h-72"} />
       </div>
+      <button onClick={handleRefetch} disabled={isFetching} className={"btn"}>
+        <FontAwesomeIcon icon={faRefresh} /> Refresh Data
+      </button>
     </div>
   );
 };
