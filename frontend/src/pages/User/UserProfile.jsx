@@ -341,7 +341,7 @@ const UserProfile = () => {
               <div className={"flex gap-2 items-end"}>
                 <h1 className="text-4xl font-bold mt-4">{data?.user.name}</h1>
                 {data?.user.isAdmin && (
-                  <p className="text-xl text-green-600 mt-4 p-1 border-2 border-green-600 rounded-xl">
+                  <p className="text-xl text-green-600 mt-4 p-1 border-2 border-green-600 rounded-xl max-md:text-sm max-sm:w-full max-sm:text-center">
                     <FontAwesomeIcon icon={faUserGear} /> Admin
                   </p>
                 )}

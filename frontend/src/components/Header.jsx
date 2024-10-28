@@ -15,6 +15,7 @@ import {
   faUserGear,
 } from "@fortawesome/free-solid-svg-icons";
 import SearchContainer from "./SearchContainer.jsx";
+import SearchContainerMobile from "./SearchContainerMobile.jsx";
 
 const Header = () => {
   const [position, setPosition] = useState(window.scrollY);
@@ -47,27 +48,28 @@ const Header = () => {
 
   return (
     <header
-      className={`${visible ? "top-0" : "-top-24"} transition-all duration-300 sticky z-50 w-full h-[80px] gradient flex flex-row justify-between gap-12 items-center px-32 max-lg:px-6`}
+      className={`${visible ? "top-0" : "-top-24"} transition-all duration-300 sticky z-50 w-full h-[80px] gradient flex flex-row justify-between gap-12 items-center px-32 max-sm:gap-1 max-sm:px-4 max-lg:px-6`}
     >
       <div className={"flex flex-row gap-12 items-center"}>
         <Link to={"/"}>
           <img src={logo} alt="logo" width={48} height={48} />
         </Link>
-        <h1 className={"text-xl font-bold max-md:hidden uppercase"}>
+        <h1 className={"text-xl font-bold max-xl:hidden uppercase"}>
           {location}
         </h1>
       </div>
       <nav
         className={
-          "flex flex-row justify-center items-center gap-4 font-normal"
+          "flex flex-row justify-center items-center gap-3 font-normal"
         }
       >
         <SearchContainer />
+        <SearchContainerMobile />
         {user ? (
           <>
             <Link
               className={
-                "gap-2 uppercase hover:text-gray-300 hover:border-gray-300 flex text-center justify-center items-center transition ease-in-out rounded-md border-[1px] border-white px-2 py-2"
+                "max-sm:text-sm gap-2 uppercase hover:text-gray-300 hover:border-gray-300 flex text-center justify-center items-center transition ease-in-out rounded-md border-[1px] border-white px-1 py-2"
               }
               to={"/posts/new"}
             >
@@ -76,7 +78,7 @@ const Header = () => {
             {user.isAdmin && (
               <Link
                 className={
-                  "gap-2 uppercase hover:text-gray-300 hover:border-gray-300 flex text-center justify-center items-center transition ease-in-out rounded-md border-[1px] border-white px-2 py-2"
+                  "max-sm:text-sm gap-2 uppercase hover:text-gray-300 hover:border-gray-300 flex text-center justify-center items-center transition ease-in-out rounded-md border-[1px] border-white px-1 py-2"
                 }
                 to={"/admin/overview"}
               >
@@ -126,7 +128,7 @@ const Header = () => {
           <>
             <Link
               className={
-                "uppercase hover:text-gray-300 hover:border-gray-300 transition ease-in-out"
+                "uppercase hover:text-gray-300 hover:border-gray-300 transition ease-in-out rounded-md border-[1px] border-white px-4 py-2"
               }
               to={"/auth/login"}
             >
