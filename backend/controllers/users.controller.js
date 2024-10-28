@@ -38,14 +38,22 @@ const getUserSubscriptions = async (req, res) => {
 };
 
 const getUsers = async (req, res) => {
-  const { page, limit } = req.query;
+  const { page, limit, searchTerm, sortOrder } = req.query;
+  console.log(page, limit, searchTerm);
   const skip = (page - 1) * limit;
   try {
-    const users = await User.find(null, " _id avatar name subscribers", null)
+    let query = {};
+    if (searchTerm) query.name = { $regex: searchTerm, $options: "i" };
+    const users = await User.find(
+      query,
+      " _id avatar name subscribers ban",
+      null,
+    )
       .skip(skip)
+      .sort({ createdAt: sortOrder === "new" ? -1 : 1 })
       .limit(limit);
-    if (!users) return res.status(404).json({ message: "Users not found" });
-    return res.status(200).json({ users, message: "Successes" });
+    const total = await User.countDocuments(query);
+    return res.status(200).json({ users, total, message: "Success" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Something went wrong" });
