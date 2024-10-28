@@ -60,7 +60,7 @@ const Header = () => {
       </div>
       <nav
         className={
-          "flex flex-row justify-center items-center gap-3 font-normal"
+          "flex flex-row justify-center items-center gap-4 font-normal"
         }
       >
         <SearchContainer />
@@ -69,7 +69,7 @@ const Header = () => {
           <>
             <Link
               className={
-                "max-sm:text-sm gap-2 uppercase hover:text-gray-300 hover:border-gray-300 flex text-center justify-center items-center transition ease-in-out rounded-md border-[1px] border-white px-1 py-2"
+                "max-sm:text-sm gap-1 uppercase hover:text-gray-300 hover:border-gray-300 flex text-center justify-center items-center transition ease-in-out rounded-md border-[1px] border-white px-1 py-2"
               }
               to={"/posts/new"}
             >
@@ -78,7 +78,7 @@ const Header = () => {
             {user.isAdmin && (
               <Link
                 className={
-                  "max-sm:text-sm gap-2 uppercase hover:text-gray-300 hover:border-gray-300 flex text-center justify-center items-center transition ease-in-out rounded-md border-[1px] border-white px-1 py-2"
+                  "max-sm:text-sm gap-1 uppercase hover:text-gray-300 hover:border-gray-300 flex text-center justify-center items-center transition ease-in-out rounded-md border-[1px] border-white px-1 py-2"
                 }
                 to={"/admin/overview"}
               >

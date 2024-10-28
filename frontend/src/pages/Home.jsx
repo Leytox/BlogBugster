@@ -109,7 +109,7 @@ const Home = () => {
         >
           <h1
             className={
-              "text-6xl font-bold text-center uppercase mt-20 overline block 2xl:hidden"
+              "text-6xl font-bold text-center uppercase mt-20 overline block 2xl:hidden max-md:text-4xl"
             }
           >
             <FontAwesomeIcon icon={faStar} /> FEATURES{" "}
@@ -154,7 +154,7 @@ const Home = () => {
       </section>
       <section className="min-h-screen py-20 flex items-center">
         <div className="w-full max-w-4xl mx-auto px-6">
-          <h1 className="text-6xl font-bold text-center uppercase mb-12 overline">
+          <h1 className="text-6xl font-bold text-center uppercase mb-12 overline max-md:text-4xl">
             <FontAwesomeIcon icon={faCircleQuestion} /> About Us{" "}
             <FontAwesomeIcon icon={faCircleQuestion} />
           </h1>
